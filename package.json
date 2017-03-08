@@ -6,7 +6,8 @@
   "author": "Victor Feijo",
   "license": "MIT",
   "scripts": {
-    "start": "webpack-dev-server"
+    "start": "webpack-dev-server",
+    "build": "webpack"
   },
   "dependencies": {
     "antd": "^2.8.0",
