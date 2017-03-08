@@ -8,7 +8,8 @@
   "scripts": {
     "start": "webpack-dev-server",
     "build": "webpack",
-    "lint": "node_modules/.bin/eslint --ext .jsx src/"
+    "lint": "eslint --ext .jsx src/app --ext .js src/core/",
+    "test": "yarn run lint && jest"
   },
   "dependencies": {
     "antd": "^2.8.0",
@@ -32,6 +33,7 @@
     "eslint-config-airbnb": "^14.1.0",
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-react": "^6.10.0",
+    "jest": "^19.0.2",
     "style-loader": "^0.13.2"
   }
 }
