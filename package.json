@@ -9,11 +9,13 @@
     "start": "webpack-dev-server",
     "build": "webpack",
     "lint": "eslint --ext .jsx src/app --ext .js src/core/",
-    "test": "yarn run lint && jest"
+    "test": "yarn run lint && jest",
+    "server": "yarn run build && node ./server.js"
   },
   "dependencies": {
     "antd": "^2.8.0",
     "eslint-plugin-jsx-a11y": "^4.0.0",
+    "express": "^4.15.2",
     "global": "^4.3.1",
     "html-webpack-plugin": "^2.28.0",
     "path": "^0.12.7",

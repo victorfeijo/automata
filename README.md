@@ -14,8 +14,12 @@ To run the app on dev server
 
 Testing and linting
 
-`$ yarn test`
+`$ yarn run test`
 
 Prepate for production
 
-`$ yarn build`
+`$ yarn run build`
+
+Node server
+
+`$ yarn run server`
