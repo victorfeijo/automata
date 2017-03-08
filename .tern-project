@@ -1,0 +1,11 @@
+{
+  "libs": [
+    "lodash"
+  ],
+  "plugins": {
+    "requirejs": {
+      "baseURL": "./",
+      "paths": {}
+    }
+  }
+}
