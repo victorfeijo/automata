@@ -16,7 +16,7 @@ Testing and linting
 
 `$ yarn run test`
 
-Prepate for production
+Prepare for production
 
 `$ yarn run build`
 
