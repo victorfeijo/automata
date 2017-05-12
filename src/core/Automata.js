@@ -1,21 +1,21 @@
 import { where, isEmpty, isNil, complement, __ } from 'ramda';
 
-const specAutomata = automata => {
-  return where({
+const specAutomata = automata => (
+  where({
     alphabet: complement(isEmpty(__)),
-    states: complement(isEmpty(__)),
+    transitions: complement(isEmpty(__)),
     initial: complement(isNil(__)),
-    finals: complement(isEmpty(__))
-  })(automata);
-}
+    finals: complement(isEmpty(__)),
+  })(automata)
+);
 
-export function makeAutomata(alphabet, states, initial, finals) {
+export default function makeAutomata(alphabet, transitions, initial, finals) {
   const automata = {
-    alphabet: alphabet,
-    states: states,
-    initial: initial,
-    finals: finals
+    alphabet,
+    transitions,
+    initial,
+    finals,
   };
 
-  return specAutomata(automata) ? automata : {}
+  return specAutomata(automata) ? automata : {};
 }
