@@ -9,6 +9,7 @@
     "start": "webpack-dev-server",
     "build": "webpack",
     "lint": "eslint --ext .jsx src/app --ext .js src/core/",
+    "jest": "jest",
     "test": "yarn run lint && jest",
     "server": "yarn run build && node ./server.js"
   },
