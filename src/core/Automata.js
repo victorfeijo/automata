@@ -1,16 +1,27 @@
-import { where, isEmpty, isNil, complement, __ } from 'ramda';
+import { where, all, __ } from 'ramda';
+import { isString, isStringList } from './Predicates';
 
-const specAutomata = automata => (
+export const specTransition = transition => (
   where({
-    alphabet: complement(isEmpty(__)),
-    transitions: complement(isEmpty(__)),
-    initial: complement(isNil(__)),
-    finals: complement(isEmpty(__)),
+    state: isString(__),
+    value: isString(__),
+    next: isStringList(__),
+  })(transition)
+);
+
+export const specAutomata = automata => (
+  where({
+    states: isStringList(__),
+    alphabet: isStringList(__),
+    transitions: all(specTransition(__))(__),
+    initial: isString(__),
+    finals: isStringList(__),
   })(automata)
 );
 
-export default function makeAutomata(alphabet, transitions, initial, finals) {
+export default function makeAutomata(states, alphabet, transitions, initial, finals) {
   const automata = {
+    states,
     alphabet,
     transitions,
     initial,

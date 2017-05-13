@@ -1,15 +1,11 @@
-import makeAutomata from '../src/core/Automata.js';
+import makeAutomata from '../src/core/Automata';
+import { automata1 as sample } from '../samples/ValidAutomatas'
 
-const alphabet = new Set(['a', 'b']);
-const q0 = { 'a': 'q0', 'b': 'q1' };
-const q1 = { 'a': 'q1', 'b': 'q2' };
-const q2 = { 'a': 'q0', 'b': 'q2' };
-const transitions = new Set([q0, q1, q2]);
-const initial = q0;
-const finals = new Set([q2]);
+const { states, alphabet, transitions, initial, finals } = sample;
 
 test('It makes a correct finite automata', () => {
-  expect(makeAutomata(alphabet, transitions, initial, finals)).toEqual({
+  expect(makeAutomata(states, alphabet, transitions, initial, finals)).toEqual({
+    states: states,
     alphabet: alphabet,
     transitions: transitions,
     initial: initial,
@@ -17,18 +13,36 @@ test('It makes a correct finite automata', () => {
   });
 });
 
-test('It dont create automata with empty alphabet', () => {
-  expect(makeAutomata({}, transitions, initial, finals)).toEqual({});
+test('It dont create automata with invalid states', () => {
+  const invalidStates = ['q0', 20];
+
+  expect(makeAutomata(invalidStates, alphabet, transitions, initial, finals)).toEqual({});
 });
 
-test('It dont create automata with empty transitions', () => {
-  expect(makeAutomata(alphabet, {}, initial, finals)).toEqual({});
+test('It dont create automata with invalid alphabet', () => {
+  const invalidAlphabet = ['a', 21, 'b'];
+
+  expect(makeAutomata(states, invalidAlphabet, transitions, initial, finals)).toEqual({});
 });
 
-test('It dont create automata with null initial', () => {
-  expect(makeAutomata(alphabet, transitions, null, finals)).toEqual({});
+test('It dont create automata with invalid transitions', () => {
+  const invalidTransisitions = [{
+    state: 'q0',
+    value: 20,
+    next: 'q0',
+  }];
+
+  expect(makeAutomata(states, alphabet, invalidTransisitions, initial, finals)).toEqual({});
 });
 
-test('It dont create automata with empty finals', () => {
-  expect(makeAutomata(alphabet, transitions, initial, {})).toEqual({});
+test('It dont create automata with invalid initial', () => {
+  const invalidInitial= 20;
+
+  expect(makeAutomata(states, alphabet, transitions, invalidInitial, finals)).toEqual({});
+});
+
+test('It dont create automata with invalid finals', () => {
+  const invalidFinals = ['q0', {}];
+
+  expect(makeAutomata(states, alphabet, transitions, initial, invalidFinals)).toEqual({});
 });
