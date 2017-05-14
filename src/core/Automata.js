@@ -1,7 +1,7 @@
 import { where, all, __ } from 'ramda';
 import { isString, isStringList } from './Predicates';
 
-export const specTransition = transition => (
+const specTransition = transition => (
   where({
     state: isString(__),
     value: isString(__),
@@ -9,7 +9,7 @@ export const specTransition = transition => (
   })(transition)
 );
 
-export const specAutomata = automata => (
+const specAutomata = automata => (
   where({
     states: isStringList(__),
     alphabet: isStringList(__),

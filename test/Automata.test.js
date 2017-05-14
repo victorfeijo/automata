@@ -1,5 +1,5 @@
 import makeAutomata from '../src/core/Automata';
-import { automata1 as sample } from '../samples/ValidAutomatas'
+import { automata1 as sample } from '../samples/Deterministic';
 
 const { states, alphabet, transitions, initial, finals } = sample;
 
