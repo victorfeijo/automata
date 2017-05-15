@@ -30,3 +30,9 @@ export default function makeAutomata(states, alphabet, transitions, initial, fin
 
   return specAutomata(automata) ? automata : {};
 }
+
+export const errorTransition = {
+  state: 'ERROR',
+  value: '',
+  next: [],
+};

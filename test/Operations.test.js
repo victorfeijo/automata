@@ -1,11 +1,21 @@
-import { acceptTape } from '../src/core/Operations';
-import { automata1 as automata } from '../samples/Deterministic';
-import { tape1, tape2 } from '../samples/Tapes';
+import { readTape } from '../src/core/Operations';
+import { automata1, automata2 } from '../samples/Deterministic';
+import { tape1, tape2, tape3 } from '../samples/Tapes';
 
-test('It dont accept a tape', () => {
-  expect(acceptTape(automata, tape1)).toBe(true);
-});
+describe('Read tape', () => {
+  test('Full state automata - Read and accept tape', () => {
+    expect(readTape(automata1, tape1)).toBe(true);
+  });
 
-test('It dont accept a tape', () => {
-  expect(acceptTape(automata, tape2)).toBe(false);
+  test('Full state automata - Read and reject tape', () => {
+    expect(readTape(automata1, tape2)).toBe(false);
+  });
+
+  test('Error state automata - Read and reject tape', () => {
+    expect(readTape(automata2, tape3)).toBe(true);
+  });
+
+  test('Error state automata - Read and reject tape', () => {
+    expect(readTape(automata2, tape2)).toBe(false);
+  });
 });
