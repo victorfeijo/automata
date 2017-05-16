@@ -1,9 +1,10 @@
-import makeAutomata from '../src/core/Automata';
-import { d_automata1 as sample } from '../samples/Deterministic';
+import makeAutomata, { isNonDeterministic } from '../src/core/Automata';
+import { d_automata1, d_automata2 } from '../samples/Deterministic';
+import { nd_automata1 } from '../samples/NonDeterministic';
 
-const { states, alphabet, transitions, initial, finals } = sample;
+describe('Automata validation and creation', () => {
+  const { states, alphabet, transitions, initial, finals } = d_automata1;
 
-describe('Valid automata', () => {
   test('It makes a correct deterministic automata', () => {
     expect(makeAutomata(states, alphabet, transitions, initial, finals)).toEqual({
       states: states,
@@ -13,9 +14,7 @@ describe('Valid automata', () => {
       finals: finals
     });
   });
-});
 
-describe('Invalid automata', () => {
   test('It dont create automata with invalid states', () => {
     const invalidStates = ['q0', 20];
 
@@ -48,5 +47,17 @@ describe('Invalid automata', () => {
     const invalidFinals = ['q0', {}];
 
     expect(makeAutomata(states, alphabet, transitions, initial, invalidFinals)).toEqual({});
+  });
+});
+
+describe('Verify automata is deterministic', () => {
+  test('Automata is deterministic', () => {
+    expect(isNonDeterministic(d_automata1)).toBe(false);
+
+    expect(isNonDeterministic(d_automata2)).toBe(false);
+  });
+
+  test('Automata is non deterministic', () => {
+    expect(isNonDeterministic(nd_automata1)).toBe(true);
   });
 });
