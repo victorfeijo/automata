@@ -1,11 +1,16 @@
 import { isNil, isEmpty, contains, find,
-         propEq, tail, head, filter, any } from 'ramda';
+         propEq, tail, head, filter, any,
+         gte, length } from 'ramda';
 import { errorTransition } from './Automata';
 
 export const findTransition = (transitions, state, value) => (
   (find(propEq('value', value))(
     filter(propEq('state', state), transitions),
   ) || errorTransition)
+);
+
+export const firstNDTransition = transitions => (
+  find(tran => gte(length(tran.next), 2))(transitions)
 );
 
 const verifyTape = (actual, transitions, finals, left) => {

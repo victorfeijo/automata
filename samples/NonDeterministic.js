@@ -1,5 +1,6 @@
 import makeAutomata from '../src/core/Automata.js';
 
+// L(A) = { x | x E (a,b)* and #a's are odd }
 export const nd_automata1 = makeAutomata(
   ['q0', 'q1', 'q2'],
   ['a', 'b'],
