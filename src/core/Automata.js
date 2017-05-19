@@ -1,4 +1,4 @@
-import { where, all, any, pluck, gte, length, __ } from 'ramda';
+import { where, all, any, pluck, gte, length, propEq, __ } from 'ramda';
 import { isString, isStringList } from './Predicates';
 
 const specTransition = transition => (
@@ -31,9 +31,19 @@ export default function makeAutomata(states, alphabet, transitions, initial, fin
   return specAutomata(automata) ? automata : {};
 }
 
-export const isNonDeterministic = automata => (
-  any(next => gte(length(next), 2))(
-    pluck('next', automata.transitions),
+export const isBlankTransition = transition => (
+  propEq('value', '')(transition)
+);
+
+export const hasBlankTransitions = automata => (
+  any(isBlankTransition(__))(automata.transitions)
+);
+
+export const isDeterministic = automata => (
+  !(hasBlankTransitions(automata) ||
+    any(next => gte(length(next), 2))(
+      pluck('next', automata.transitions),
+    )
   )
 );
 

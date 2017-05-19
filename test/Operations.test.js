@@ -1,6 +1,6 @@
-import { readTape } from '../src/core/Operations';
+import { readTape, transitiveTransitions } from '../src/core/Operations';
 import { d_automata1, d_automata2 } from '../samples/Deterministic';
-import { nd_automata1 } from '../samples/NonDeterministic';
+import { nd_automata1, nd_automata3 } from '../samples/NonDeterministic';
 import { tape1, tape2, tape3 } from '../samples/Tapes';
 
 describe('Read tape', () => {
@@ -27,4 +27,20 @@ describe('Read tape', () => {
   test('Non deterministic automata - Read and reject tape', () => {
     expect(readTape(d_automata2, tape2)).toBe(false);
   });
+});
+
+describe('Transitive transitions', () => {
+  test('Transitive on deterministic automata', () => {
+    const { initial, transitions } = d_automata2;
+
+    expect(transitiveTransitions(initial, transitions)).toEqual(['q0', 'q1', 'q3', 'q2'])
+    expect(transitiveTransitions('q1', transitions)).toEqual(['q1', 'q3'])
+  })
+
+  test('Transitive on non deterministic automata', () => {
+    const { initial, transitions } = nd_automata3;
+
+    expect(transitiveTransitions(initial, transitions)).toEqual(['q0', 'q1', 'q2'])
+    expect(transitiveTransitions('q1', transitions)).toEqual(['q1'])
+  })
 });

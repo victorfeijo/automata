@@ -1,6 +1,6 @@
-import makeAutomata, { isNonDeterministic } from '../src/core/Automata';
+import makeAutomata, { isDeterministic, hasBlankTransitions } from '../src/core/Automata';
 import { d_automata1, d_automata2 } from '../samples/Deterministic';
-import { nd_automata1 } from '../samples/NonDeterministic';
+import { nd_automata1, nd_automata3 } from '../samples/NonDeterministic';
 
 describe('Automata validation and creation', () => {
   const { states, alphabet, transitions, initial, finals } = d_automata1;
@@ -52,12 +52,18 @@ describe('Automata validation and creation', () => {
 
 describe('Verify automata is deterministic', () => {
   test('Automata is deterministic', () => {
-    expect(isNonDeterministic(d_automata1)).toBe(false);
+    expect(isDeterministic(d_automata1)).toBe(true);
 
-    expect(isNonDeterministic(d_automata2)).toBe(false);
+    expect(isDeterministic(d_automata2)).toBe(true);
   });
 
   test('Automata is non deterministic', () => {
-    expect(isNonDeterministic(nd_automata1)).toBe(true);
+    expect(isDeterministic(nd_automata1)).toBe(false);
+  });
+
+  test('Automata is ND by blank transisitions', () => {
+    expect(hasBlankTransitions(nd_automata3)).toBe(true);
+
+    expect(isDeterministic(nd_automata3)).toBe(false);
   });
 });
