@@ -60,3 +60,29 @@ export const nd_automata2 = makeAutomata(
   'q0',
   ['q3']
 );
+
+// ---- HAS EMPTY TRANSITIONS -----
+// L(M) = { x E (a | b)* }
+export const nd_automata3 = makeAutomata(
+  ['q0', 'q1', 'q2'],
+  ['a', 'b'],
+  [{
+    state: 'q0',
+    value: '',
+    next: ['q1'],
+  }, {
+    state: 'q0',
+    value: 'a',
+    next: ['q2'],
+  }, {
+    state: 'q1',
+    value: 'b',
+    next: ['q1'],
+  }, {
+    state: 'q2',
+    value: 'a',
+    next: ['q2'],
+  }],
+  'q0',
+  ['q1, q2']
+);
