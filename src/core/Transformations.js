@@ -1,7 +1,5 @@
-import { isNil, isEmpty, contains, find,
-         propEq, tail, head, filter, any,
-         gte, length, map, append, unnest,
-         uniq, without, clone, difference } from 'ramda';
+import { isEmpty, contains, tail, head, filter,
+         clone, difference } from 'ramda';
 
 import makeAutomata, { isDeterministic } from './Automata';
 import { firstNDTransition, removeFromNext, transitiveTransitions } from './Operations';
@@ -25,11 +23,11 @@ function removeStates(automata, states) {
   const leftTransitions = filter(t => t.state !== remove, automata.transitions);
 
   return removeStates(makeAutomata(
-    filter((v) => v !== remove, automata.states),
+    filter(s => s !== remove, automata.states),
     clone(automata.alphabet),
     removeFromNext(remove, leftTransitions),
     clone(automata.initial),
-    filter((v) => v !== remove, automata.finals)
+    filter(f => f !== remove, automata.finals),
   ), tail(states));
 }
 
@@ -60,4 +58,4 @@ export {
   removeStates,
   removeUnreachables,
   determineze,
-}
+};
