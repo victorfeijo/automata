@@ -1,14 +1,21 @@
 import { isNil, isEmpty, contains, find,
          propEq, tail, head, filter, any,
          gte, length, map, append, unnest,
-         uniq } from 'ramda';
+         uniq, without, clone, difference } from 'ramda';
 
-import { makeAutomata, isDeterministic } from './Automata';
-import { firstNDTransition } from './Operations';
+import makeAutomata, { isDeterministic } from './Automata';
+import { firstNDTransition, removeFromNext, transitiveTransitions } from './Operations';
 
 function removeBlankTransitions(automata) {
 }
 
+
+/**
+ * Remove a collection of states from given automata.
+ * @param {Automata} automata - Automata to clean.
+ * @param {array<string>} states - States to remove.
+ * @return {Automata} - A new automata without give states.
+ */
 function removeStates(automata, states) {
   if (isEmpty(states) || contains(automata.initial, states)) {
     return automata;
@@ -16,6 +23,28 @@ function removeStates(automata, states) {
 
   const remove = head(states);
   const leftTransitions = filter(t => t.state !== remove, automata.transitions);
+
+  return removeStates(makeAutomata(
+    filter((v) => v !== remove, automata.states),
+    clone(automata.alphabet),
+    removeFromNext(remove, leftTransitions),
+    clone(automata.initial),
+    filter((v) => v !== remove, automata.finals)
+  ), tail(states));
+}
+
+/**
+ * Remove all unreachable states from automata.
+ * @param {Automata} automata - Automata to clean.
+ * @return {Automata} - A new automata without unreachable states.
+ */
+function removeUnreachables(automata) {
+  const reachable = transitiveTransitions(
+    automata.initial,
+    automata.transitions,
+  );
+
+  return removeStates(automata, difference(automata.states, reachable));
 }
 
 function determineze(automata) {
@@ -28,5 +57,7 @@ function determineze(automata) {
 
 export {
   removeBlankTransitions,
+  removeStates,
+  removeUnreachables,
   determineze,
 }
