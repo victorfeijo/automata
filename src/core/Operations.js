@@ -70,6 +70,30 @@ function transitiveTransitions(state, transitions, visited = []) {
 }
 
 /**
+ * Find all previous states from a given state.
+ * @param {string} state - Starting state.
+ * @param {array<object>} transitions - All automata transitions.
+ * @param {array<string>} visited - Visited states to stop recursion.
+ * @return {array<string>} - List of all previous (not ordered).
+ */
+function previousStates(state, transitions, visited = []) {
+  if (contains(state, visited)) {
+    return visited;
+  }
+
+  const prvTransitions = filter(t => contains(state, t.next), transitions);
+
+  if (isEmpty(prvTransitions)) {
+    return append(state, visited);
+  }
+
+  return uniq(flatten(map(tran =>
+    previousStates(tran.state, transitions, append(state, visited)),
+    prvTransitions,
+  )));
+}
+
+/**
  * Recursive check transitions to read a tape.
  * @param {string} actual - Actual recursion looking state (starts with q0).
  * @param {array<object>} transitions - All automata transitions.
@@ -106,5 +130,6 @@ export {
   firstNDTransition,
   removeFromNext,
   transitiveTransitions,
+  previousStates,
   readTape,
 };

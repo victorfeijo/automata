@@ -1,5 +1,5 @@
-import { readTape, transitiveTransitions, removeFromNext } from '../src/core/Operations';
-import { d_automata1, d_automata2 } from '../samples/Deterministic';
+import { readTape, transitiveTransitions, removeFromNext, previousStates } from '../src/core/Operations';
+import { d_automata1, d_automata2, d_automata5 } from '../samples/Deterministic';
 import { nd_automata1, nd_automata3 } from '../samples/NonDeterministic';
 import { tape1, tape2, tape3 } from '../samples/Tapes';
 
@@ -45,7 +45,7 @@ describe('Transitive transitions', () => {
   })
 });
 
-describe('Remove dead state', () => {
+describe('Remove state from next', () => {
   test('Remove q1 on deterministic automata', () => {
     const { transitions, initial } = d_automata2;
 
@@ -65,4 +65,18 @@ describe('Remove dead state', () => {
       { state: 'q2', value: 'a', next: [ 'q1' ] },
     ]);
   })
+});
+
+describe('Previous transitions', () => {
+  test('All transitions previous from final', () => {
+    const { states, transitions, finals } = d_automata2;
+
+    expect(previousStates(finals[0], transitions).sort()).toEqual(states.sort());
+  });
+
+  test('Just some transitions previous from final', () => {
+    const { transitions, finals } = d_automata5;
+
+    expect(previousStates(finals[0], transitions)).toEqual(['q1', 'q0']);
+  });
 });
