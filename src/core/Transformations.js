@@ -1,8 +1,8 @@
 import { isEmpty, contains, tail, head, filter,
-         clone, difference } from 'ramda';
+         clone, difference, uniq, flatten, map } from 'ramda';
 
 import makeAutomata, { isDeterministic } from './Automata';
-import { firstNDTransition, removeFromNext, transitiveTransitions } from './Operations';
+import { firstNDTransition, removeFromNext, transitiveTransitions, previousStates } from './Operations';
 
 function removeBlankTransitions(automata) {
 }
@@ -37,12 +37,25 @@ function removeStates(automata, states) {
  * @return {Automata} - A new automata without unreachable states.
  */
 function removeUnreachables(automata) {
-  const reachable = transitiveTransitions(
-    automata.initial,
-    automata.transitions,
-  );
+  const { states, transitions, initial } = automata;
 
-  return removeStates(automata, difference(automata.states, reachable));
+  const reachable = transitiveTransitions(initial, transitions);
+
+  return removeStates(automata, difference(states, reachable));
+}
+
+/**
+ * Remove all dead states from automata.
+ * @param {Automata} automata - Automata to clean.
+ * @return {Automata} - A new automata without dead states.
+ */
+function removeDeads(automata) {
+  const { states, transitions, finals } = automata;
+
+  const validStates = uniq(flatten(map(final =>
+    previousStates(final, transitions), finals)));
+
+  return removeStates(automata, difference(states, validStates));
 }
 
 function determineze(automata) {
@@ -57,5 +70,6 @@ export {
   removeBlankTransitions,
   removeStates,
   removeUnreachables,
+  removeDeads,
   determineze,
 };

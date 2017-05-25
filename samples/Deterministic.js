@@ -116,3 +116,53 @@ export const d_automata4 = makeAutomata(
   'S',
   ['S', 'F', 'BF', 'SF', 'BSF']
 );
+
+// L(A) = { x | x E a(ba)* }
+// NOT MINIMIZED
+export const d_automata5 = makeAutomata(
+  ['q0', 'q1', 'q2', 'q3'],
+  ['a', 'b'],
+  [{
+    state: 'q0', value: 'a', next: ['q1']
+  }, {
+    state: 'q0', value: 'b', next: ['q2']
+  }, {
+    state: 'q1', value: 'b', next: ['q0']
+  }, {
+    state: 'q2', value: 'a', next: ['q3']
+  }, {
+    state: 'q3', value: 'a', next: ['q2']
+  }, {
+    state: 'q3', value: 'b', next: ['q2']
+  }],
+  'q0',
+  ['q1']
+);
+
+// L(A) = ??
+// NOT MINIMIZED ->> TEST CASE TO REMOVE DEAD STATES
+export const d_automata6 = makeAutomata(
+  ['q0', 'q1', 'q2', 'q3', 'q4', 'q5'],
+  ['a', 'b'],
+  [{
+    state: 'q0', value: 'a', next: ['q1']
+  }, {
+    state: 'q0', value: 'b', next: ['q3']
+  }, {
+    state: 'q1', value: 'a', next: ['q2']
+  }, {
+    state: 'q1', value: 'b', next: ['q0']
+  }, {
+    state: 'q2', value: 'b', next: ['q2']
+  }, {
+    state: 'q3', value: 'b', next: ['q3']
+  }, {
+    state: 'q4', value: 'a', next: ['q4']
+  }, {
+    state: 'q4', value: 'b', next: ['q5']
+  }, {
+    state: 'q5', value: 'b', next: ['q5']
+  }],
+  'q0',
+  ['q0', 'q2', 'q3']
+);
