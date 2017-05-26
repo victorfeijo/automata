@@ -12,7 +12,8 @@
     "jest": "jest",
     "test": "yarn run lint && jest",
     "server": "yarn run build && node ./server.js",
-    "repl": "babel-node --presets es2015"
+    "repl": "babel-node --presets es2015",
+    "docs": "documentation build src/** -f html -o docs"
   },
   "dependencies": {
     "antd": "^2.8.0",
