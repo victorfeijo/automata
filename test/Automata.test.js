@@ -38,7 +38,7 @@ describe('Automata validation and creation', () => {
   });
 
   test('It dont create automata with invalid initial', () => {
-    const invalidInitial= 20;
+    const invalidInitial = 20;
 
     expect(makeAutomata(states, alphabet, transitions, invalidInitial, finals)).toEqual({});
   });
