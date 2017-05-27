@@ -10,7 +10,7 @@ import { errorTransition } from './Automata';
  * @param {array<object>} transitions - Transitions to look.
  * @param {string} state - State to find.
  * @param {string} value - Value to filter transitions.
- * @return {object} - Found transition or error transition.
+ * @return {transition} - Found transition or error transition.
  */
 const findTransition = (transitions, state, value) => (
   (find(propEq('value', value))(
@@ -61,6 +61,10 @@ function transitiveTransitions(state, transitions, visited = []) {
   }
 
   const stateTransitions = filter(propEq('state', state), transitions);
+
+  if (isEmpty(stateTransitions)) {
+    return append(state, visited);
+  }
 
   return uniq(flatten(map(tran =>
            (map(next =>

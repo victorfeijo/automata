@@ -35,7 +35,7 @@ describe('Transitive transitions', () => {
 
     expect(transitiveTransitions(initial, transitions)).toEqual(['q0', 'q1', 'q3', 'q2']);
     expect(transitiveTransitions('q1', transitions)).toEqual(['q1', 'q3']);
-  })
+  });
 
   test('Transitive on non deterministic automata', () => {
     const { initial, transitions } = nd_automata3;

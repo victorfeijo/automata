@@ -58,6 +58,9 @@ function removeDeads(automata) {
   return removeStates(automata, difference(states, validStates));
 }
 
+function reduceEquivalents(automata, equivalents) {
+}
+
 function determineze(automata) {
   if (isDeterministic(automata)) {
     return automata;
