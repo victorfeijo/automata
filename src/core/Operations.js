@@ -119,9 +119,9 @@ const equivalentStates = curry((automata, equivalents, stateA, stateB) => {
   const stateBTransitions = map(sym =>
     findTransition(transitions, stateB, sym), alphabet);
 
-  return all(sym => {
-    const { next:symNextA } = find(propEq('value', sym), stateATransitions);
-    const { next:symNextB } = find(propEq('value', sym), stateBTransitions);
+  return all((sym) => {
+    const { next: symNextA } = find(propEq('value', sym), stateATransitions);
+    const { next: symNextB } = find(propEq('value', sym), stateBTransitions);
 
     return any(equivalent => (
       contains(symNextA[0], equivalent) && contains(symNextB[0], equivalent)

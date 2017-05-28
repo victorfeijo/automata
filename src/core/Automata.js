@@ -48,7 +48,7 @@ export const isDeterministic = automata => (
 );
 
 export const errorTransition = (state, value) => ({
-  state: state,
-  value: value,
+  state,
+  value,
   next: ['ERROR'],
 });
