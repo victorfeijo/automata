@@ -2,7 +2,7 @@ import { isNil, isEmpty, contains, find,
          propEq, tail, head, filter, any,
          gte, length, map, append, flatten,
          uniq, clone, equals, without, reject,
-         all} from 'ramda';
+         all, curry, reduce } from 'ramda';
 
 import { errorTransition } from './Automata';
 
@@ -101,29 +101,55 @@ function previousStates(state, transitions, visited = []) {
 /**
  * Check if the given state A is equivalent to state B
  * on the current equivalents set.
+ * @param {Automata} automata - Deterministic automata to check.
+ * @param {array<array>} equivalents - Set of equivalent states.
  * @param {string} stateA - State A to compare.
  * @param {string} stateB - State B to compare.
- * @param {array<array>} equivalents - Set of equivalent states.
- * @param {Automata} automata - Automata to check.
  * @return {bool} - If the given states are equivalents.
  */
-function equivalentStates(stateA, stateB, equivalents, automata) {
+const equivalentStates = curry((automata, equivalents, stateA, stateB) => {
+  if (equals(stateA, stateB)) {
+    return true;
+  }
+
   const { transitions, alphabet } = automata;
 
   const stateATransitions = map(sym =>
     findTransition(transitions, stateA, sym), alphabet);
-
   const stateBTransitions = map(sym =>
     findTransition(transitions, stateB, sym), alphabet);
 
   return all(sym => {
-    const { next:symNextA } = filter(propEq('value', sym), stateATransitions)[0];
-    const { next:symNextB } = filter(propEq('value', sym), stateBTransitions)[0];
+    const { next:symNextA } = find(propEq('value', sym), stateATransitions);
+    const { next:symNextB } = find(propEq('value', sym), stateBTransitions);
 
     return any(equivalent => (
       contains(symNextA[0], equivalent) && contains(symNextB[0], equivalent)
     ), equivalents);
   }, alphabet);
+});
+
+/**
+ * Reduce a set of pre-equivalent states in a final
+ * transitive equivalent states group.
+ * @param {Automata} automata - Deterministic automata to check.
+ * @param {array<array>} equivalents - Set of pre-equivalent states.
+ * @return {array<array>} - Final set of transitive equivalent states.
+ */
+function reduceEquivalents(automata, equivalents) {
+  const reduced = reduce((acc, equivalent) => {
+    const grouped = uniq(map(state => (
+      filter(equivalentStates(automata, equivalents, state), equivalent)
+    ), equivalent));
+
+    return [...acc, ...grouped];
+  }, [], equivalents);
+
+  if (equals(reduced, equivalents)) {
+    return reduced;
+  }
+
+  return reduceEquivalents(automata, reduced);
 }
 
 /**
@@ -165,5 +191,6 @@ export {
   transitiveTransitions,
   previousStates,
   equivalentStates,
+  reduceEquivalents,
   readTape,
 };
