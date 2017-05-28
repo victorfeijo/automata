@@ -1,5 +1,5 @@
-  import { isEmpty, contains, tail, head, filter, any,
-         clone, difference, uniq, flatten, map, concat, append, reduce} from 'ramda';
+  import { isEmpty, contains, tail, head, filter, any, propEq, find,
+         clone, difference, uniq, flatten, map, concat, append, reduce, union} from 'ramda';
 
 import makeAutomata, { isDeterministic } from './Automata';
 import { firstNDTransition, removeFromNext, transitiveTransitions, previousStates, findTransition } from './Operations';
@@ -61,26 +61,47 @@ function removeDeads(automata) {
 function reduceEquivalents(automata, equivalents) {
 }
 
-function createDetTransition(automata, ndTransition) {
-  const newState = reduce((s, state) => concat(s,state), '', ndTransition.next);
-  ndTransition.next = newState;
-  let newFinals = automata.finals;
-  if (any(f => contains(f, ndTransition.next), automata.finals)) {
-    newFinals = append(newFinals, newState);
+function createNewTransition(automata, states) {
+  const { transitions, alphabet } = automata;
+  let state;
+  let symbol;
+  let statesTransitions;
+  for (state of states) {
+    for (symbol of alphabet) {
+      statesTransitions = union(statesTransitions, (map(sym =>
+      findTransition(transitions, state, symbol), alphabet)));
+    }
+
   }
 
-  // automata.alphabet;
-  // reduce(tran => tran.next,);
-  // const newTransition = []
+  let newState = reduce((newState, state) => concat(newState, state), '', states);
+  let sym;
+  let newTransitions;
+  let newNext;
+  for (sym of alphabet) {
 
+    const transSym = filter(propEq('value', sym), statesTransitions);
+    const symNextAll = reduce((acc, tran) => union(acc, tran.next), [], transSym);
+
+    newTransitions = union(newTransitions, [{state: newState, value: sym, next: symNextAll}]);
+  }
   const newStates = append(newState, automata.states);
+
+  let newFinals = automata.finals;
+  if (any(state => contains(state, automata.finals), states)) {
+    newFinals = union(newFinals, newState);
+  }
+
   return makeAutomata(
     newStates,
-    automata.alphabet,
-    automata.transitions,
-    automata.initial,
+    clone(automata.alphabet),
+    union(automata.transitions, newTransitions),
+    clone(automata.initial),
     newFinals,
   );
+}
+
+function createDetTransition(automata, ndTransition) {
 }
 
 function determineze(automata) {
@@ -104,4 +125,5 @@ export {
   removeDeads,
   determineze,
   createDetTransition,
+  createNewTransition,
 };

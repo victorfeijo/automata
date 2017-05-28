@@ -4,7 +4,7 @@ import { d_automata2,
          d_automata5,
          d_automata6 } from '../samples/Deterministic';
 import { nd_automata1 } from '../samples/NonDeterministic';
-import { determineze, removeStates, removeUnreachables, removeDeads, createDetTransition } from '../src/core/Transformations';
+import { determineze, removeStates, removeUnreachables, removeDeads, createDetTransition, createNewTransition } from '../src/core/Transformations';
 import makeAutomata from '../src/core/Automata';
 
 describe('Transform NDAF to DAF', () => {
@@ -20,16 +20,21 @@ describe('Transform NDAF to DAF', () => {
       }, {
         state: 'q0', value: 'b', next: ['q0']
       }, {
-        state: 'q1', value: 'a', next: ['q0', 'q2']
+        state: 'q1', value: 'a', next: ['q0q2']
       }, {
         state: 'q1', value: 'b', next: ['q1']
       }, {
         state: 'q2', value: 'a', next: ['q1']
+      }, {
+        state: 'q0q2', value: 'a', next: ['q1']
+      }, {
+        state: 'q0q2', value: 'b', next: ['q0']
       }],
       'q0',
       ['q1']
     );
-    expect(createDetTransition(nd_automata1, {state: 'q1', value: 'a', next: ['q0', 'q2']})).toEqual(expected);
+    console.log(createNewTransition(nd_automata1, ['q0','q2']));
+    // expect(createDetTransition(nd_automata1, {state: 'q1', value: 'a', next: ['q0', 'q2']})).toEqual(expected);
   });
   // test('Valid transformation', () => {
   //   expect(determineze(nd_automata1)).toEqual(d_automata3);
