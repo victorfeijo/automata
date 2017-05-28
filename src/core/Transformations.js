@@ -1,8 +1,8 @@
-import { isEmpty, contains, tail, head, filter,
-         clone, difference, uniq, flatten, map } from 'ramda';
+  import { isEmpty, contains, tail, head, filter, any,
+         clone, difference, uniq, flatten, map, concat, append, reduce} from 'ramda';
 
 import makeAutomata, { isDeterministic } from './Automata';
-import { firstNDTransition, removeFromNext, transitiveTransitions, previousStates } from './Operations';
+import { firstNDTransition, removeFromNext, transitiveTransitions, previousStates, findTransition } from './Operations';
 
 function removeBlankTransitions(automata) {
 }
@@ -61,10 +61,38 @@ function removeDeads(automata) {
 function reduceEquivalents(automata, equivalents) {
 }
 
+function createDetTransition(automata, ndTransition) {
+  const newState = reduce((s, state) => concat(s,state), '', ndTransition.next);
+  ndTransition.next = newState;
+  let newFinals = automata.finals;
+  if (any(f => contains(f, ndTransition.next), automata.finals)) {
+    newFinals = append(newFinals, newState);
+  }
+
+  // automata.alphabet;
+  // reduce(tran => tran.next,);
+  // const newTransition = []
+
+  const newStates = append(newState, automata.states);
+  return makeAutomata(
+    newStates,
+    automata.alphabet,
+    automata.transitions,
+    automata.initial,
+    newFinals,
+  );
+}
+
 function determineze(automata) {
   if (isDeterministic(automata)) {
     return automata;
   }
+
+  const ndTransition = firstNDTransition(automata.transitions);
+  const nAutomata = createNewTransition(automata, ndTransition);
+  let detAutomata = determineze(nAutomata);
+  detAutomata = removeUnreachables(detAutomata);
+  return detAutomata;
 
   console.log(firstNDTransition(automata.transitions));
 }
@@ -75,4 +103,5 @@ export {
   removeUnreachables,
   removeDeads,
   determineze,
+  createDetTransition,
 };

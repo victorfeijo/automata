@@ -4,14 +4,33 @@ import { d_automata2,
          d_automata5,
          d_automata6 } from '../samples/Deterministic';
 import { nd_automata1 } from '../samples/NonDeterministic';
-import { determineze, removeStates, removeUnreachables, removeDeads } from '../src/core/Transformations';
+import { determineze, removeStates, removeUnreachables, removeDeads, createDetTransition } from '../src/core/Transformations';
 import makeAutomata from '../src/core/Automata';
 
 describe('Transform NDAF to DAF', () => {
   // test('Already is deterministic', () => {
   //   expect(determineze(d_automata3)).toEqual(d_automata3);
   // });
-
+  test('Update State and Transition', () => {
+    const expected = makeAutomata(
+      ['q0', 'q1', 'q2', 'q0q2'],
+      ['a', 'b'],
+      [{
+        state: 'q0', value: 'a', next: ['q1']
+      }, {
+        state: 'q0', value: 'b', next: ['q0']
+      }, {
+        state: 'q1', value: 'a', next: ['q0', 'q2']
+      }, {
+        state: 'q1', value: 'b', next: ['q1']
+      }, {
+        state: 'q2', value: 'a', next: ['q1']
+      }],
+      'q0',
+      ['q1']
+    );
+    expect(createDetTransition(nd_automata1, {state: 'q1', value: 'a', next: ['q0', 'q2']})).toEqual(expected);
+  });
   // test('Valid transformation', () => {
   //   expect(determineze(nd_automata1)).toEqual(d_automata3);
   // });
