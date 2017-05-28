@@ -166,3 +166,37 @@ export const d_automata6 = makeAutomata(
   'q0',
   ['q0', 'q2', 'q3']
 );
+
+// L(A) = { x | x E (a,b)* and x not contains bb }
+// NOT MINIMIZED -->> TEST CASE FOR EQUIVALENT STATES
+export const d_automata7 = makeAutomata(
+  ['A', 'B', 'C', 'E', 'F', 'G'],
+  ['a', 'b'],
+  [{
+    state: 'A', value: 'a', next: ['G']
+  }, {
+    state: 'A', value: 'b', next: ['B']
+  }, {
+    state: 'B', value: 'a', next: ['F']
+  }, {
+    state: 'B', value: 'b', next: ['E']
+  }, {
+    state: 'C', value: 'a', next: ['C']
+  }, {
+    state: 'C', value: 'b', next: ['G']
+  }, {
+    state: 'E', value: 'a', next: ['E']
+  }, {
+    state: 'E', value: 'b', next: ['A']
+  }, {
+    state: 'F', value: 'a', next: ['B']
+  }, {
+    state: 'F', value: 'b', next: ['C']
+  }, {
+    state: 'G', value: 'a', next: ['G']
+  }, {
+    state: 'G', value: 'b', next: ['F']
+  }],
+  'A',
+  ['A', 'G']
+);

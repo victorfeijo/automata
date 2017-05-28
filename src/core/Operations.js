@@ -1,7 +1,8 @@
 import { isNil, isEmpty, contains, find,
          propEq, tail, head, filter, any,
          gte, length, map, append, flatten,
-         uniq, clone, equals, without, reject } from 'ramda';
+         uniq, clone, equals, without, reject,
+         all} from 'ramda';
 
 import { errorTransition } from './Automata';
 
@@ -15,7 +16,7 @@ import { errorTransition } from './Automata';
 const findTransition = (transitions, state, value) => (
   (find(propEq('value', value))(
     filter(propEq('state', state), transitions),
-  ) || errorTransition)
+  ) || errorTransition(state, value))
 );
 
 /**
@@ -98,6 +99,34 @@ function previousStates(state, transitions, visited = []) {
 }
 
 /**
+ * Check if the given state A is equivalent to state B
+ * on the current equivalents set.
+ * @param {string} stateA - State A to compare.
+ * @param {string} stateB - State B to compare.
+ * @param {array<array>} equivalents - Set of equivalent states.
+ * @param {Automata} automata - Automata to check.
+ * @return {bool} - If the given states are equivalents.
+ */
+function equivalentStates(stateA, stateB, equivalents, automata) {
+  const { transitions, alphabet } = automata;
+
+  const stateATransitions = map(sym =>
+    findTransition(transitions, stateA, sym), alphabet);
+
+  const stateBTransitions = map(sym =>
+    findTransition(transitions, stateB, sym), alphabet);
+
+  return all(sym => {
+    const { next:symNextA } = filter(propEq('value', sym), stateATransitions)[0];
+    const { next:symNextB } = filter(propEq('value', sym), stateBTransitions)[0];
+
+    return any(equivalent => (
+      contains(symNextA[0], equivalent) && contains(symNextB[0], equivalent)
+    ), equivalents);
+  }, alphabet);
+}
+
+/**
  * Recursive check transitions to read a tape.
  * @param {string} actual - Actual recursion looking state (starts with q0).
  * @param {array<object>} transitions - All automata transitions.
@@ -135,5 +164,6 @@ export {
   removeFromNext,
   transitiveTransitions,
   previousStates,
+  equivalentStates,
   readTape,
 };
