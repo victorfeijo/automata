@@ -58,9 +58,6 @@ function removeDeads(automata) {
   return removeStates(automata, difference(states, validStates));
 }
 
-function reduceEquivalents(automata, equivalents) {
-}
-
 function createNewTransition(automata, states) {
   const { transitions, alphabet } = automata;
   let state;
