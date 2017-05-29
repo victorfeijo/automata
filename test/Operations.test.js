@@ -1,7 +1,9 @@
-import { readTape, transitiveTransitions, removeFromNext, previousStates } from '../src/core/Operations';
-import { d_automata1, d_automata2, d_automata5 } from '../samples/Deterministic';
+import { readTape, transitiveTransitions, removeFromNext, previousStates, equivalentStates, reduceEquivalents } from '../src/core/Operations';
+import { removeUnreachables } from '../src/core/Transformations';
+import { d_automata1, d_automata2, d_automata4, d_automata7, d_automata5 } from '../samples/Deterministic';
 import { nd_automata1, nd_automata3 } from '../samples/NonDeterministic';
 import { tape1, tape2, tape3 } from '../samples/Tapes';
+import { difference } from 'ramda';
 
 describe('Read tape', () => {
   test('Full state automata - Read and accept tape', () => {
@@ -78,5 +80,62 @@ describe('Previous transitions', () => {
     const { transitions, finals } = d_automata5;
 
     expect(previousStates(finals[0], transitions)).toEqual(['q1', 'q0']);
+  });
+});
+
+describe('Equivalent states', () => {
+  test('Equivalence test on d_automata7', () => {
+    const { states, transitions, finals } = d_automata7;
+    const equivalents = [finals, difference(states, finals)];
+
+    expect(equivalentStates(d_automata7, equivalents, 'A', 'G')).toBeTruthy();
+    expect(equivalentStates(d_automata7, equivalents, 'B', 'F')).toBeTruthy();
+    expect(equivalentStates(d_automata7, equivalents, 'C', 'E')).toBeTruthy();
+    expect(equivalentStates(d_automata7, equivalents, 'G', 'A')).toBeTruthy();
+
+    expect(equivalentStates(d_automata7, equivalents, 'B', 'C')).toBeFalsy();
+    expect(equivalentStates(d_automata7, equivalents, 'A', 'F')).toBeFalsy();
+    expect(equivalentStates(d_automata7, equivalents, 'G', 'B')).toBeFalsy();
+  });
+
+  test('Equivalence tes on d_automata5 - with error transitions', () => {
+    const { states, transitions, finals } = d_automata5;
+    const equivalents = [finals, difference(states, finals)];
+
+    expect(equivalentStates(d_automata5, equivalents, 'q0', 'q0')).toBeTruthy();
+    expect(equivalentStates(d_automata5, equivalents, 'q2', 'q2')).toBeTruthy();
+
+    expect(equivalentStates(d_automata5, equivalents, 'q1', 'q2')).toBeFalsy();
+    expect(equivalentStates(d_automata5, equivalents, 'q0', 'q1')).toBeFalsy();
+  });
+});
+
+describe('Equivalent states', () => {
+  test('Reduce equivalents on d_automata7', () => {
+    const { states, finals } = d_automata7;
+    const equivalents = [difference(states, finals), finals];
+
+    expect(reduceEquivalents(d_automata7, equivalents)).toEqual(
+      [['B', 'F'], ['C', 'E'], ['A', 'G']]
+    );
+  });
+
+  test('Reduce equivalents on d_automata5', () => {
+    const { states, finals } = d_automata5;
+    const equivalents = [difference(states, finals), finals];
+
+    expect(reduceEquivalents(d_automata5, equivalents)).toEqual(
+      [['q0'], ['q2'], ['q3'], ['q1']]
+    );
+  });
+
+  test('Reduce equivalents on d_automata4', () => {
+    const minimized = removeUnreachables(d_automata4);
+    const { states, finals } = minimized;
+    const equivalents = [difference(states, finals), finals];
+
+    expect(reduceEquivalents(minimized, equivalents)).toEqual(
+      [['A', 'AC'], ['C'], ['S', 'SF', 'BSF'], ['BF']]
+    );
   });
 });

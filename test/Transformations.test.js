@@ -2,16 +2,41 @@ import { d_automata2,
          d_automata3,
          d_automata4,
          d_automata5,
-         d_automata6 } from '../samples/Deterministic';
+         d_automata6,
+         d_automata7} from '../samples/Deterministic';
 import { nd_automata1 } from '../samples/NonDeterministic';
-import { determineze, removeStates, removeUnreachables, removeDeads } from '../src/core/Transformations';
+import { determineze, removeStates, removeUnreachables, removeDeads, createDetTransition, createNewTransition, minEquivalent } from '../src/core/Transformations';
 import makeAutomata from '../src/core/Automata';
 
 describe('Transform NDAF to DAF', () => {
   // test('Already is deterministic', () => {
   //   expect(determineze(d_automata3)).toEqual(d_automata3);
   // });
-
+  test('Update State and Transition', () => {
+    const expected = makeAutomata(
+      ['q0', 'q1', 'q2', 'q0q2'],
+      ['a', 'b'],
+      [{
+        state: 'q0', value: 'a', next: ['q1']
+      }, {
+        state: 'q0', value: 'b', next: ['q0']
+      }, {
+        state: 'q1', value: 'a', next: ['q0q2']
+      }, {
+        state: 'q1', value: 'b', next: ['q1']
+      }, {
+        state: 'q2', value: 'a', next: ['q1']
+      }, {
+        state: 'q0q2', value: 'a', next: ['q1']
+      }, {
+        state: 'q0q2', value: 'b', next: ['q0']
+      }],
+      'q0',
+      ['q1']
+    );
+    console.log(createNewTransition(nd_automata1, ['q0','q2']));
+    // expect(createDetTransition(nd_automata1, {state: 'q1', value: 'a', next: ['q0', 'q2']})).toEqual(expected);
+  });
   // test('Valid transformation', () => {
   //   expect(determineze(nd_automata1)).toEqual(d_automata3);
   // });
@@ -121,5 +146,11 @@ describe('Remove dead states', () => {
 
   test('It dont remove any state', () => {
     expect(removeDeads(d_automata2)).toEqual(d_automata2);
+  });
+});
+
+describe('Min equivalent automata', () => {
+  test('Automata has equivalent states', () => {
+    console.log(minEquivalent(d_automata4));
   });
 });
