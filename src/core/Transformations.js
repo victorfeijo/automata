@@ -1,8 +1,9 @@
   import { isEmpty, contains, tail, head, filter, any, propEq, find,
-         clone, difference, uniq, flatten, map, concat, append, reduce, union} from 'ramda';
+    clone, difference, uniq, flatten, map, concat, append, reduce,
+    union, pluck } from 'ramda';
 
 import makeAutomata, { isDeterministic } from './Automata';
-import { firstNDTransition, removeFromNext, transitiveTransitions, previousStates, findTransition } from './Operations';
+import { firstNDTransition, removeFromNext, transitiveTransitions, previousStates, findTransition, reduceEquivalents } from './Operations';
 
 function removeBlankTransitions(automata) {
 }
@@ -58,6 +59,30 @@ function removeDeads(automata) {
   return removeStates(automata, difference(states, validStates));
 }
 
+function minEquivalent(automata) {
+  const { states, alphabet, initial, finals } = automata;
+  const nonFinals = difference(states, finals);
+
+  const equivalents = reduceEquivalents(automata, [nonFinals, finals]);
+
+  const transitions = map((states) => ({
+    transition: createNewTransition(automata, states),
+    generatedBy: states,
+  }), equivalents);
+
+  console.log('transitions -> ', transitions);
+
+  console.log(
+    map((tran) => tran.transition.state, transitions),
+    clone(alphabet),
+    pluck('transition', transitions),
+    find((tran) =>
+      contains(initial, tran.generatedBy), transitions).transition.state,
+    map((tran) => tran.transition.state,
+      filter((tran) => any((state) => contains(state, finals), tran.generatedBy), transitions)),
+  );
+}
+
 function createNewTransition(automata, states) {
   const { transitions, alphabet } = automata;
   let state;
@@ -68,7 +93,6 @@ function createNewTransition(automata, states) {
       statesTransitions = union(statesTransitions, (map(sym =>
       findTransition(transitions, state, symbol), alphabet)));
     }
-
   }
 
   let newState = reduce((newState, state) => concat(newState, state), '', states);
@@ -82,20 +106,22 @@ function createNewTransition(automata, states) {
 
     newTransitions = union(newTransitions, [{state: newState, value: sym, next: symNextAll}]);
   }
-  const newStates = append(newState, automata.states);
 
-  let newFinals = automata.finals;
-  if (any(state => contains(state, automata.finals), states)) {
-    newFinals = union(newFinals, newState);
-  }
+  return newTransitions;
+  // const newStates = append(newState, automata.states);
 
-  return makeAutomata(
-    newStates,
-    clone(automata.alphabet),
-    union(automata.transitions, newTransitions),
-    clone(automata.initial),
-    newFinals,
-  );
+  // let newFinals = automata.finals;
+  // if (any(state => contains(state, automata.finals), states)) {
+  //   newFinals = union(newFinals, newState);
+  // }
+
+  // return makeAutomata(
+  //   newStates,
+  //   clone(automata.alphabet),
+  //   union(automata.transitions, newTransitions),
+  //   clone(automata.initial),
+  //   newFinals,
+  // );
 }
 
 function createDetTransition(automata, ndTransition) {
@@ -123,4 +149,5 @@ export {
   determineze,
   createDetTransition,
   createNewTransition,
+  minEquivalent,
 };

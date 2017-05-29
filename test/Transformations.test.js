@@ -4,7 +4,7 @@ import { d_automata2,
          d_automata5,
          d_automata6 } from '../samples/Deterministic';
 import { nd_automata1 } from '../samples/NonDeterministic';
-import { determineze, removeStates, removeUnreachables, removeDeads, createDetTransition, createNewTransition } from '../src/core/Transformations';
+import { determineze, removeStates, removeUnreachables, removeDeads, createDetTransition, createNewTransition, minEquivalent } from '../src/core/Transformations';
 import makeAutomata from '../src/core/Automata';
 
 describe('Transform NDAF to DAF', () => {
@@ -145,5 +145,11 @@ describe('Remove dead states', () => {
 
   test('It dont remove any state', () => {
     expect(removeDeads(d_automata2)).toEqual(d_automata2);
+  });
+});
+
+describe('Min equivalent automata', () => {
+  test('Automata has equivalent states', () => {
+    console.log(minEquivalent(d_automata4));
   });
 });
