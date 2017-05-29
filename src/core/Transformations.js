@@ -66,19 +66,19 @@ function minEquivalent(automata) {
   const equivalents = reduceEquivalents(automata, [nonFinals, finals]);
 
   const transitions = map((states) => ({
-    transition: createNewTransition(automata, states),
+    transitions: createNewTransition(automata, states),
     generatedBy: states,
   }), equivalents);
 
-  console.log('transitions -> ', transitions);
-
-  console.log(
-    map((tran) => tran.transition.state, transitions),
+  return makeAutomata(
+    reduce((acc, tran) =>
+      union(acc, pluck('state', tran.transitions)), [], transitions),
     clone(alphabet),
-    pluck('transition', transitions),
+    reduce((acc, tran) =>
+      union(acc, tran.transitions), [], transitions),
     find((tran) =>
-      contains(initial, tran.generatedBy), transitions).transition.state,
-    map((tran) => tran.transition.state,
+      contains(initial, tran.generatedBy), transitions).transitions[0].state,
+    map((tran) => tran.transitions[0].state,
       filter((tran) => any((state) => contains(state, finals), tran.generatedBy), transitions)),
   );
 }

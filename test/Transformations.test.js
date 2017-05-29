@@ -2,7 +2,8 @@ import { d_automata2,
          d_automata3,
          d_automata4,
          d_automata5,
-         d_automata6 } from '../samples/Deterministic';
+         d_automata6,
+         d_automata7} from '../samples/Deterministic';
 import { nd_automata1 } from '../samples/NonDeterministic';
 import { determineze, removeStates, removeUnreachables, removeDeads, createDetTransition, createNewTransition, minEquivalent } from '../src/core/Transformations';
 import makeAutomata from '../src/core/Automata';
