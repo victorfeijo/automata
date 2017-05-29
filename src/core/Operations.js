@@ -2,7 +2,7 @@ import { isNil, isEmpty, contains, find,
          propEq, tail, head, filter, any,
          gte, length, map, append, flatten,
          uniq, clone, equals, without, reject,
-         all, curry, reduce } from 'ramda';
+         all, curry, reduce, union, concat } from 'ramda';
 
 import { errorTransition } from './Automata';
 
@@ -152,6 +152,33 @@ function reduceEquivalents(automata, equivalents) {
   return reduceEquivalents(automata, reduced);
 }
 
+function createNewTransition(automata, states) {
+  const { transitions, alphabet } = automata;
+  let state;
+  let symbol;
+  let statesTransitions;
+  for (state of states) {
+    for (symbol of alphabet) {
+      statesTransitions = union(statesTransitions, (map(sym =>
+      findTransition(transitions, state, symbol), alphabet)));
+    }
+  }
+
+  let newState = reduce((newState, state) => concat(newState, state), '', states);
+  let sym;
+  let newTransitions;
+  let newNext;
+  for (sym of alphabet) {
+
+    const transSym = filter(propEq('value', sym), statesTransitions);
+    const symNextAll = reduce((acc, tran) => union(acc, tran.next), [], transSym);
+
+    newTransitions = union(newTransitions, [{state: newState, value: sym, next: symNextAll}]);
+  }
+
+  return newTransitions;
+}
+
 /**
  * Recursive check transitions to read a tape.
  * @param {string} actual - Actual recursion looking state (starts with q0).
@@ -192,5 +219,6 @@ export {
   previousStates,
   equivalentStates,
   reduceEquivalents,
+  createNewTransition,
   readTape,
 };

@@ -5,7 +5,7 @@ import { d_automata2,
          d_automata6,
          d_automata7} from '../samples/Deterministic';
 import { nd_automata1 } from '../samples/NonDeterministic';
-import { determineze, removeStates, removeUnreachables, removeDeads, createDetTransition, createNewTransition, minEquivalent } from '../src/core/Transformations';
+import { determineze, removeStates, removeUnreachables, removeDeads, createDetTransition, minEquivalent } from '../src/core/Transformations';
 import makeAutomata from '../src/core/Automata';
 
 describe('Transform NDAF to DAF', () => {
@@ -34,7 +34,6 @@ describe('Transform NDAF to DAF', () => {
       'q0',
       ['q1']
     );
-    console.log(createNewTransition(nd_automata1, ['q0','q2']));
     // expect(createDetTransition(nd_automata1, {state: 'q1', value: 'a', next: ['q0', 'q2']})).toEqual(expected);
   });
   // test('Valid transformation', () => {
