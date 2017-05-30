@@ -1,12 +1,15 @@
-import { d_automata2,
+import { d_automata1,
+         d_automata2,
          d_automata3,
          d_automata4,
          d_automata5,
          d_automata6,
-         d_automata7} from '../samples/Deterministic';
+         d_automata7 } from '../samples/Deterministic';
 import { nd_automata1 } from '../samples/NonDeterministic';
-import { determineze, removeStates, removeUnreachables, removeDeads, createDetTransition, minEquivalent } from '../src/core/Transformations';
+import { minimize, determineze, removeStates, removeUnreachables, removeDeads, createDetTransition, removeEquivalent } from '../src/core/Transformations';
+import { readTape } from '../src/core/Operations';
 import makeAutomata from '../src/core/Automata';
+import makeTape from '../src/core/Tape';
 
 describe('Transform NDAF to DAF', () => {
   // test('Already is deterministic', () => {
@@ -148,8 +151,134 @@ describe('Remove dead states', () => {
   });
 });
 
-describe('Min equivalent automata', () => {
-  test('Automata has equivalent states', () => {
-    console.log(minEquivalent(d_automata4));
+describe('Remove equivalent states from automata', () => {
+  test('d_Automata7 has equivalent states', () => {
+    const expected = makeAutomata(
+      ['BF', 'CE', 'AG'],
+      ['a', 'b'],
+      [{ state: 'BF', value: 'a', next: ['BF'] },
+       { state: 'BF', value: 'b', next: ['CE'] },
+       { state: 'CE', value: 'a', next: ['CE'] },
+       { state: 'CE', value: 'b', next: ['AG'] },
+       { state: 'AG', value: 'a', next: ['AG'] },
+       { state: 'AG', value: 'b', next: ['BF'] }],
+      'AG',
+      ['AG']
+    );
+
+    expect(removeEquivalent(d_automata7)).toEqual(expected);
+  });
+
+  test('d_Automata1 has no equivalent states', () => {
+    expect(removeEquivalent(d_automata1)).toEqual(d_automata1);
+  });
+});
+
+describe('Minimize automata', () => {
+  test('Read tape test d_automata1', () => {
+    const tape1 = makeTape('abb');
+    const tape2 = makeTape('abba');
+
+    const minimized = minimize(d_automata1);
+
+    expect(readTape(d_automata1, tape1)).toBeTruthy();
+    expect(readTape(minimized, tape1)).toBeTruthy();
+
+    expect(readTape(d_automata1, tape2)).toBeFalsy();
+    expect(readTape(minimized, tape2)).toBeFalsy();
+  });
+
+  test('Read tape test d_automata2', () => {
+    const tape1 = makeTape('aabba');
+    const tape2 = makeTape('bbaaa');
+    const tape3 = makeTape('abba');
+
+    const minimized = minimize(d_automata2);
+
+    expect(readTape(d_automata2, tape1)).toBeTruthy();
+    expect(readTape(minimized, tape1)).toBeTruthy();
+
+    expect(readTape(d_automata2, tape2)).toBeTruthy();
+    expect(readTape(minimized, tape2)).toBeTruthy();
+
+    expect(readTape(d_automata2, tape3)).toBeFalsy();
+    expect(readTape(minimized, tape3)).toBeFalsy();
+  });
+
+  test('Read tape test d_automata3', () => {
+    const tape1 = makeTape('abbabbabaa');
+    const tape2 = makeTape('a');
+    const tape3 = makeTape('abbba');
+
+    const minimized = minimize(d_automata3);
+
+    expect(readTape(d_automata3, tape1)).toBeTruthy();
+    expect(readTape(minimized, tape1)).toBeTruthy();
+
+    expect(readTape(d_automata3, tape2)).toBeTruthy();
+    expect(readTape(minimized, tape2)).toBeTruthy();
+
+    expect(readTape(d_automata3, tape3)).toBeFalsy();
+    expect(readTape(minimized, tape3)).toBeFalsy();
+  });
+
+  test('Read tape test d_automata4', () => {
+    const tape1 = makeTape('baba');
+    const tape2 = makeTape('baccccbca');
+    const tape3 = makeTape('aabbba');
+
+    const minimized = minimize(d_automata4);
+
+    expect(readTape(d_automata4, tape1)).toBeTruthy();
+    expect(readTape(minimized, tape1)).toBeTruthy();
+
+    expect(readTape(d_automata4, tape2)).toBeTruthy();
+    expect(readTape(minimized, tape2)).toBeTruthy();
+
+    expect(readTape(d_automata4, tape3)).toBeFalsy();
+    expect(readTape(minimized, tape3)).toBeFalsy();
+  });
+
+  test('Read tape test d_automata5', () => {
+    const tape1 = makeTape('abababa');
+    const tape2 = makeTape('abaab');
+
+    const minimized = minimize(d_automata5);
+
+    expect(readTape(d_automata5, tape1)).toBeTruthy();
+    expect(readTape(minimized, tape1)).toBeTruthy();
+
+    expect(readTape(d_automata5, tape2)).toBeFalsy();
+    expect(readTape(minimized, tape2)).toBeFalsy();
+  });
+
+  test('Read tape test d_automata6', () => {
+    const tape1 = makeTape('abab');
+    const tape2 = makeTape('baaaab');
+
+    const minimized = minimize(d_automata6);
+
+    expect(readTape(d_automata6, tape1)).toBeTruthy();
+    expect(readTape(minimized, tape1)).toBeTruthy();
+
+    expect(readTape(d_automata6, tape2)).toBeFalsy();
+    expect(readTape(minimized, tape2)).toBeFalsy();
+  });
+
+  test('Read tape test d_automata7', () => {
+    const tape1 = makeTape('aaaa');
+    const tape2 = makeTape('abaabaaba');
+    const tape3 = makeTape('abbaa');
+
+    const minimized = minimize(d_automata7);
+
+    expect(readTape(d_automata7, tape1)).toBeTruthy();
+    expect(readTape(minimized, tape1)).toBeTruthy();
+
+    expect(readTape(d_automata7, tape2)).toBeTruthy();
+    expect(readTape(minimized, tape2)).toBeTruthy();
+
+    expect(readTape(d_automata7, tape3)).toBeFalsy();
+    expect(readTape(minimized, tape3)).toBeFalsy();
   });
 });

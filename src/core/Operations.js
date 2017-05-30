@@ -1,4 +1,4 @@
-import { isNil, isEmpty, contains, find,
+import { isNil, isEmpty, contains, find, assoc,
          propEq, tail, head, filter, any,
          gte, length, map, append, flatten,
          uniq, clone, equals, without, reject,
@@ -180,6 +180,36 @@ function createNewTransition(automata, states) {
 }
 
 /**
+ * Creates new automata transitions based on
+ * equivalent states. It also transform the next
+ * transition to a equivalent one.
+ * @param {array<array>} equivalents - Set of equivalent states.
+ * @param {Automata} automata - Automata to create new transitions.
+ * @return {object} - A object with transitions and which states
+ * generated then.
+ */
+function createEquivalentTransitions(equivalents, automata) {
+  const generated = map((states) => ({
+    transitions: createNewTransition(automata, states),
+    generatedBy: states,
+  }), equivalents);
+
+  return map((gen) => {
+    const transitions = map((transition) => {
+      const newNext = find((g) => (
+        all(n => contains(n, g.generatedBy), transition.next)
+      ), generated);
+
+      if (isNil(newNext)) {
+        return transition;
+      }
+      return assoc('next', [newNext.transitions[0].state], transition);
+    }, gen.transitions);
+    return assoc('transitions', transitions, gen);
+  }, generated);
+}
+
+/**
  * Recursive check transitions to read a tape.
  * @param {string} actual - Actual recursion looking state (starts with q0).
  * @param {array<object>} transitions - All automata transitions.
@@ -220,5 +250,6 @@ export {
   equivalentStates,
   reduceEquivalents,
   createNewTransition,
+  createEquivalentTransitions,
   readTape,
 };
