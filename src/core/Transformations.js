@@ -1,6 +1,7 @@
 import { isEmpty, contains, tail, head, filter,
          any, find, clone, difference, uniq,
-         flatten, map, reduce, union, pluck, pipe } from 'ramda';
+         flatten, map, reduce, union, pluck, pipe
+         sort, propEq, equals, concat, append } from 'ramda';
 
 import makeAutomata, { isDeterministic } from './Automata';
 
@@ -104,6 +105,32 @@ function minimize(automata) {
 }
 
 function createDetTransition(automata, ndTransition) {
+  console.log(automata.transitions);
+  console.log(ndTransition);
+  const newState = reduce((newState, state) => concat(newState, state), '', ndTransition.next);
+
+
+  let newTransitionAdd = createNewTransition(automata, ndTransition.next);
+  // newTransitionAdd = removeEquivalents(ndTransition.next);
+  let newFinals = automata.finals;
+  if (any(f => contains(f, automata.finals), ndTransition.next)) {
+    newFinals = union(newFinals, [newState]);
+  }
+  let filterTrans = filter(t => !equals(ndTransition, t), automata.transitions);
+  const editNdTransition = [{state: ndTransition.state, value: ndTransition.value, next: [newState]}];
+
+  let newTransitions = union(union(filterTrans, newTransitionAdd), editNdTransition);
+  // newTransitions = sort((tran) => transition.state, newTransitions);
+
+  console.log(newTransitions);
+  return makeAutomata(
+    uniq(append(newState, automata.states)),
+    clone(automata.alphabet),
+    newTransitions,
+    clone(automata.initial),
+    union(automata.finals, newFinals),
+
+  );
 }
 
 function determineze(automata) {
@@ -112,9 +139,9 @@ function determineze(automata) {
   }
 
   const ndTransition = firstNDTransition(automata.transitions);
-  const nAutomata = createNewTransition(automata, ndTransition);
+  const nAutomata = createDetTransition(automata, ndTransition);
   let detAutomata = determineze(nAutomata);
-  detAutomata = removeUnreachables(detAutomata);
+  // detAutomata = removeUnreachables(detAutomata);
   return detAutomata;
 
   console.log(firstNDTransition(automata.transitions));

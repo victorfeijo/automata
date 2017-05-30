@@ -1,8 +1,8 @@
 import { isNil, isEmpty, contains, find, assoc,
          propEq, tail, head, filter, any,
          gte, length, map, append, flatten,
-         uniq, clone, equals, without, reject,
-         all, curry, reduce, union, concat } from 'ramda';
+         uniq, clone, equals, without, reject, split,
+         all, curry, reduce, union, concat, sort, pluck, compose } from 'ramda';
 
 import { errorTransition } from './Automata';
 
@@ -163,7 +163,6 @@ function createNewTransition(automata, states) {
       findTransition(transitions, state, symbol), alphabet)));
     }
   }
-
   let newState = reduce((newState, state) => concat(newState, state), '', states);
   let sym;
   let newTransitions;
@@ -171,7 +170,7 @@ function createNewTransition(automata, states) {
   for (sym of alphabet) {
 
     const transSym = filter(propEq('value', sym), statesTransitions);
-    const symNextAll = reduce((acc, tran) => union(acc, tran.next), [], transSym);
+    const symNextAll = (reduce((acc, tran) => union(acc, filter(t => t !== 'ERROR', tran.next)), [], transSym)).sort();
 
     newTransitions = union(newTransitions, [{state: newState, value: sym, next: symNextAll}]);
   }
