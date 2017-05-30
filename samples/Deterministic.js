@@ -167,7 +167,7 @@ export const d_automata6 = makeAutomata(
   ['q0', 'q2', 'q3']
 );
 
-// L(A) = { x | x E (a,b)* and x not contains bb }
+// L(A) = { x | x E (a,b)* and #b are ÷ 3 }
 // NOT MINIMIZED -->> TEST CASE FOR EQUIVALENT STATES
 export const d_automata7 = makeAutomata(
   ['A', 'B', 'C', 'E', 'F', 'G'],

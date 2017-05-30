@@ -1,13 +1,13 @@
-  import { isEmpty, contains, tail, head, filter, any, propEq, find,
-    clone, difference, uniq, flatten, map, concat, append, reduce,
-    union, pluck } from 'ramda';
+import { isEmpty, contains, tail, head, filter,
+         any, find, clone, difference, uniq,
+         flatten, map, reduce, union, pluck, pipe } from 'ramda';
 
 import makeAutomata, { isDeterministic } from './Automata';
-import { firstNDTransition, removeFromNext, transitiveTransitions, previousStates, findTransition, reduceEquivalents, createNewTransition } from './Operations';
 
-function removeBlankTransitions(automata) {
-}
-
+import { firstNDTransition, removeFromNext,
+         transitiveTransitions, previousStates,
+         reduceEquivalents, createNewTransition,
+         createEquivalentTransitions } from './Operations';
 
 /**
  * Remove a collection of states from given automata.
@@ -59,16 +59,18 @@ function removeDeads(automata) {
   return removeStates(automata, difference(states, validStates));
 }
 
-function minEquivalent(automata) {
+/**
+ * Transform the given automata in a new automata
+ * without equivalent states.
+ * @param {Automata} automata - Automata to clean.
+ * @return {Automata} - A new automata without equivalent states.
+ */
+function removeEquivalent(automata) {
   const { states, alphabet, initial, finals } = automata;
   const nonFinals = difference(states, finals);
 
   const equivalents = reduceEquivalents(automata, [nonFinals, finals]);
-
-  const transitions = map((states) => ({
-    transitions: createNewTransition(automata, states),
-    generatedBy: states,
-  }), equivalents);
+  const transitions = createEquivalentTransitions(equivalents, automata);
 
   return makeAutomata(
     reduce((acc, tran) =>
@@ -76,11 +78,29 @@ function minEquivalent(automata) {
     clone(alphabet),
     reduce((acc, tran) =>
       union(acc, tran.transitions), [], transitions),
-    find((tran) =>
+    find(tran =>
       contains(initial, tran.generatedBy), transitions).transitions[0].state,
-    map((tran) => tran.transitions[0].state,
-      filter((tran) => any((state) => contains(state, finals), tran.generatedBy), transitions)),
+    map(tran => tran.transitions[0].state,
+      filter(tran => any(state => contains(state, finals), tran.generatedBy), transitions)),
   );
+}
+
+/**
+ * Apply a set of core functions to minimize the automata.
+ * First, it removes all unreachable states.
+ * Then, remove all dead states from the new automata.
+ * Finally, creates a new automata without equivalent states.
+ * @param {Automata} automata - Automata to minimize.
+ * @return {Automata} - A new minimzed automata.
+ */
+function minimize(automata) {
+  if (!isDeterministic(automata)) {
+    throw new Error('Automata should be deterministic to minimize.');
+  }
+
+  return pipe(removeUnreachables,
+              removeDeads,
+              removeEquivalent)(automata);
 }
 
 function createDetTransition(automata, ndTransition) {
@@ -101,11 +121,11 @@ function determineze(automata) {
 }
 
 export {
-  removeBlankTransitions,
+  minimize,
   removeStates,
   removeUnreachables,
   removeDeads,
   determineze,
   createDetTransition,
-  minEquivalent,
+  removeEquivalent,
 };
