@@ -1,32 +1,13 @@
 import { isEmpty, contains, tail, head, filter,
-         any, propEq, find, clone, difference, uniq,
-         flatten, map, concat, append, reduce,
-         union, pluck, pipe } from 'ramda';
+         any, find, clone, difference, uniq,
+         flatten, map, reduce, union, pluck, pipe } from 'ramda';
 
 import makeAutomata, { isDeterministic } from './Automata';
 
 import { firstNDTransition, removeFromNext,
          transitiveTransitions, previousStates,
-         findTransition, reduceEquivalents,
-         createNewTransition, createEquivalentTransitions } from './Operations';
-
-/**
- * Apply a set of core functions to minimize the automata.
- * First, it removes all unreachable states.
- * Then, remove all dead states from the new automata.
- * Finally, creates a new automata without equivalent states.
- * @param {Automata} automata - Automata to minimize.
- * @return {Automata} - A new minimzed automata.
- */
-function minimize(automata) {
-  if (!isDeterministic(automata)) {
-    throw 'Automata should be deterministic to minimize.'
-  }
-
-  return pipe(removeUnreachables,
-              removeDeads,
-              removeEquivalent)(automata);
-}
+         reduceEquivalents, createNewTransition,
+         createEquivalentTransitions } from './Operations';
 
 /**
  * Remove a collection of states from given automata.
@@ -97,11 +78,29 @@ function removeEquivalent(automata) {
     clone(alphabet),
     reduce((acc, tran) =>
       union(acc, tran.transitions), [], transitions),
-    find((tran) =>
+    find(tran =>
       contains(initial, tran.generatedBy), transitions).transitions[0].state,
-    map((tran) => tran.transitions[0].state,
-      filter((tran) => any((state) => contains(state, finals), tran.generatedBy), transitions)),
+    map(tran => tran.transitions[0].state,
+      filter(tran => any(state => contains(state, finals), tran.generatedBy), transitions)),
   );
+}
+
+/**
+ * Apply a set of core functions to minimize the automata.
+ * First, it removes all unreachable states.
+ * Then, remove all dead states from the new automata.
+ * Finally, creates a new automata without equivalent states.
+ * @param {Automata} automata - Automata to minimize.
+ * @return {Automata} - A new minimzed automata.
+ */
+function minimize(automata) {
+  if (!isDeterministic(automata)) {
+    throw new Error('Automata should be deterministic to minimize.');
+  }
+
+  return pipe(removeUnreachables,
+              removeDeads,
+              removeEquivalent)(automata);
 }
 
 function createDetTransition(automata, ndTransition) {

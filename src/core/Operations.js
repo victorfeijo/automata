@@ -189,14 +189,14 @@ function createNewTransition(automata, states) {
  * generated then.
  */
 function createEquivalentTransitions(equivalents, automata) {
-  const generated = map((states) => ({
+  const generated = map(states => ({
     transitions: createNewTransition(automata, states),
     generatedBy: states,
   }), equivalents);
 
   return map((gen) => {
     const transitions = map((transition) => {
-      const newNext = find((g) => (
+      const newNext = find(g => (
         all(n => contains(n, g.generatedBy), transition.next)
       ), generated);
 

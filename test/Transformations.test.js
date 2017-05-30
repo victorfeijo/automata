@@ -175,6 +175,12 @@ describe('Remove equivalent states from automata', () => {
 });
 
 describe('Minimize automata', () => {
+  test('Dont minimize NDFA', () => {
+    expect(() => {
+      minimize(nd_automata1);
+    }).toThrowError('Automata should be deterministic to minimize.')
+  });
+
   test('Read tape test d_automata1', () => {
     const tape1 = makeTape('abb');
     const tape2 = makeTape('abba');
