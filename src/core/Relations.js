@@ -24,7 +24,8 @@ function joinAutomatas(automataA, automataB) {
   return makeAutomata(
     union([newInitialTransition.state],
       union(distinguishA.states, distinguishB.states)),
-    union(distinguishA.alphabet, distinguishB.alphabet),
+    union(['&'],
+      union(distinguishA.alphabet, distinguishB.alphabet)),
     union([newInitialTransition],
       union(distinguishA.transitions, distinguishB.transitions)),
     newInitialTransition.state,
@@ -32,6 +33,12 @@ function joinAutomatas(automataA, automataB) {
   );
 }
 
+/**
+ * Apply complemenet property to automata
+ * @param {Automata} automata - Automata to complement.
+ * @param {string?} newState - State name to complemenent error.
+ * @return {Automata} - Complement automata.
+ */
 function complementAutomata(automata, newState = 'qCOMP') {
   const transitions = pipe(
     withErrorTransitions,
@@ -53,7 +60,17 @@ function complementAutomata(automata, newState = 'qCOMP') {
   );
 }
 
+function intersectionAutomata(automataA, automataB) {
+  return complementAutomata(
+    joinAutomatas(
+      complementAutomata(automataA),
+      complementAutomata(automataB)
+    )
+  );
+}
+
 export {
   joinAutomatas,
-  complementAutomata
+  complementAutomata,
+  intersectionAutomata
 }

@@ -1,10 +1,13 @@
 import { d_automata1,
          d_automata2,
+         d_automata3,
          d_automata4,
          d_automata5,
          d_automata7 } from '../samples/Deterministic';
 
-import { joinAutomatas, complementAutomata } from '../src/core/Relations';
+import { joinAutomatas,
+         complementAutomata,
+         intersectionAutomata } from '../src/core/Relations';
 import { readTape } from '../src/core/Operations';
 import makeTape from '../src/core/Tape';
 
@@ -73,5 +76,11 @@ describe('Complement relation', () => {
     expect(readTape(complemented, tape1)).toBeTruthy();
     expect(readTape(complemented, tape2)).toBeTruthy();
     expect(readTape(complemented, tape3)).toBeFalsy();
+  });
+});
+
+describe('Intersection relation', () => {
+  test('Structural test intersection d_automata2 d_automata3', () => {
+    const att = intersectionAutomata(d_automata7, d_automata4);
   });
 });
