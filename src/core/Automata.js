@@ -32,7 +32,7 @@ export default function makeAutomata(states, alphabet, transitions, initial, fin
 }
 
 export const isBlankTransition = transition => (
-  propEq('value', '')(transition)
+  propEq('value', '&')(transition)
 );
 
 export const hasBlankTransitions = automata => (
