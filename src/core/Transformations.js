@@ -105,8 +105,6 @@ function minimize(automata) {
 }
 
 function createDetTransition(automata, ndTransition) {
-  // console.log(automata.transitions);
-  // console.log(ndTransition);
   const newState = reduce((newState, state) => concat(newState, state), '', ndTransition.next);
   let filterTrans = filter(t => !equals(ndTransition, t), automata.transitions);
   let newTransitions;
@@ -115,7 +113,6 @@ function createDetTransition(automata, ndTransition) {
   let filterTest = filter(t => equals(t, newState), automata.states);
   if (length(filterTest) > 0) {
     newTransitions = union(filterTrans, editNdTransition);
-    // console.log(newTransitions);
     return makeAutomata (
       automata.states,
       clone(automata.alphabet),
@@ -126,7 +123,6 @@ function createDetTransition(automata, ndTransition) {
   }
 
   let newTransitionAdd = createNewTransition(automata, ndTransition.next);
-  // newTransitionAdd = removeEquivalents(ndTransition.next);
 
   let newFinals = automata.finals;
   if (any(f => contains(f, automata.finals), ndTransition.next)) {
@@ -134,9 +130,7 @@ function createDetTransition(automata, ndTransition) {
   }
 
   newTransitions = union(union(filterTrans, newTransitionAdd), editNdTransition);
-  // newTransitions = sort((tran) => transition.state, newTransitions);
 
-  // console.log(newTransitions);
   return makeAutomata(
     uniq(append(newState, automata.states)),
     clone(automata.alphabet),
@@ -148,18 +142,13 @@ function createDetTransition(automata, ndTransition) {
 }
 
 function determineze(automata) {
-  // console.log(automata.transitions);
   if (isDeterministic(automata)) {
     return automata;
   }
 
   const ndTransition = firstNDTransition(automata.transitions);
   const nAutomata = createDetTransition(automata, ndTransition);
-  // console.log(nAutomata.transitions);
   let detAutomata = determineze(nAutomata);
-  // detAutomata = removeUnreachables(detAutomata);
-  // console.log(detAutomata);
-  // console.log(detAutomata.transitions);
   return detAutomata;
 
 }

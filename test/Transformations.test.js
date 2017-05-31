@@ -12,9 +12,6 @@ import makeAutomata from '../src/core/Automata';
 import makeTape from '../src/core/Tape';
 
 describe('Transform NDAF to DAF', () => {
-  // test('Already is deterministic', () => {
-  //   expect(determineze(d_automata3)).toEqual(d_automata3);
-  // });
   test('Update State and Transition with 2 next', () => {
     const expected = makeAutomata(
       ['q0', 'q1', 'q2', 'q0q2'],
@@ -39,11 +36,6 @@ describe('Transform NDAF to DAF', () => {
       ['q1']
     );
     expect(createDetTransition(nd_automata1, {state: 'q1', value: 'a', next: ['q0', 'q2']})).toEqual(expected);
-    // expect(determineze(nd_automata1)).toEqual(expected);
-    // const automataDet = createDetTransition(nd_automata1, {state: 'q1', value: 'a', next: ['q0', 'q2']});
-    // console.log(automataDet);
-    // console.log(automataDet.transitions);
-    // expect(automataDet).toEqual(expected);
   });
   test('Update State and Transition with 3 next', () => {
     const expected = makeAutomata(
@@ -68,18 +60,6 @@ describe('Transform NDAF to DAF', () => {
       'q0',
       ['q1', 'q0q1q2']
     );
-    // const test1 = createDetTransition(nd_automata4, {state: 'q1', value: 'a', next: ['q0','q1', 'q2']});
-    // console.log(test1);
-    // console.log(test1.transitions);
-    // const test2 = createDetTransition(test1, {state: 'q0q1q2', value: 'a', next: ['q0','q1', 'q2']});
-    // console.log(test2);
-    // console.log(test2.transitions);
-    // const test3 = createDetTransition(test2, {state: 'q0q1q2', value: 'b', next: ['q0','q1']});
-    // console.log(test3);
-    // console.log(test3.transitions);
-    // const test4 = createDetTransition(test3, {state: 'q0q1', value: 'b', next: ['q0','q1']});
-    // console.log(test4);
-    // console.log(test4.transitions);
     expect(createDetTransition(nd_automata4, {state: 'q1', value: 'a', next: ['q0','q1', 'q2']})).toEqual(expected);
   });
   test('Update State and Transition with 3.1 next', () => {
@@ -136,9 +116,6 @@ describe('Transform NDAF to DAF', () => {
       'q0',
       ['q1', 'q0q1q3']
     );
-    // const test = createDetTransition(nd_automata51, {state: 'q0q1q3', value: 'a', next: ['q0','q1', 'q3']});
-    // console.log(test);
-    // console.log(test.transitions);
     expect(createDetTransition(nd_automata51, {state: 'q0q1q3', value: 'a', next: ['q0','q1', 'q3']})).toEqual(expected);
   });
   test('Update State and Transition with 3.3 next', () => {
@@ -171,9 +148,6 @@ describe('Transform NDAF to DAF', () => {
       'q0',
       ['q1', 'q0q1q3', 'q0q1q2']
     );
-    // const test = createDetTransition(nd_automata52, {state: 'q0q1q3', value: 'b', next: ['q0','q1', 'q2']});
-    // console.log(test);
-    // console.log(test.transitions);
     expect(createDetTransition(nd_automata52, {state: 'q0q1q3', value: 'b', next: ['q0','q1','q2']})).toEqual(expected);
   })
   test('Determineze Simple Automata', () => {
@@ -280,15 +254,9 @@ describe('Transform NDAF to DAF', () => {
     const det2 = createDetTransition(det1, {state: 'q1', value: 'a', next: ['q0','q3']});
     console.log(det2);
     console.log(det2.transitions);
-    // console.log(nd_automata6.transitions);
     const det5 = determineze(nd_automata6);
     console.log(det5);
-    console.log(removeEquivalent(det5));
-    // expect(readTape(d_automata1, tape1)).toBeTruthy();
-    // expect(readTape(minimized, tape1)).toBeTruthy();
-
-    // expect(readTape(d_automata1, tape2)).toBeFalsy();
-    // expect(readTape(minimized, tape2)).toBeFalsy();
+    console.log('minimizado', minimize(det5));
   });
 
 });

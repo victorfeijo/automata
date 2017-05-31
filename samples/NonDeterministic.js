@@ -133,12 +133,6 @@ export const nd_automata6 = makeAutomata(
         state: 'q3', value: 'a', next: ['q0', 'q3']
       }, {
         state: 'q3', value: 'c', next: ['q1', 'q3']
-      // }, {
-        // state: 'q4', value: 'a', next: ['']
-      // }, {
-        // state: 'q4', value: 'b', next: ['']
-      // }, {
-        // state: 'q4', value: 'c', next: ['']
       }],
       'q0',
       ['q0', 'q3']

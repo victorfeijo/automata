@@ -172,43 +172,23 @@ function createNewTransition(automata, states) {
 
     const transSym = filter(propEq('value', sym), statesTransitions);
     let symNextAll = (reduce((acc, tran) => union(acc, filter(t => t !== 'ERROR', tran.next)), [], transSym)).sort();
-    // console.log(symNextAll);
+
     const n = length(symNextAll);
-    // const test = map(s => symNextAll[i].indexOf(s) !== -1, symNextAll);
-    // let test;
-    // for (i of n) {
-      // for (j of n) {
-      //   if (i !== j && symNextAll[i].indexOf(symNextAll[j]) !== -1) {
-            // test = union(symNextAll[]);
-        // }
-      // }
-    // }
-    // console.log(symNextAll[0].indexOf(test));
-    // let s;
-    // for (s of symNextAll) {
-      // if (!any(map(t => s.indexOf(t) !== -1, test))) {
-        // test = append(test, s);
-      // }
-    // }
     let i;
     let j;
     for (i of range(0, n)) {
       for (j of range(0, n)) {
         if (i !== j && symNextAll[i].indexOf(symNextAll[j]) >= 0 ) {
-          // There's at least one
           noRepeatArr = union(noRepeatArr, [symNextAll[i]]);
         }
       }
     }
-    // console.log(test);
     if (!isEmpty(noRepeatArr)) {
       symNextAll = noRepeatArr;
     }
 
     newTransitions = union(newTransitions, [{state: newState, value: sym, next: symNextAll}]);
-    // console.log(newTransitions);
     newTransitions = filter(t => !isEmpty(t.next), newTransitions);
-    // console.log(newTransitions);
   }
 
   return newTransitions;
