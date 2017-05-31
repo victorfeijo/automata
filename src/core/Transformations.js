@@ -1,6 +1,6 @@
 import { isEmpty, contains, tail, head, filter,
-         any, find, clone, difference, uniq,
-         flatten, map, reduce, union, pluck, pipe,
+         any, find, clone, difference, uniq, length,
+         flatten, map, reduce, union, pluck, pipe, splitEvery,
          sort, propEq, equals, concat, append } from 'ramda';
 
 import makeAutomata, { isDeterministic } from './Automata';
@@ -109,9 +109,13 @@ function createDetTransition(automata, ndTransition) {
   // console.log(ndTransition);
   const newState = reduce((newState, state) => concat(newState, state), '', ndTransition.next);
   let filterTrans = filter(t => !equals(ndTransition, t), automata.transitions);
+  let newTransitions;
   const editNdTransition = [{state: ndTransition.state, value: ndTransition.value, next: [newState]}];
-  if (newState === ndTransition.state ) {
+
+  let filterTest = filter(t => equals(t, newState), automata.states);
+  if (length(filterTest) > 0) {
     newTransitions = union(filterTrans, editNdTransition);
+    // console.log(newTransitions);
     return makeAutomata (
       automata.states,
       clone(automata.alphabet),
@@ -129,10 +133,10 @@ function createDetTransition(automata, ndTransition) {
     newFinals = union(newFinals, [newState]);
   }
 
-  let newTransitions = union(union(filterTrans, newTransitionAdd), editNdTransition);
+  newTransitions = union(union(filterTrans, newTransitionAdd), editNdTransition);
   // newTransitions = sort((tran) => transition.state, newTransitions);
 
-  // console.log(newTransitionAdd);
+  // console.log(newTransitions);
   return makeAutomata(
     uniq(append(newState, automata.states)),
     clone(automata.alphabet),
@@ -144,12 +148,14 @@ function createDetTransition(automata, ndTransition) {
 }
 
 function determineze(automata) {
+  // console.log(automata.transitions);
   if (isDeterministic(automata)) {
     return automata;
   }
 
   const ndTransition = firstNDTransition(automata.transitions);
   const nAutomata = createDetTransition(automata, ndTransition);
+  // console.log(nAutomata.transitions);
   let detAutomata = determineze(nAutomata);
   // detAutomata = removeUnreachables(detAutomata);
   // console.log(detAutomata);

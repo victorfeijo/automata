@@ -168,7 +168,7 @@ function createNewTransition(automata, states) {
   let newTransitions;
   let newNext;
   for (sym of alphabet) {
-    let test = [];
+    let noRepeatArr = [];
 
     const transSym = filter(propEq('value', sym), statesTransitions);
     let symNextAll = (reduce((acc, tran) => union(acc, filter(t => t !== 'ERROR', tran.next)), [], transSym)).sort();
@@ -196,15 +196,19 @@ function createNewTransition(automata, states) {
       for (j of range(0, n)) {
         if (i !== j && symNextAll[i].indexOf(symNextAll[j]) >= 0 ) {
           // There's at least one
-          test = union(test, [symNextAll[i]]);
+          noRepeatArr = union(noRepeatArr, [symNextAll[i]]);
         }
       }
     }
     // console.log(test);
-    if (length(test) !== 0) {
-      symNextAll = test;
+    if (!isEmpty(noRepeatArr)) {
+      symNextAll = noRepeatArr;
     }
+
     newTransitions = union(newTransitions, [{state: newState, value: sym, next: symNextAll}]);
+    // console.log(newTransitions);
+    newTransitions = filter(t => !isEmpty(t.next), newTransitions);
+    // console.log(newTransitions);
   }
 
   return newTransitions;

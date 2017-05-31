@@ -271,9 +271,19 @@ describe('Transform NDAF to DAF', () => {
     const tape1 = makeTape('abb');
     const tape2 = makeTape('abba');
 
-      const det = determineze(nd_automata6);
-      console.log(det);
-      console.log(det.trasitions);
+    const det = createDetTransition(nd_automata6, {state: 'q0', value: 'b', next: ['q2','q3']});
+    console.log(det);
+    console.log(det.transitions);
+    const det1 = createDetTransition(det, {state: 'q0', value: 'c', next: ['q0','q3']});
+    console.log(det1);
+    console.log(det1.transitions);
+    const det2 = createDetTransition(det1, {state: 'q1', value: 'a', next: ['q0','q3']});
+    console.log(det2);
+    console.log(det2.transitions);
+    // console.log(nd_automata6.transitions);
+    const det5 = determineze(nd_automata6);
+    console.log(det5);
+    console.log(removeEquivalent(det5));
     // expect(readTape(d_automata1, tape1)).toBeTruthy();
     // expect(readTape(minimized, tape1)).toBeTruthy();
 
