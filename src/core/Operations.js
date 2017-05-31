@@ -1,8 +1,9 @@
 import { isNil, isEmpty, contains, find, assoc,
-         propEq, tail, head, filter, any,
+         propEq, tail, head, filter, any, forEach,
          gte, length, map, append, flatten, range,
          uniq, clone, equals, without, reject, split,
-         all, curry, reduce, union, concat, sort, pluck, compose } from 'ramda';
+         all, curry, reduce, union, concat, sort, pluck,
+         update, indexOf } from 'ramda';
 
 import { errorTransition } from './Automata';
 
@@ -21,12 +22,41 @@ const findTransition = (transitions, state, value) => (
 
 /**
  * Find the first non deterministic transition.
- * @param {array<object>} transitions - Transitions to look.
- * @return {object} - First found non deterministic transition.
+ * @param {array<transitions>} transitions - Transitions to look.
+ * @return {transition} - First found non deterministic transition.
  */
 const firstNDTransition = transitions => (
   find(tran => gte(length(tran.next), 2))(transitions)
 );
+
+/**
+ * Return a set of transitions with error.
+ * @param {automata} automata - Automata to look.
+ * @return {array<transitions>} - Transitions with error.
+ */
+const withErrorTransitions = automata => (
+  reduce((acc, state) => (
+    union(
+      map(sym =>
+        findTransition(automata.transitions, state, sym),
+        automata.alphabet),
+      acc)
+  ), [], automata.states)
+);
+
+/**
+ * Change ERROR state to given name.
+ * @param {array<transition>} transitions - Transitions to parse.
+ * @param {string} name - Name to rename error state.
+ * @return {array<transition>} - Transitions with state.
+ */
+const errorToState = curry((name, transitions) => (
+  map(tran => (
+    contains('ERROR', tran.next) ? assoc(
+      'next', update(indexOf('ERROR', tran.next), name, tran.next), tran
+    ) : tran
+  ), transitions)
+));
 
 /**
  * Removes given state from next transitions.
@@ -259,6 +289,8 @@ const readTape = (automata, tape) => (
 export {
   findTransition,
   firstNDTransition,
+  withErrorTransitions,
+  errorToState,
   removeFromNext,
   transitiveTransitions,
   previousStates,

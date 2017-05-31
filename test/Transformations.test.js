@@ -5,7 +5,7 @@ import { d_automata1,
          d_automata5,
          d_automata6,
          d_automata7 } from '../samples/Deterministic';
-import { minimize, determineze, removeStates, removeUnreachables, removeDeads, createDetTransition, removeEquivalent } from '../src/core/Transformations';
+import { distinguishStates, minimize, determineze, removeStates, removeUnreachables, removeDeads, createDetTransition, removeEquivalent } from '../src/core/Transformations';
 import { readTape } from '../src/core/Operations';
 import { nd_automata1, nd_automata4, nd_automata5, nd_automata51, nd_automata52, nd_automata6 } from '../samples/NonDeterministic';
 import makeAutomata from '../src/core/Automata';
@@ -486,5 +486,41 @@ describe('Minimize automata', () => {
 
     expect(readTape(d_automata7, tape3)).toBeFalsy();
     expect(readTape(minimized, tape3)).toBeFalsy();
+  });
+});
+
+describe('Distinguish states', () => {
+  test('It adds A char to d_automata1', () => {
+    const expected = makeAutomata(
+      [ 'q0A', 'q1A', 'q2A' ],
+      [ 'a', 'b' ],
+      [ { state: 'q0A', value: 'a', next: [ 'q0A' ] },
+        { state: 'q0A', value: 'b', next: [ 'q1A' ] },
+        { state: 'q1A', value: 'a', next: [ 'q1A' ] },
+        { state: 'q1A', value: 'b', next: [ 'q2A' ] },
+        { state: 'q2A', value: 'a', next: [ 'q0A' ] },
+        { state: 'q2A', value: 'b', next: [ 'q2A' ] } ],
+      'q0A',
+      [ 'q2A' ]
+    );
+
+    expect(distinguishStates(d_automata1, 'A')).toEqual(expected);
+  });
+
+  test('It adds A char to d_automata4', () => {
+    const tape1 = makeTape('baba');
+    const tape2 = makeTape('baccccbca');
+    const tape3 = makeTape('aabbba');
+
+    const distinguish = distinguishStates(d_automata4, 'A');
+
+    expect(readTape(d_automata4, tape1)).toBeTruthy();
+    expect(readTape(distinguish, tape1)).toBeTruthy();
+
+    expect(readTape(d_automata4, tape2)).toBeTruthy();
+    expect(readTape(distinguish, tape2)).toBeTruthy();
+
+    expect(readTape(d_automata4, tape3)).toBeFalsy();
+    expect(readTape(distinguish, tape3)).toBeFalsy();
   });
 });
