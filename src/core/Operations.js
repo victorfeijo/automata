@@ -1,8 +1,8 @@
 import { isNil, isEmpty, contains, find, assoc,
          propEq, tail, head, filter, any,
-         gte, length, map, append, flatten,
-         uniq, clone, equals, without, reject,
-         all, curry, reduce, union, concat } from 'ramda';
+         gte, length, map, append, flatten, range,
+         uniq, clone, equals, without, reject, split,
+         all, curry, reduce, union, concat, sort, pluck, compose } from 'ramda';
 
 import { errorTransition } from './Automata';
 
@@ -163,17 +163,32 @@ function createNewTransition(automata, states) {
       findTransition(transitions, state, symbol), alphabet)));
     }
   }
-
   let newState = reduce((newState, state) => concat(newState, state), '', states);
   let sym;
   let newTransitions;
   let newNext;
   for (sym of alphabet) {
+    let noRepeatArr = [];
 
     const transSym = filter(propEq('value', sym), statesTransitions);
-    const symNextAll = reduce((acc, tran) => union(acc, tran.next), [], transSym);
+    let symNextAll = (reduce((acc, tran) => union(acc, filter(t => t !== 'ERROR', tran.next)), [], transSym)).sort();
+
+    const n = length(symNextAll);
+    let i;
+    let j;
+    for (i of range(0, n)) {
+      for (j of range(0, n)) {
+        if (i !== j && symNextAll[i].indexOf(symNextAll[j]) >= 0 ) {
+          noRepeatArr = union(noRepeatArr, [symNextAll[i]]);
+        }
+      }
+    }
+    if (!isEmpty(noRepeatArr)) {
+      symNextAll = noRepeatArr;
+    }
 
     newTransitions = union(newTransitions, [{state: newState, value: sym, next: symNextAll}]);
+    newTransitions = filter(t => !isEmpty(t.next), newTransitions);
   }
 
   return newTransitions;

@@ -1,6 +1,7 @@
 import { isEmpty, contains, tail, head, filter,
-         any, find, clone, difference, uniq,
-         flatten, map, reduce, union, pluck, pipe } from 'ramda';
+         any, find, clone, difference, uniq, length,
+         flatten, map, reduce, union, pluck, pipe, splitEvery,
+         sort, propEq, equals, concat, append } from 'ramda';
 
 import makeAutomata, { isDeterministic } from './Automata';
 
@@ -104,6 +105,40 @@ function minimize(automata) {
 }
 
 function createDetTransition(automata, ndTransition) {
+  const newState = reduce((newState, state) => concat(newState, state), '', ndTransition.next);
+  let filterTrans = filter(t => !equals(ndTransition, t), automata.transitions);
+  let newTransitions;
+  const editNdTransition = [{state: ndTransition.state, value: ndTransition.value, next: [newState]}];
+
+  let filterTest = filter(t => equals(t, newState), automata.states);
+  if (length(filterTest) > 0) {
+    newTransitions = union(filterTrans, editNdTransition);
+    return makeAutomata (
+      automata.states,
+      clone(automata.alphabet),
+      newTransitions,
+      clone(automata.initial),
+      union(automata.finals, newFinals),
+    );
+  }
+
+  let newTransitionAdd = createNewTransition(automata, ndTransition.next);
+
+  let newFinals = automata.finals;
+  if (any(f => contains(f, automata.finals), ndTransition.next)) {
+    newFinals = union(newFinals, [newState]);
+  }
+
+  newTransitions = union(union(filterTrans, newTransitionAdd), editNdTransition);
+
+  return makeAutomata(
+    uniq(append(newState, automata.states)),
+    clone(automata.alphabet),
+    newTransitions,
+    clone(automata.initial),
+    union(automata.finals, newFinals),
+
+  );
 }
 
 function determineze(automata) {
@@ -112,12 +147,10 @@ function determineze(automata) {
   }
 
   const ndTransition = firstNDTransition(automata.transitions);
-  const nAutomata = createNewTransition(automata, ndTransition);
+  const nAutomata = createDetTransition(automata, ndTransition);
   let detAutomata = determineze(nAutomata);
-  detAutomata = removeUnreachables(detAutomata);
   return detAutomata;
 
-  console.log(firstNDTransition(automata.transitions));
 }
 
 export {
