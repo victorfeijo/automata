@@ -241,23 +241,6 @@ describe('Transform NDAF to DAF', () => {
     expect(determineze(nd_automata51)).toEqual(expected);
   });
 
-  test('Read tape test nd_automata6', () => {
-    const tape1 = makeTape('abb');
-    const tape2 = makeTape('abba');
-
-    const det = createDetTransition(nd_automata6, {state: 'q0', value: 'b', next: ['q2','q3']});
-    console.log(det);
-    console.log(det.transitions);
-    const det1 = createDetTransition(det, {state: 'q0', value: 'c', next: ['q0','q3']});
-    console.log(det1);
-    console.log(det1.transitions);
-    const det2 = createDetTransition(det1, {state: 'q1', value: 'a', next: ['q0','q3']});
-    console.log(det2);
-    console.log(det2.transitions);
-    const det5 = determineze(nd_automata6);
-    console.log(det5);
-    console.log('minimizado', minimize(det5));
-  });
 
 });
 
