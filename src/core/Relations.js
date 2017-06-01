@@ -24,8 +24,7 @@ function joinAutomatas(automataA, automataB) {
   return makeAutomata(
     union([newInitialTransition.state],
       union(distinguishA.states, distinguishB.states)),
-    union(['&'],
-      union(distinguishA.alphabet, distinguishB.alphabet)),
+    union(distinguishA.alphabet, distinguishB.alphabet),
     union([newInitialTransition],
       union(distinguishA.transitions, distinguishB.transitions)),
     newInitialTransition.state,

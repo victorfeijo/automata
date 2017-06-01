@@ -187,42 +187,50 @@ function removeBlankTransitions(automata) {
     return automata;
   }
   const blankTransition = firstBlankTransition(automata.transitions);
-  let filterTrans = filter(t => !equals(t, blankTransition), automata.transitions);
-  console.log(filterTrans);
-  const filterBlankValues = filter(val => val !== '&', reduce((acc, tran) => union(acc, tran.value), [], filter(t => equals(blankTransition.state, t.state), automata.transitions)));
-  console.log(filterBlankValues);
-  const filterBlankStates = filter(tran => equals(blankTransition.state, tran.state), automata.transitions);
-  console.log(filterBlankStates);
+
+  let filterTrans = filter(t =>
+    !equals(t, blankTransition), automata.transitions);
+
+  const filterBlankValues = filter(
+    val => val !== '&',
+    reduce(
+      (acc, tran) => union(acc, tran.value),
+      [],
+      filter(t => equals(blankTransition.state, t.state), automata.transitions)
+    )
+  );
+  const filterBlankStates = filter(tran =>
+    equals(blankTransition.state, tran.state), automata.transitions);
   const blankNext = blankTransition.next;
-  let blankNextTransitions = filter(tran => contains(tran.state, blankNext), automata.transitions);
-  const blankAlphabet = reduce((acc, tran) => union(acc, tran.value), [], blankNextTransitions);
-  console.log(blankTransition.next);
-  console.log(blankTransition.state);
+  let blankNextTransitions = filter(tran =>
+    contains(tran.state, blankNext), automata.transitions);
+  const blankAlphabet = reduce((acc, tran) =>
+    union(acc, tran.value), [], blankNextTransitions);
+
   if (contains(blankTransition.state, blankTransition.next)) {
-    blankNextTransitions = filter(bNT => !equals(bNT, blankTransition), blankNextTransitions);
+    blankNextTransitions = filter(bNT =>
+      !equals(bNT, blankTransition), blankNextTransitions);
   }
-    console.log(blankNextTransitions);
+
   const newTransitions = reduce((acc, trans) => union(acc, trans), [],
-                            map(sym => {
-                              const symTran = filter(t => t.value === sym, blankNextTransitions);
-                              const joinNext = reduce((acc, tran) => union(acc, tran.next), [], symTran);
+    map(sym => {
+      const symTran = filter(t => t.value === sym, blankNextTransitions);
+      const joinNext = reduce((acc, tran) => union(acc, tran.next), [], symTran);
 
-                              if (contains(sym, filterBlankValues)) {
-                                const transitionByValue = find(propEq('value', sym), filterBlankStates);
-                                const transitionDuplicate = [{state: blankTransition.state, value: sym, next: transitionByValue.next}]
+      if (contains(sym, filterBlankValues)) {
+        const transitionByValue = find(propEq('value', sym), filterBlankStates);
+        const transitionDuplicate = [
+          {state: blankTransition.state, value: sym, next: transitionByValue.next}
+        ];
+        filterTrans = filter(t => !equals(t, transitionDuplicate[0]), filterTrans);
+        const newNext = union(joinNext, transitionByValue.next);
 
-                                filterTrans = filter(t => !equals(t, transitionDuplicate[0]), filterTrans);
+        return [{ state: blankTransition.state, value: sym, next: newNext }];
+      } else {
+        return [{ state: blankTransition.state, value: sym, next: joinNext }]
+      }
+    }, blankAlphabet));
 
-                                const newNext = union(joinNext, transitionByValue.next);
-
-                                return [{ state: blankTransition.state, value: sym, next: newNext }];
-                              } else {
-                                return [{ state: blankTransition.state, value: sym, next: joinNext }]
-                              }
-                            },
-                         blankAlphabet));
-  console.log(newTransitions);
-  console.log(union(newTransitions, filterTrans));
   return removeBlankTransitions(makeAutomata(
     clone(automata.states),
     clone(automata.alphabet),
@@ -230,7 +238,6 @@ function removeBlankTransitions(automata) {
     clone(automata.initial),
     clone(automata.finals),
   ));
-  // return [];
 }
 
 export {
