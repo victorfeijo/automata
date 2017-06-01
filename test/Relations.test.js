@@ -7,7 +7,8 @@ import { d_automata1,
 
 import { joinAutomatas,
          complementAutomata,
-         intersectionAutomata } from '../src/core/Relations';
+         intersectionAutomata,
+         differenceAutomata } from '../src/core/Relations';
 import { readTape } from '../src/core/Operations';
 import makeTape from '../src/core/Tape';
 
@@ -82,5 +83,11 @@ describe('Complement relation', () => {
 describe('Intersection relation', () => {
   test('Structural test intersection d_automata2 d_automata3', () => {
     const att = intersectionAutomata(d_automata7, d_automata4);
+  });
+});
+
+describe('Difference relation', () => {
+  test('Structural test intersection d_automata2 d_automata3', () => {
+    console.log(differenceAutomata(d_automata7, d_automata4));
   });
 });
