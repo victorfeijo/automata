@@ -1,14 +1,14 @@
 import { isEmpty, contains, tail, head, filter,
-         any, find, clone, difference, uniq, length,
+         any, find, clone, difference, uniq, length, forEach,
          flatten, map, reduce, union, pluck, pipe, splitEvery,
          sort, propEq, equals, concat, append } from 'ramda';
 
-import makeAutomata, { isDeterministic } from './Automata';
+import makeAutomata, { isDeterministic, hasBlankTransitions } from './Automata';
 
 import { firstNDTransition, removeFromNext,
          transitiveTransitions, previousStates,
          reduceEquivalents, createNewTransition,
-         createEquivalentTransitions } from './Operations';
+         createEquivalentTransitions, firstBlankTransition} from './Operations';
 
 /**
  * Remove a collection of states from given automata.
@@ -153,6 +153,40 @@ function determineze(automata) {
 
 }
 
+function removeBlankTransitions(automata) {
+  if (!hasBlankTransitions(automata)) {
+    return automata;
+  }
+  const blankTransition = firstBlankTransition(automata.transitions);
+  let filterTrans = filter(t => !equals(t, blankTransition), automata.transitions);
+
+  const filterBlankValues = filter(val => val !== '&', reduce((acc, tran) => union(acc, tran.value), [], filter(t => equals(blankTransition.state, t.state), automata.transitions)));
+
+  const filterBlankStates = filter(tran => equals(blankTransition.state, tran.state), automata.transitions);
+  const blankNext = blankTransition.next;
+  const blankNextTransitions = filter(tran => contains(tran.state, blankNext), automata.transitions);
+  const newTransitions = reduce((acc, trans) => union(acc, trans), [],
+                            map(tran => {
+                              if (contains(tran.value, filterBlankValues)) {
+                                const transitionByValue = find(propEq('value', tran.value), filterBlankStates);
+                                const transitionDuplicate = [{state: blankTransition.state, value: tran.value, next: transitionByValue.next}]
+                                filterTrans = filter(t => !equals(t, transitionDuplicate[0]), filterTrans);
+                                const newNext = union(tran.next, transitionByValue.next);
+                                return [{state: blankTransition.state, value: tran.value, next: newNext}];
+                              } else {
+                                return [{state: blankTransition.state, value: tran.value, next: tran.next}]
+                              }
+                            },
+                         blankNextTransitions));
+  return removeBlankTransitions(makeAutomata(
+    clone(automata.states),
+    clone(automata.alphabet),
+    union(filterTrans, newTransitions),
+    clone(automata.initial),
+    clone(automata.finals),
+  ));
+}
+
 export {
   minimize,
   removeStates,
@@ -161,4 +195,5 @@ export {
   determineze,
   createDetTransition,
   removeEquivalent,
+  removeBlankTransitions,
 };

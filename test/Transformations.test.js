@@ -5,9 +5,9 @@ import { d_automata1,
          d_automata5,
          d_automata6,
          d_automata7 } from '../samples/Deterministic';
-import { minimize, determineze, removeStates, removeUnreachables, removeDeads, createDetTransition, removeEquivalent } from '../src/core/Transformations';
+import { minimize, determineze, removeStates, removeUnreachables, removeDeads, createDetTransition, removeEquivalent, removeBlankTransitions } from '../src/core/Transformations';
 import { readTape } from '../src/core/Operations';
-import { nd_automata1, nd_automata4, nd_automata5, nd_automata51, nd_automata52, nd_automata6 } from '../samples/NonDeterministic';
+import { nd_automata1, nd_automata3, nd_automata4, nd_automata5, nd_automata51, nd_automata52, nd_automata6, nd_automata7, nd_automata8} from '../samples/NonDeterministic';
 import makeAutomata from '../src/core/Automata';
 import makeTape from '../src/core/Tape';
 
@@ -242,6 +242,65 @@ describe('Transform NDAF to DAF', () => {
   });
 
 
+});
+
+describe('Remove Blank Transitions', () => {
+  test('Remove Blank of nd_automata3', () => {
+    const expected = makeAutomata(
+      ['q0', 'q1', 'q2'],
+      ['a', 'b'],
+      [{
+        state: 'q0', value: 'a', next: ['q2']
+      }, {
+        state: 'q1', value: 'b', next: ['q1']
+      }, {
+        state: 'q2', value: 'a', next: ['q2']
+      }, {
+        state: 'q0', value: 'b', next: ['q1']
+      }],
+      'q0',
+      ['q1, q2']
+    );
+    expect(removeBlankTransitions(nd_automata3)).toEqual(expected);
+  });
+  test('Remove Blank of nd_automata7', () => {
+    const expected = makeAutomata(
+      ['q0', 'q1', 'q2'],
+      ['a', 'b'],
+      [{
+        state: 'q0', value: 'a', next: ['q1']
+      }, {
+        state: 'q0', value: 'b', next: ['q2']
+      }, {
+        state: 'q1', value: 'b', next: ['q2']
+      }, {
+        state: 'q2', value: 'a', next: ['q1']
+      }, {
+        state: 'q2', value: 'b', next: ['q2', 'q1']
+      }],
+      'q0',
+      ['q2']
+    );
+    expect(removeBlankTransitions(nd_automata7)).toEqual(expected);
+  });
+  test('Remove Blank Transition to ERROR', () => {
+    const expected = makeAutomata(
+      ['q0', 'q1', 'q2'],
+      ['a', 'b'],
+      [{
+        state: 'q0', value: 'a', next: ['q1']
+      }, {
+        state: 'q0', value: 'b', next: ['q2']
+      }, {
+        state: 'q1', value: 'b', next: ['q2']
+      }, {
+       state: 'q2', value: 'b', next: ['q1']
+      }],
+     'q0',
+     ['q2']
+    );
+    expect(removeBlankTransitions(nd_automata8)).toEqual(expected);
+  });
 });
 
 describe('Remove states', () => {

@@ -155,3 +155,39 @@ export const nd_automata3 = makeAutomata(
   'q0',
   ['q1, q2']
 );
+
+export const nd_automata7 = makeAutomata(
+  ['q0', 'q1', 'q2'],
+  ['a', 'b'],
+  [{
+    state: 'q0', value: 'a', next: ['q1']
+  }, {
+    state: 'q0', value: 'b', next: ['q2']
+  }, {
+    state: 'q1', value: 'b', next: ['q2']
+  }, {
+    state: 'q2', value: '&', next: ['q0']
+  }, {
+    state: 'q2', value: 'b', next: ['q1']
+  }],
+  'q0',
+  ['q2']
+);
+
+export const nd_automata8 = makeAutomata(
+  ['q0', 'q1', 'q2'],
+  ['a', 'b'],
+  [{
+    state: 'q0', value: 'a', next: ['q1']
+  }, {
+    state: 'q0', value: 'b', next: ['q2']
+  }, {
+    state: 'q1', value: 'b', next: ['q2']
+  }, {
+    state: 'q2', value: '&', next: ['ERROR']
+  }, {
+    state: 'q2', value: 'b', next: ['q1']
+  }],
+  'q0',
+  ['q2']
+);

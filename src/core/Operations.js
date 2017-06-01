@@ -4,7 +4,7 @@ import { isNil, isEmpty, contains, find, assoc,
          uniq, clone, equals, without, reject, split,
          all, curry, reduce, union, concat, sort, pluck, compose } from 'ramda';
 
-import { errorTransition } from './Automata';
+import { errorTransition, isBlankTransition } from './Automata';
 
 /**
  * Find a transition.
@@ -26,6 +26,10 @@ const findTransition = (transitions, state, value) => (
  */
 const firstNDTransition = transitions => (
   find(tran => gte(length(tran.next), 2))(transitions)
+);
+
+const firstBlankTransition = transitions => (
+  find(tran => isBlankTransition(tran))(transitions)
 );
 
 /**
@@ -267,4 +271,5 @@ export {
   createNewTransition,
   createEquivalentTransitions,
   readTape,
+  firstBlankTransition,
 };
