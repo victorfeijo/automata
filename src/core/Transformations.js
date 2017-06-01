@@ -10,6 +10,31 @@ import { firstNDTransition, removeFromNext,
          reduceEquivalents, createNewTransition,
          createEquivalentTransitions, firstBlankTransition} from './Operations';
 
+
+/**
+ * Distinguish all states from given automata
+ * concating a character in all states.
+ * @param {Automata} automata - Automata to distinguish.
+ * @return {Automata} - A new automata with states + char.
+ */
+function distinguishStates(automata, char) {
+  const newTransitions = map(transition => (
+    {
+      state: concat(transition.state, char),
+      value: clone(transition.value),
+      next: map(n => concat(n, char), transition.next),
+    }
+  ), automata.transitions);
+
+  return makeAutomata(
+    map(s => concat(s, char), automata.states),
+    clone(automata.alphabet),
+    newTransitions,
+    concat(automata.initial, char),
+    map(f => concat(f, char), automata.finals)
+  );
+}
+
 /**
  * Remove a collection of states from given automata.
  * @param {Automata} automata - Automata to clean.
@@ -188,6 +213,7 @@ function removeBlankTransitions(automata) {
 }
 
 export {
+  distinguishStates,
   minimize,
   removeStates,
   removeUnreachables,
