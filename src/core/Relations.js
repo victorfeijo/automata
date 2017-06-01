@@ -69,8 +69,16 @@ function intersectionAutomata(automataA, automataB) {
   );
 }
 
+function differenceAutomata(automataA, automataB) {
+  return intersectionAutomata(
+    automataA,
+    complementAutomata(automataB)
+  );
+}
+
 export {
   joinAutomatas,
   complementAutomata,
-  intersectionAutomata
+  intersectionAutomata,
+  differenceAutomata,
 }
