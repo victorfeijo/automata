@@ -315,9 +315,11 @@ describe('Remove Blank Transitions', () => {
       }, {
         state: 'q1', value: 'b', next: ['q2']
       }, {
-        state: 'q3', value: 'a', next: ['q3']
+        state: 'q2', value: 'a', next: ['q1']
       }, {
         state: 'q2', value: 'b', next: ['q2', 'q1']
+      }, {
+        state: 'q3', value: 'a', next: ['q1', 'q3']
       }, {
         state: 'q3', value: 'b', next: ['q2', 'q1']
       }],
@@ -325,8 +327,7 @@ describe('Remove Blank Transitions', () => {
       ['q2']
     );
     const test = removeBlankTransitions(nd_automata9);
-    console.log(test);
-      console.log(test.transitions);
+
     expect(removeBlankTransitions(nd_automata9)).toEqual(expected);
   });
 });
