@@ -5,13 +5,15 @@ import { d_automata1,
          d_automata5,
          d_automata7 } from '../samples/Deterministic';
 
+import { nd_automata3 } from '../samples/NonDeterministic';
+
 import { joinAutomatas,
          complementAutomata,
          intersectionAutomata,
          differenceAutomata } from '../src/core/Relations';
 import { readTape } from '../src/core/Operations';
+import { removeBlankTransitions } from '../src/core/Transformations';
 import makeTape from '../src/core/Tape';
-
 import { contains } from 'ramda';
 
 describe('Union relation', () => {
@@ -20,7 +22,7 @@ describe('Union relation', () => {
   });
 
   test('Join d_automata5 with d_automata5', () => {
-    const joined = joinAutomatas(d_automata5, d_automata5);
+    const joined = joinAutomatas(d_automata7, nd_automata3);
   });
 });
 
@@ -82,12 +84,14 @@ describe('Complement relation', () => {
 
 describe('Intersection relation', () => {
   test('Structural test intersection d_automata2 d_automata3', () => {
-    const att = intersectionAutomata(d_automata7, d_automata4);
+    const att = intersectionAutomata(d_automata2, d_automata1);
+
+    // console.log(removeBlankTransitions(att))
   });
 });
 
 describe('Difference relation', () => {
   test('Structural test intersection d_automata2 d_automata3', () => {
-    console.log(differenceAutomata(d_automata7, d_automata4));
+    // console.log(differenceAutomata(d_automata7, d_automata4));
   });
 });

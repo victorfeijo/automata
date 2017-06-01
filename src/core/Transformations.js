@@ -195,6 +195,7 @@ function removeBlankTransitions(automata) {
   console.log(filterBlankStates);
   const blankNext = blankTransition.next;
   let blankNextTransitions = filter(tran => contains(tran.state, blankNext), automata.transitions);
+  const blankAlphabet = reduce((acc, tran) => union(acc, tran.value), [], blankNextTransitions);
   console.log(blankTransition.next);
   console.log(blankTransition.state);
   if (contains(blankTransition.state, blankTransition.next)) {
@@ -202,18 +203,24 @@ function removeBlankTransitions(automata) {
   }
     console.log(blankNextTransitions);
   const newTransitions = reduce((acc, trans) => union(acc, trans), [],
-                            map(tran => {
-                              if (contains(tran.value, filterBlankValues)) {
-                                const transitionByValue = find(propEq('value', tran.value), filterBlankStates);
-                                const transitionDuplicate = [{state: blankTransition.state, value: tran.value, next: transitionByValue.next}]
+                            map(sym => {
+                              const symTran = filter(t => t.value === sym, blankNextTransitions);
+                              const joinNext = reduce((acc, tran) => union(acc, tran.next), [], symTran);
+
+                              if (contains(sym, filterBlankValues)) {
+                                const transitionByValue = find(propEq('value', sym), filterBlankStates);
+                                const transitionDuplicate = [{state: blankTransition.state, value: sym, next: transitionByValue.next}]
+
                                 filterTrans = filter(t => !equals(t, transitionDuplicate[0]), filterTrans);
-                                const newNext = union(tran.next, transitionByValue.next);
-                                return [{state: blankTransition.state, value: tran.value, next: newNext}];
+
+                                const newNext = union(joinNext, transitionByValue.next);
+
+                                return [{ state: blankTransition.state, value: sym, next: newNext }];
                               } else {
-                                return [{state: blankTransition.state, value: tran.value, next: tran.next}]
+                                return [{ state: blankTransition.state, value: sym, next: joinNext }]
                               }
                             },
-                              blankNextTransitions));
+                         blankAlphabet));
   console.log(newTransitions);
   console.log(union(newTransitions, filterTrans));
   return removeBlankTransitions(makeAutomata(
