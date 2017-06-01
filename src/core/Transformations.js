@@ -128,7 +128,11 @@ function minimize(automata) {
               removeDeads,
               removeEquivalent)(automata);
 }
-
+/**
+ * Create a new deterministic transition and its dependencies.
+ * First rename a new state for the newTransition.
+ * Filter transitions to remove non-deterministic transition
+ */
 function createDetTransition(automata, ndTransition) {
   const newState = reduce((newState, state) => concat(newState, state), '', ndTransition.next);
   let filterTrans = filter(t => !equals(ndTransition, t), automata.transitions);
@@ -184,12 +188,19 @@ function removeBlankTransitions(automata) {
   }
   const blankTransition = firstBlankTransition(automata.transitions);
   let filterTrans = filter(t => !equals(t, blankTransition), automata.transitions);
-
+  console.log(filterTrans);
   const filterBlankValues = filter(val => val !== '&', reduce((acc, tran) => union(acc, tran.value), [], filter(t => equals(blankTransition.state, t.state), automata.transitions)));
-
+  console.log(filterBlankValues);
   const filterBlankStates = filter(tran => equals(blankTransition.state, tran.state), automata.transitions);
+  console.log(filterBlankStates);
   const blankNext = blankTransition.next;
-  const blankNextTransitions = filter(tran => contains(tran.state, blankNext), automata.transitions);
+  let blankNextTransitions = filter(tran => contains(tran.state, blankNext), automata.transitions);
+  console.log(blankTransition.next);
+  console.log(blankTransition.state);
+  if (contains(blankTransition.state, blankTransition.next)) {
+    blankNextTransitions = filter(bNT => !equals(bNT, blankTransition), blankNextTransitions);
+  }
+    console.log(blankNextTransitions);
   const newTransitions = reduce((acc, trans) => union(acc, trans), [],
                             map(tran => {
                               if (contains(tran.value, filterBlankValues)) {
@@ -202,7 +213,9 @@ function removeBlankTransitions(automata) {
                                 return [{state: blankTransition.state, value: tran.value, next: tran.next}]
                               }
                             },
-                         blankNextTransitions));
+                              blankNextTransitions));
+  console.log(newTransitions);
+  console.log(union(newTransitions, filterTrans));
   return removeBlankTransitions(makeAutomata(
     clone(automata.states),
     clone(automata.alphabet),
@@ -210,6 +223,7 @@ function removeBlankTransitions(automata) {
     clone(automata.initial),
     clone(automata.finals),
   ));
+  // return [];
 }
 
 export {
