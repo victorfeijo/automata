@@ -6,6 +6,7 @@ import { isNil, isEmpty, contains, find, assoc,
          update, indexOf } from 'ramda';
 
 import { errorTransition, isBlankTransition } from './Automata';
+import ENUM from './Enum';
 
 /**
  * Find a transition.
@@ -34,18 +35,31 @@ const firstBlankTransition = transitions => (
 );
 
 /**
+ * Return a set of error transitions.
+ * @param {automata} automata - Automata to look.
+ * @return {array<transitions>} - Error transitions with error.
+ */
+const errorTransitions = automata => (
+  filter(tran => contains(ENUM.Error, tran.next),
+    reduce((acc, state) => (
+      union(
+        map(sym =>
+          findTransition(automata.transitions, state, sym),
+          automata.alphabet),
+        acc)
+    ), [], automata.states))
+);
+
+/**
  * Return a set of transitions with error.
  * @param {automata} automata - Automata to look.
  * @return {array<transitions>} - Transitions with error.
  */
 const withErrorTransitions = automata => (
-  reduce((acc, state) => (
-    union(
-      map(sym =>
-        findTransition(automata.transitions, state, sym),
-        automata.alphabet),
-      acc)
-  ), [], automata.states)
+  union(
+    automata.transitions,
+    errorTransitions(automata)
+  )
 );
 
 /**
@@ -56,8 +70,8 @@ const withErrorTransitions = automata => (
  */
 const errorToState = curry((name, transitions) => (
   map(tran => (
-    contains('ERROR', tran.next) ? assoc(
-      'next', update(indexOf('ERROR', tran.next), name, tran.next), tran
+    contains(ENUM.Error, tran.next) ? assoc(
+      'next', update(indexOf(ENUM.ERROR, tran.next), name, tran.next), tran
     ) : tran
   ), transitions)
 ));
@@ -205,7 +219,7 @@ function createNewTransition(automata, states) {
     let noRepeatArr = [];
 
     const transSym = filter(propEq('value', sym), statesTransitions);
-    let symNextAll = (reduce((acc, tran) => union(acc, filter(t => t !== 'ERROR', tran.next)), [], transSym)).sort();
+    let symNextAll = (reduce((acc, tran) => union(acc, filter(t => t !== ENUM.Error, tran.next)), [], transSym)).sort();
 
     const n = length(symNextAll);
     let i;

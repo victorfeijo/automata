@@ -84,9 +84,11 @@ describe('Complement relation', () => {
 
 describe('Intersection relation', () => {
   test('Structural test intersection d_automata2 d_automata3', () => {
-    const att = intersectionAutomata(d_automata2, d_automata1);
+    const att = intersectionAutomata(d_automata4, d_automata7);
 
-    // console.log(removeBlankTransitions(att))
+    // console.log(att)
+
+    console.log(removeBlankTransitions(att))
   });
 });
 
