@@ -231,10 +231,7 @@ function removeBlankTransitions(automata) {
       }
     }, blankAlphabet));
   let newFinals = automata.finals;
-  console.log(blankTransition.next);
-  console.log(automata.finals);
   if (any(state => contains(state, automata.finals), blankTransition.next)) {
-    console.log('entered!');
     newFinals = union(newFinals, [blankTransition.state]);
   }
   return removeBlankTransitions(makeAutomata(

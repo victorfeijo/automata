@@ -142,8 +142,9 @@ describe('Difference relation', () => {
 
 describe('Difference relation', () => {
   test('Logical test intersection d_automata4 d_automata7', () => {
+    //TODO SOLVE TAPE2 BUG
     const tape1 = makeTape('aababab');
-    const tape2 = makeTape('baabb');
+    const tape2 = makeTape('acbcbaabca');
     const tape3 = makeTape('abaaba');
     const tape4 = makeTape('aaabbba');
 
