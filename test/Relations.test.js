@@ -3,26 +3,52 @@ import { d_automata1,
          d_automata3,
          d_automata4,
          d_automata5,
+         d_automata6,
          d_automata7 } from '../samples/Deterministic';
-
 import { nd_automata3 } from '../samples/NonDeterministic';
-
 import { joinAutomatas,
          complementAutomata,
          intersectionAutomata,
          differenceAutomata } from '../src/core/Relations';
 import { readTape } from '../src/core/Operations';
-import { removeBlankTransitions } from '../src/core/Transformations';
 import makeTape from '../src/core/Tape';
 import { contains } from 'ramda';
 
 describe('Union relation', () => {
-  test('Join d_automata1 with d_automata2', () => {
-    const joined = joinAutomatas(d_automata1, d_automata2);
+  test('Join d_automata2 with d_automata3', () => {
+    const tape1 = makeTape('aabbbab');
+    const tape2 = makeTape('baaaaa');
+    const tape3 = makeTape('baa');
+
+    const joined = joinAutomatas(d_automata2, d_automata3);
+
+    expect(readTape(joined, tape1)).toBeTruthy();
+    expect(readTape(joined, tape2)).toBeTruthy();
+    expect(readTape(joined, tape3)).toBeFalsy();
   });
 
-  test('Join d_automata5 with d_automata5', () => {
-    const joined = joinAutomatas(d_automata7, nd_automata3);
+  test('Join d_automata4 with d_automata5', () => {
+    const tape1 = makeTape('ababa');
+    const tape2 = makeTape('baaaa');
+    const tape3 = makeTape('baaa');
+
+    const joined = joinAutomatas(d_automata4, d_automata5);
+
+    expect(readTape(joined, tape1)).toBeTruthy();
+    expect(readTape(joined, tape2)).toBeTruthy();
+    expect(readTape(joined, tape3)).toBeFalsy();
+  });
+
+  test('Join d_automata7 with d_automata7', () => {
+    const tape1 = makeTape('aaaaa');
+    const tape2 = makeTape('abbaabbaabb');
+    const tape3 = makeTape('baa');
+
+    const joined = joinAutomatas(d_automata7, d_automata7);
+
+    expect(readTape(joined, tape1)).toBeTruthy();
+    expect(readTape(joined, tape2)).toBeTruthy();
+    expect(readTape(joined, tape3)).toBeFalsy();
   });
 });
 
@@ -83,17 +109,49 @@ describe('Complement relation', () => {
 });
 
 describe('Intersection relation', () => {
-  test('Structural test intersection d_automata2 d_automata3', () => {
-    const att = intersectionAutomata(d_automata4, d_automata7);
+  test('Logical test intersection d_automata2 d_automata3', () => {
+    const tape1 = makeTape('aabbab');
+    const tape2 = makeTape('bbaaabaa');
+    const tape3 = makeTape('abababa');
+    const tape4 = makeTape('aa');
 
-    // console.log(att)
+    const intersect = intersectionAutomata(d_automata2, d_automata3);
 
-    console.log(removeBlankTransitions(att))
+    expect(readTape(intersect, tape1)).toBeTruthy();
+    expect(readTape(intersect, tape2)).toBeTruthy();
+    expect(readTape(intersect, tape3)).toBeFalsy();
+    expect(readTape(intersect, tape4)).toBeFalsy();
   });
 });
 
 describe('Difference relation', () => {
-  test('Structural test intersection d_automata2 d_automata3', () => {
-    // console.log(differenceAutomata(d_automata7, d_automata4));
+  test('Logical test intersection d_automata3 d_automata7', () => {
+    const tape1 = makeTape('aabbab');
+    const tape2 = makeTape('bbbbabb');
+    const tape3 = makeTape('abaaba');
+    const tape4 = makeTape('aaabbba');
+
+    const intersect = intersectionAutomata(d_automata3, d_automata7);
+
+    expect(readTape(intersect, tape1)).toBeTruthy();
+    expect(readTape(intersect, tape2)).toBeTruthy();
+    expect(readTape(intersect, tape3)).toBeFalsy();
+    expect(readTape(intersect, tape4)).toBeFalsy();
+  });
+});
+
+describe('Difference relation', () => {
+  test('Logical test intersection d_automata4 d_automata7', () => {
+    const tape1 = makeTape('aababab');
+    const tape2 = makeTape('baabb');
+    const tape3 = makeTape('abaaba');
+    const tape4 = makeTape('aaabbba');
+
+    const intersect = intersectionAutomata(d_automata4, d_automata7);
+
+    expect(readTape(intersect, tape1)).toBeTruthy();
+    expect(readTape(intersect, tape2)).toBeTruthy();
+    expect(readTape(intersect, tape3)).toBeFalsy();
+    expect(readTape(intersect, tape4)).toBeFalsy();
   });
 });

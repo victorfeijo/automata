@@ -1,8 +1,9 @@
 import { union, concat, clone, difference,
          map, contains, pipe } from 'ramda';
-import { distinguishStates } from './Transformations';
+import { determineze, distinguishStates, removeBlankTransitions } from './Transformations';
 import { withErrorTransitions, errorToState } from './Operations';
 import makeAutomata from './Automata';
+import ENUM from './Enum';
 
 /**
  * Apply union property relation between automataA and
@@ -17,18 +18,22 @@ function joinAutomatas(automataA, automataB) {
 
   const newInitialTransition = {
     state: concat(distinguishA.initial, distinguishB.initial),
-    value: '&',
+    value: ENUM.Epsilon,
     next: [distinguishA.initial, distinguishB.initial]
   };
 
-  return makeAutomata(
-    union([newInitialTransition.state],
-      union(distinguishA.states, distinguishB.states)),
-    union(distinguishA.alphabet, distinguishB.alphabet),
-    union([newInitialTransition],
-      union(distinguishA.transitions, distinguishB.transitions)),
-    newInitialTransition.state,
-    union(distinguishA.finals, distinguishB.finals)
+  return determineze(
+    removeBlankTransitions(
+      makeAutomata(
+        union([newInitialTransition.state],
+          union(distinguishA.states, distinguishB.states)),
+        union(distinguishA.alphabet, distinguishB.alphabet),
+        union([newInitialTransition],
+          union(distinguishA.transitions, distinguishB.transitions)),
+        newInitialTransition.state,
+        union(distinguishA.finals, distinguishB.finals)
+      )
+    )
   );
 }
 
@@ -60,6 +65,17 @@ function complementAutomata(automata, newState = 'qCOMP') {
 }
 
 function intersectionAutomata(automataA, automataB) {
+  // const aComp = complementAutomata(automataA)
+  // console.log('A complement -> ', aComp)
+  // const bComp = complementAutomata(automataB)
+  // console.log('B complement -> ', bComp)
+
+  // const joined = joinAutomatas(aComp, bComp)
+
+  // const compJoin = complementAutomata(joined)
+
+  // return compJoin;
+
   return complementAutomata(
     joinAutomatas(
       complementAutomata(automataA),
