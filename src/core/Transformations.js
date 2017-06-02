@@ -195,12 +195,12 @@ function removeBlankTransitions(automata) {
   console.log(filterBlankStates);
   const blankNext = blankTransition.next;
   let blankNextTransitions = filter(tran => contains(tran.state, blankNext), automata.transitions);
-  const blankAlphabet = reduce((acc, tran) => union(acc, tran.value), [], blankNextTransitions);
   console.log(blankTransition.next);
   console.log(blankTransition.state);
   if (contains(blankTransition.state, blankTransition.next)) {
     blankNextTransitions = filter(bNT => !equals(bNT, blankTransition), blankNextTransitions);
   }
+  const blankAlphabet = reduce((acc, tran) => union(acc, tran.value), [], blankNextTransitions);
     console.log(blankNextTransitions);
   const newTransitions = reduce((acc, trans) => union(acc, trans), [],
                             map(sym => {
