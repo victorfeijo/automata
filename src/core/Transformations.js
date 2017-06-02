@@ -230,13 +230,19 @@ function removeBlankTransitions(automata) {
         return [{ state: blankTransition.state, value: sym, next: joinNext }]
       }
     }, blankAlphabet));
-
+  let newFinals = automata.finals;
+  console.log(blankTransition.next);
+  console.log(automata.finals);
+  if (any(state => contains(state, automata.finals), blankTransition.next)) {
+    console.log('entered!');
+    newFinals = union(newFinals, [blankTransition.state]);
+  }
   return removeBlankTransitions(makeAutomata(
     clone(automata.states),
     clone(automata.alphabet),
     union(filterTrans, newTransitions),
     clone(automata.initial),
-    clone(automata.finals),
+    newFinals,
   ));
 }
 

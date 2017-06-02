@@ -324,11 +324,29 @@ describe('Remove Blank Transitions', () => {
         state: 'q3', value: 'b', next: ['q2', 'q1']
       }],
       'q0',
-      ['q2']
+      ['q2', 'q3']
     );
     const test = removeBlankTransitions(nd_automata9);
 
     expect(removeBlankTransitions(nd_automata9)).toEqual(expected);
+  });
+  test('Remove blank transition and modify finals', () => {
+    const expected = makeAutomata(
+      ['q0', 'q1', 'q2'],
+      ['a', 'b'],
+      [{
+        state: 'q0', value: 'a', next: ['q2']
+      }, {
+        state: 'q1', value: 'b', next: ['q1']
+      }, {
+        state: 'q2', value: 'a', next: ['q2']
+      }, {
+        state: 'q0', value: 'b', next: ['q1']
+      }],
+      'q0',
+      ['q1', 'q2', 'q0']
+    );
+    expect(removeBlankTransitions(nd_automata3)).toEqual(expected);
   });
 });
 

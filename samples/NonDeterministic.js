@@ -153,7 +153,7 @@ export const nd_automata3 = makeAutomata(
     state: 'q2', value: 'a', next: ['q2']
   }],
   'q0',
-  ['q1, q2']
+  ['q1', 'q2']
 );
 
 export const nd_automata7 = makeAutomata(
