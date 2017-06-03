@@ -1,4 +1,5 @@
 export default {
   Error: 'ERROR',
-  Epsilon: '&'
+  Epsilon: '&',
+  Lambda: 'ƒ'
 }
