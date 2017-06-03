@@ -1,14 +1,39 @@
 import { isEmpty, contains, tail, head, filter,
-         any, find, clone, difference, uniq, length,
+         any, find, clone, difference, uniq, length, forEach,
          flatten, map, reduce, union, pluck, pipe, splitEvery,
          sort, propEq, equals, concat, append } from 'ramda';
 
-import makeAutomata, { isDeterministic } from './Automata';
+import makeAutomata, { isDeterministic, hasBlankTransitions } from './Automata';
 
 import { firstNDTransition, removeFromNext,
          transitiveTransitions, previousStates,
-         reduceEquivalents, createNewTransition,
-         createEquivalentTransitions } from './Operations';
+         reduceEquivalents, createNewTransition, removeRepeatedStates,
+         createEquivalentTransitions, firstBlankTransition} from './Operations';
+
+
+/**
+ * Distinguish all states from given automata
+ * concating a character in all states.
+ * @param {Automata} automata - Automata to distinguish.
+ * @return {Automata} - A new automata with states + char.
+ */
+function distinguishStates(automata, char) {
+  const newTransitions = map(transition => (
+    {
+      state: concat(transition.state, char),
+      value: clone(transition.value),
+      next: map(n => concat(n, char), transition.next),
+    }
+  ), automata.transitions);
+
+  return makeAutomata(
+    map(s => concat(s, char), automata.states),
+    clone(automata.alphabet),
+    newTransitions,
+    concat(automata.initial, char),
+    map(f => concat(f, char), automata.finals)
+  );
+}
 
 /**
  * Remove a collection of states from given automata.
@@ -103,9 +128,14 @@ function minimize(automata) {
               removeDeads,
               removeEquivalent)(automata);
 }
-
+/**
+ * Create a new deterministic transition and its dependencies.
+ * First rename a new state for the newTransition.
+ * Filter transitions to remove non-deterministic transition
+ */
 function createDetTransition(automata, ndTransition) {
-  const newState = reduce((newState, state) => concat(newState, state), '', ndTransition.next);
+  const removedDupStates = removeRepeatedStates(ndTransition.next);
+  const newState = reduce((newState, state) => concat(newState, state), '', removedDupStates);
   let filterTrans = filter(t => !equals(ndTransition, t), automata.transitions);
   let newTransitions;
   const editNdTransition = [{state: ndTransition.state, value: ndTransition.value, next: [newState]}];
@@ -153,7 +183,69 @@ function determineze(automata) {
 
 }
 
+function removeBlankTransitions(automata) {
+  if (!hasBlankTransitions(automata)) {
+    return automata;
+  }
+  const blankTransition = firstBlankTransition(automata.transitions);
+
+  let filterTrans = filter(t =>
+    !equals(t, blankTransition), automata.transitions);
+
+  const filterBlankValues = filter(
+    val => val !== '&',
+    reduce(
+      (acc, tran) => union(acc, tran.value),
+      [],
+      filter(t => equals(blankTransition.state, t.state), automata.transitions)
+    )
+  );
+  const filterBlankStates = filter(tran =>
+    equals(blankTransition.state, tran.state), automata.transitions);
+  const blankNext = blankTransition.next;
+  let blankNextTransitions = filter(tran =>
+    contains(tran.state, blankNext), automata.transitions);
+  const blankAlphabet = reduce((acc, tran) =>
+    union(acc, tran.value), [], blankNextTransitions);
+
+  if (contains(blankTransition.state, blankTransition.next)) {
+    blankNextTransitions = filter(bNT =>
+      !equals(bNT, blankTransition), blankNextTransitions);
+  }
+
+  const newTransitions = reduce((acc, trans) => union(acc, trans), [],
+    map(sym => {
+      const symTran = filter(t => t.value === sym, blankNextTransitions);
+      const joinNext = reduce((acc, tran) => union(acc, tran.next), [], symTran);
+
+      if (contains(sym, filterBlankValues)) {
+        const transitionByValue = find(propEq('value', sym), filterBlankStates);
+        const transitionDuplicate = [
+          {state: blankTransition.state, value: sym, next: transitionByValue.next}
+        ];
+        filterTrans = filter(t => !equals(t, transitionDuplicate[0]), filterTrans);
+        const newNext = union(joinNext, transitionByValue.next);
+
+        return [{ state: blankTransition.state, value: sym, next: newNext }];
+      } else {
+        return [{ state: blankTransition.state, value: sym, next: joinNext }]
+      }
+    }, blankAlphabet));
+  let newFinals = automata.finals;
+  if (any(state => contains(state, automata.finals), blankTransition.next)) {
+    newFinals = union(newFinals, [blankTransition.state]);
+  }
+  return removeBlankTransitions(makeAutomata(
+    clone(automata.states),
+    clone(automata.alphabet),
+    union(filterTrans, newTransitions),
+    clone(automata.initial),
+    newFinals,
+  ));
+}
+
 export {
+  distinguishStates,
   minimize,
   removeStates,
   removeUnreachables,
@@ -161,4 +253,5 @@ export {
   determineze,
   createDetTransition,
   removeEquivalent,
+  removeBlankTransitions,
 };

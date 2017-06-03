@@ -1,5 +1,6 @@
 import { where, all, any, pluck, gte, length, propEq, __ } from 'ramda';
 import { isString, isStringList } from './Predicates';
+import ENUM from './Enum';
 
 const specTransition = transition => (
   where({
@@ -32,7 +33,7 @@ export default function makeAutomata(states, alphabet, transitions, initial, fin
 }
 
 export const isBlankTransition = transition => (
-  propEq('value', '')(transition)
+  propEq('value', ENUM.Epsilon)(transition)
 );
 
 export const hasBlankTransitions = automata => (
@@ -50,5 +51,5 @@ export const isDeterministic = automata => (
 export const errorTransition = (state, value) => ({
   state,
   value,
-  next: ['ERROR'],
+  next: [ENUM.Error],
 });

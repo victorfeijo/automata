@@ -1,9 +1,9 @@
-import { readTape, transitiveTransitions, removeFromNext, previousStates, equivalentStates, reduceEquivalents } from '../src/core/Operations';
+import { readTape, transitiveTransitions, removeFromNext, previousStates, equivalentStates, reduceEquivalents, withErrorTransitions } from '../src/core/Operations';
 import { removeUnreachables } from '../src/core/Transformations';
 import { d_automata1, d_automata2, d_automata4, d_automata7, d_automata5 } from '../samples/Deterministic';
 import { nd_automata1, nd_automata3 } from '../samples/NonDeterministic';
 import { tape1, tape2, tape3 } from '../samples/Tapes';
-import { difference } from 'ramda';
+import { difference, contains } from 'ramda';
 
 describe('Read tape', () => {
   test('Full state automata - Read and accept tape', () => {
@@ -137,5 +137,18 @@ describe('Equivalent states', () => {
     expect(reduceEquivalents(minimized, equivalents)).toEqual(
       [['A', 'AC'], ['C'], ['S', 'SF', 'BSF'], ['BF']]
     );
+  });
+});
+
+describe('With error transitions', () => {
+  test('Return transitions with error from d_automata1', () => {
+    const withError = withErrorTransitions(d_automata2);
+
+    expect(contains(
+      { state: 'q1', value: 'b', next: ['ERROR'] }, withError
+    )).toBeTruthy();
+    expect(contains(
+      { state: 'q2', value: 'a', next: ['ERROR'] }, withError
+    )).toBeTruthy();
   });
 });

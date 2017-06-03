@@ -1,10 +1,12 @@
 import { isNil, isEmpty, contains, find, assoc,
-         propEq, tail, head, filter, any,
+         propEq, tail, head, filter, any, forEach,
          gte, length, map, append, flatten, range,
          uniq, clone, equals, without, reject, split,
-         all, curry, reduce, union, concat, sort, pluck, compose } from 'ramda';
+         all, curry, reduce, union, concat, sort, pluck,
+         update, indexOf, remove } from 'ramda';
 
-import { errorTransition } from './Automata';
+import { errorTransition, isBlankTransition } from './Automata';
+import ENUM from './Enum';
 
 /**
  * Find a transition.
@@ -21,12 +23,58 @@ const findTransition = (transitions, state, value) => (
 
 /**
  * Find the first non deterministic transition.
- * @param {array<object>} transitions - Transitions to look.
- * @return {object} - First found non deterministic transition.
+ * @param {array<transitions>} transitions - Transitions to look.
+ * @return {transition} - First found non deterministic transition.
  */
 const firstNDTransition = transitions => (
   find(tran => gte(length(tran.next), 2))(transitions)
 );
+
+const firstBlankTransition = transitions => (
+  find(tran => isBlankTransition(tran))(transitions)
+);
+
+/**
+ * Return a set of error transitions.
+ * @param {automata} automata - Automata to look.
+ * @return {array<transitions>} - Error transitions with error.
+ */
+const errorTransitions = automata => (
+  filter(tran => contains(ENUM.Error, tran.next),
+    reduce((acc, state) => (
+      union(
+        map(sym =>
+          findTransition(automata.transitions, state, sym),
+          automata.alphabet),
+        acc)
+    ), [], automata.states))
+);
+
+/**
+ * Return a set of transitions with error.
+ * @param {automata} automata - Automata to look.
+ * @return {array<transitions>} - Transitions with error.
+ */
+const withErrorTransitions = automata => (
+  union(
+    automata.transitions,
+    errorTransitions(automata)
+  )
+);
+
+/**
+ * Change ERROR state to given name.
+ * @param {array<transition>} transitions - Transitions to parse.
+ * @param {string} name - Name to rename error state.
+ * @return {array<transition>} - Transitions with state.
+ */
+const errorToState = curry((name, transitions) => (
+  map(tran => (
+    contains(ENUM.Error, tran.next) ? assoc(
+      'next', update(indexOf(ENUM.ERROR, tran.next), name, tran.next), tran
+    ) : tran
+  ), transitions)
+));
 
 /**
  * Removes given state from next transitions.
@@ -151,6 +199,30 @@ function reduceEquivalents(automata, equivalents) {
 
   return reduceEquivalents(automata, reduced);
 }
+function removeRepeatedStates(states) {
+  const n = length(states);
+  let i;
+  let j;
+  let noRepeatArr = [];
+  let statesRemainder = clone(states);
+  let indexToDel = [];
+  for (i of range(0, n)) {
+    for (j of range(0, n)) {
+      if (i !== j && states[i].indexOf(states[j]) >= 0 ) {
+        noRepeatArr = union(noRepeatArr,[states[i]]);
+        indexToDel = append(states.indexOf(states[j]), indexToDel);
+      }
+    }
+  }
+  if (!isEmpty(indexToDel)) {
+    const delElem = reduce((splt, i) => statesRemainder.splice(i, 1), [], indexToDel);
+  }
+  if (!isEmpty(noRepeatArr)) {
+    return union(noRepeatArr, statesRemainder);
+  } else {
+    return statesRemainder;
+  }
+}
 
 function createNewTransition(automata, states) {
   const { transitions, alphabet } = automata;
@@ -163,31 +235,21 @@ function createNewTransition(automata, states) {
       findTransition(transitions, state, symbol), alphabet)));
     }
   }
-  let newState = reduce((newState, state) => concat(newState, state), '', states);
+  const filteredStates = removeRepeatedStates(states);
+  let newState = reduce((newState, state) => concat(newState, state), '', filteredStates);
+
   let sym;
   let newTransitions;
   let newNext;
+  let noRepeatArr;
   for (sym of alphabet) {
-    let noRepeatArr = [];
 
     const transSym = filter(propEq('value', sym), statesTransitions);
-    let symNextAll = (reduce((acc, tran) => union(acc, filter(t => t !== 'ERROR', tran.next)), [], transSym)).sort();
+    let symNextAll = (reduce((acc, tran) => union(acc, filter(t => t !== ENUM.Error, tran.next)), [], transSym)).sort();
 
-    const n = length(symNextAll);
-    let i;
-    let j;
-    for (i of range(0, n)) {
-      for (j of range(0, n)) {
-        if (i !== j && symNextAll[i].indexOf(symNextAll[j]) >= 0 ) {
-          noRepeatArr = union(noRepeatArr, [symNextAll[i]]);
-        }
-      }
-    }
-    if (!isEmpty(noRepeatArr)) {
-      symNextAll = noRepeatArr;
-    }
+    noRepeatArr = removeRepeatedStates(symNextAll);
 
-    newTransitions = union(newTransitions, [{state: newState, value: sym, next: symNextAll}]);
+    newTransitions = union(newTransitions, [{state: newState, value: sym, next: noRepeatArr}]);
     newTransitions = filter(t => !isEmpty(t.next), newTransitions);
   }
 
@@ -259,6 +321,8 @@ const readTape = (automata, tape) => (
 export {
   findTransition,
   firstNDTransition,
+  withErrorTransitions,
+  errorToState,
   removeFromNext,
   transitiveTransitions,
   previousStates,
@@ -267,4 +331,6 @@ export {
   createNewTransition,
   createEquivalentTransitions,
   readTape,
+  firstBlankTransition,
+  removeRepeatedStates,
 };
