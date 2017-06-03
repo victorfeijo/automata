@@ -177,8 +177,6 @@ describe('Transform NDAF to DAF', () => {
       //   ['q1', 'q0q1q3']
       // );
       const test = createDetTransition(nd_automata53, {state: 'q0', value: 'a', next: ['q0q1', 'q1', 'q3']});
-      console.log(test);
-      console.log(test.transitions);
     });
     test('Determineze Simple Automata', () => {
       const expected = makeAutomata(
@@ -309,10 +307,6 @@ describe('Remove Blank Transitions', () => {
       'q0',
       ['q2']
     );
-    // const test = removeBlankTransitions(nd_automata7);
-    // console.log(test);
-    // console.log(test.transitions);
-    // expect(removeBlankTransitions(nd_automata7)).toEqual(expected);
   });
   test('Remove Blank Transition to ERROR', () => {
     const expected = makeAutomata(

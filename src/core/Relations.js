@@ -65,17 +65,6 @@ function complementAutomata(automata, newState = 'qCOMP') {
 }
 
 function intersectionAutomata(automataA, automataB) {
-  // const aComp = complementAutomata(automataA)
-  // console.log('A complement -> ', aComp)
-  // const bComp = complementAutomata(automataB)
-  // console.log('B complement -> ', bComp)
-
-  // const joined = joinAutomatas(aComp, bComp)
-
-  // const compJoin = complementAutomata(joined)
-
-  // return compJoin;
-
   return complementAutomata(
     joinAutomatas(
       complementAutomata(automataA),
