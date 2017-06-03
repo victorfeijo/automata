@@ -111,7 +111,7 @@ export const nd_automata52 = makeAutomata(
 );
 
 export const nd_automata53 = makeAutomata(
-    ['q0', 'q1', 'q2', 'q3', 'q0q1q3'],
+    ['q0', 'q1', 'q2', 'q3','q0q1', 'q0q1q3'],
     ['a', 'b'],
     [{
       state: 'q0', value: 'a', next: ['q0q1', 'q1', 'q3']
@@ -135,7 +135,7 @@ export const nd_automata53 = makeAutomata(
       state: 'q1', value: 'a', next: ['q0q1q3']
     }],
     'q0',
-    ['q1', 'q0q1q3']
+    ['q1', 'q0q1', 'q0q1q3']
 );
 
 export const nd_automata6 = makeAutomata(
