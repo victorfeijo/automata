@@ -1,4 +1,4 @@
-import { normalize, deDesimoneTree, lessSignificant } from '../src/core/regularExp';
+import { normalize, deDesimoneTree, lessSignificant } from '../src/core/RegularExpression';
 
 describe('Regular Expression Transformations', () => {
   test('Normalize Regular Expression', () => {
