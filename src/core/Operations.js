@@ -3,7 +3,7 @@ import { isNil, isEmpty, contains, find, assoc,
          gte, length, map, append, flatten, range,
          uniq, clone, equals, without, reject, split,
          all, curry, reduce, union, concat, sort, pluck,
-         update, indexOf } from 'ramda';
+         update, indexOf, remove } from 'ramda';
 
 import { errorTransition, isBlankTransition } from './Automata';
 import ENUM from './Enum';
@@ -199,6 +199,30 @@ function reduceEquivalents(automata, equivalents) {
 
   return reduceEquivalents(automata, reduced);
 }
+function removeRepeatedStates(states) {
+  const n = length(states);
+  let i;
+  let j;
+  let noRepeatArr = [];
+  let statesRemainder = clone(states);
+  let indexToDel = [];
+  for (i of range(0, n)) {
+    for (j of range(0, n)) {
+      if (i !== j && states[i].indexOf(states[j]) >= 0 ) {
+        noRepeatArr = union(noRepeatArr,[states[i]]);
+        indexToDel = append(states.indexOf(states[j]), indexToDel);
+      }
+    }
+  }
+  if (!isEmpty(indexToDel)) {
+    const delElem = reduce((splt, i) => statesRemainder.splice(i, 1), [], indexToDel);
+  }
+  if (!isEmpty(noRepeatArr)) {
+    return union(noRepeatArr, statesRemainder);
+  } else {
+    return statesRemainder;
+  }
+}
 
 function createNewTransition(automata, states) {
   const { transitions, alphabet } = automata;
@@ -211,31 +235,21 @@ function createNewTransition(automata, states) {
       findTransition(transitions, state, symbol), alphabet)));
     }
   }
-  let newState = reduce((newState, state) => concat(newState, state), '', states);
+  const filteredStates = removeRepeatedStates(states);
+  let newState = reduce((newState, state) => concat(newState, state), '', filteredStates);
+
   let sym;
   let newTransitions;
   let newNext;
+  let noRepeatArr;
   for (sym of alphabet) {
-    let noRepeatArr = [];
 
     const transSym = filter(propEq('value', sym), statesTransitions);
     let symNextAll = (reduce((acc, tran) => union(acc, filter(t => t !== ENUM.Error, tran.next)), [], transSym)).sort();
 
-    const n = length(symNextAll);
-    let i;
-    let j;
-    for (i of range(0, n)) {
-      for (j of range(0, n)) {
-        if (i !== j && symNextAll[i].indexOf(symNextAll[j]) >= 0 ) {
-          noRepeatArr = union(noRepeatArr, [symNextAll[i]]);
-        }
-      }
-    }
-    if (!isEmpty(noRepeatArr)) {
-      symNextAll = noRepeatArr;
-    }
+    noRepeatArr = removeRepeatedStates(symNextAll);
 
-    newTransitions = union(newTransitions, [{state: newState, value: sym, next: symNextAll}]);
+    newTransitions = union(newTransitions, [{state: newState, value: sym, next: noRepeatArr}]);
     newTransitions = filter(t => !isEmpty(t.next), newTransitions);
   }
 
@@ -318,4 +332,5 @@ export {
   createEquivalentTransitions,
   readTape,
   firstBlankTransition,
+  removeRepeatedStates,
 };

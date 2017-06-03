@@ -110,6 +110,34 @@ export const nd_automata52 = makeAutomata(
       ['q1', 'q0q1q3']
 );
 
+export const nd_automata53 = makeAutomata(
+    ['q0', 'q1', 'q2', 'q3', 'q0q1q3'],
+    ['a', 'b'],
+    [{
+      state: 'q0', value: 'a', next: ['q0q1', 'q1', 'q3']
+    }, {
+      state: 'q0', value: 'b', next: ['q0']
+    }, {
+      state: 'q1', value: 'b', next: ['q1']
+    }, {
+      state: 'q2', value: 'a', next: ['q1']
+    }, {
+      state: 'q3', value: 'a', next: ['q3']
+    }, {
+      state: 'q3', value: 'b', next: ['q2']
+    }, {
+      state: 'q0q1', value: 'a', next: ['q2']
+    }, {
+      state: 'q0q1q3', value: 'a', next: ['q0', 'q1', 'q2']
+    }, {
+      state: 'q0q1q3', value: 'b', next: ['q0', 'q1', 'q3']
+    }, {
+      state: 'q1', value: 'a', next: ['q0q1q3']
+    }],
+    'q0',
+    ['q1', 'q0q1q3']
+);
+
 export const nd_automata6 = makeAutomata(
       ['q0', 'q1', 'q2', 'q3'],
       ['a', 'b', 'c'],

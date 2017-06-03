@@ -7,7 +7,7 @@ import { d_automata1,
          d_automata7 } from '../samples/Deterministic';
 import { distinguishStates, minimize, determineze, removeStates, removeUnreachables, removeDeads, createDetTransition, removeEquivalent, removeBlankTransitions } from '../src/core/Transformations';
 import { readTape } from '../src/core/Operations';
-import { nd_automata1, nd_automata3, nd_automata4, nd_automata5, nd_automata51, nd_automata52, nd_automata6, nd_automata7, nd_automata8, nd_automata9} from '../samples/NonDeterministic';
+import { nd_automata1, nd_automata3, nd_automata4, nd_automata5, nd_automata51, nd_automata52, nd_automata53, nd_automata6, nd_automata7, nd_automata8, nd_automata9} from '../samples/NonDeterministic';
 import makeAutomata from '../src/core/Automata';
 import makeTape from '../src/core/Tape';
 
@@ -149,97 +149,125 @@ describe('Transform NDAF to DAF', () => {
       ['q1', 'q0q1q3', 'q0q1q2']
     );
     expect(createDetTransition(nd_automata52, {state: 'q0q1q3', value: 'b', next: ['q0','q1','q2']})).toEqual(expected);
-  })
-  test('Determineze Simple Automata', () => {
-    const expected = makeAutomata(
-      ['q0', 'q1', 'q2', 'q0q2'],
-      ['a', 'b'],
-      [{
-        state: 'q0', value: 'a', next: ['q1']
-      }, {
-        state: 'q0', value: 'b', next: ['q0']
-      }, {
-        state: 'q1', value: 'b', next: ['q1']
-      }, {
-        state: 'q2', value: 'a', next: ['q1']
-      }, {
-        state: 'q0q2', value: 'a', next: ['q1']
-      }, {
-        state: 'q0q2', value: 'b', next: ['q0']
-      }, {
-        state: 'q1', value: 'a', next: ['q0q2']
-
-      }],
-      'q0',
-      ['q1']
-    );
-    expect(determineze(nd_automata1)).toEqual(expected);
-
   });
-  test('Determineze Complex Automata', () => {
-    const expected = makeAutomata(
-      ['q0', 'q1', 'q2', 'q0q1q2', 'q0q1'],
-      ['a', 'b'],
-      [{
-        state: 'q0', value: 'a', next: ['q1']
-      }, {
-        state: 'q0', value: 'b', next: ['q0']
-      }, {
-        state: 'q1', value: 'b', next: ['q1']
-      }, {
-        state: 'q2', value: 'a', next: ['q1']
-      }, {
-        state: 'q1', value: 'a', next: ['q0q1q2']
-      }, {
-        state: 'q0q1q2', value: 'a', next: ['q0q1q2']
-      }, {
-        state: 'q0q1', value: 'a', next: ['q0q1q2']
-      }, {
-        state: 'q0q1q2', value: 'b', next: ['q0q1']
-      }, {
-        state: 'q0q1', value: 'b', next: ['q0q1']
-      }],
-      'q0',
-      ['q1', 'q0q1q2', 'q0q1']
-    );
-    expect(determineze(nd_automata4)).toEqual(expected);
-  });
-  test('Determineze Complex Automata 2.0', () => {
-    const expected = makeAutomata(
-      ['q0', 'q1', 'q2', 'q3', 'q0q1q3', 'q0q1q2', 'q0q1'],
-      ['a', 'b'],
-      [{
-        state: 'q0', value: 'a', next: ['q1']
-      }, {
-        state: 'q0', value: 'b', next: ['q0']
-      }, {
-        state: 'q1', value: 'b', next: ['q1']
-      }, {
-        state: 'q2', value: 'a', next: ['q1']
-      }, {
-        state: 'q3', value: 'a', next: ['q3']
-      }, {
-        state: 'q3', value: 'b', next: ['q2']
-      }, {
-        state: 'q1', value: 'a', next: ['q0q1q3']
-      }, {
-        state: 'q0q1q3', value: 'a', next: ['q0q1q3']
-      }, {
-        state: 'q0q1q2', value: 'a', next: ['q0q1q3']
-      }, {
-        state: 'q0q1q3', value: 'b', next: ['q0q1q2']
-      }, {
-        state: 'q0q1', value: 'a', next: ['q0q1q3']
-      }, {
-        state: 'q0q1q2', value: 'b', next: ['q0q1']
-      }, {
-        state: 'q0q1', value: 'b', next: ['q0q1']
-      }],
-      'q0',
-      ['q1', 'q0q1q3', 'q0q1q2', 'q0q1']
-    );
-    expect(determineze(nd_automata51)).toEqual(expected);
-  });
+    test('Update State and Transition with more nexts', () => {
+      // const expected = makeAutomata(
+      //   ['q0', 'q1', 'q2', 'q3', 'q0q1q3'],
+      //   ['a', 'b'],
+      //   [{
+      //     state: 'q0', value: 'a', next: ['q1']
+      //   }, {
+      //     state: 'q0', value: 'b', next: ['q0']
+      //   }, {
+      //     state: 'q1', value: 'b', next: ['q1']
+      //   }, {
+      //     state: 'q2', value: 'a', next: ['q1']
+      //   }, {
+      //     state: 'q3', value: 'a', next: ['q3']
+      //   }, {
+      //     state: 'q3', value: 'b', next: ['q2']
+      //   }, {
+      //     state: 'q0q1q3', value: 'a', next: ['q0', 'q1', 'q3']
+      //   }, {
+      //     state: 'q0q1q3', value: 'b', next: ['q0', 'q1', 'q2']
+      //   }, {
+      //     state: 'q1', value: 'a', next: ['q0q1q3']
+      //   }],
+      //   'q0',
+      //   ['q1', 'q0q1q3']
+      // );
+      const test = createDetTransition(nd_automata53, {state: 'q0', value: 'a', next: ['q0q1', 'q1', 'q3']});
+      console.log(test);
+      console.log(test.transitions);
+    });
+    test('Determineze Simple Automata', () => {
+      const expected = makeAutomata(
+        ['q0', 'q1', 'q2', 'q0q2'],
+        ['a', 'b'],
+        [{
+          state: 'q0', value: 'a', next: ['q1']
+        }, {
+          state: 'q0', value: 'b', next: ['q0']
+        }, {
+          state: 'q1', value: 'b', next: ['q1']
+        }, {
+          state: 'q2', value: 'a', next: ['q1']
+        }, {
+          state: 'q0q2', value: 'a', next: ['q1']
+        }, {
+          state: 'q0q2', value: 'b', next: ['q0']
+        }, {
+          state: 'q1', value: 'a', next: ['q0q2']
+        }],
+        'q0',
+        ['q1']
+      );
+      expect(determineze(nd_automata1)).toEqual(expected);
+    });
+    test('Determineze Complex Automata', () => {
+      const expected = makeAutomata(
+        ['q0', 'q1', 'q2', 'q0q1q2', 'q0q1'],
+        ['a', 'b'],
+        [{
+          state: 'q0', value: 'a', next: ['q1']
+        }, {
+          state: 'q0', value: 'b', next: ['q0']
+        }, {
+          state: 'q1', value: 'b', next: ['q1']
+        }, {
+          state: 'q2', value: 'a', next: ['q1']
+        }, {
+          state: 'q1', value: 'a', next: ['q0q1q2']
+        }, {
+          state: 'q0q1q2', value: 'a', next: ['q0q1q2']
+        }, {
+          state: 'q0q1', value: 'a', next: ['q0q1q2']
+        }, {
+          state: 'q0q1q2', value: 'b', next: ['q0q1']
+        }, {
+          state: 'q0q1', value: 'b', next: ['q0q1']
+        }],
+        'q0',
+        ['q1', 'q0q1q2', 'q0q1']
+      );
+      expect(determineze(nd_automata4)).toEqual(expected);
+    });
+    test('Determineze Complex Automata 2.0', () => {
+      const expected = makeAutomata(
+        ['q0', 'q1', 'q2', 'q3', 'q0q1q3', 'q0q1q2', 'q0q1'],
+        ['a', 'b'],
+        [{
+          state: 'q0', value: 'a', next: ['q1']
+        }, {
+          state: 'q0', value: 'b', next: ['q0']
+        }, {
+          state: 'q1', value: 'b', next: ['q1']
+        }, {
+          state: 'q2', value: 'a', next: ['q1']
+        }, {
+          state: 'q3', value: 'a', next: ['q3']
+        }, {
+          state: 'q3', value: 'b', next: ['q2']
+        }, {
+          state: 'q1', value: 'a', next: ['q0q1q3']
+        }, {
+          state: 'q0q1q3', value: 'a', next: ['q0q1q3']
+        }, {
+          state: 'q0q1q2', value: 'a', next: ['q0q1q3']
+        }, {
+          state: 'q0q1q3', value: 'b', next: ['q0q1q2']
+        }, {
+          state: 'q0q1', value: 'a', next: ['q0q1q3']
+        }, {
+          state: 'q0q1q2', value: 'b', next: ['q0q1']
+        }, {
+          state: 'q0q1', value: 'b', next: ['q0q1']
+        }],
+        'q0',
+        ['q1', 'q0q1q3', 'q0q1q2', 'q0q1']
+      );
+      expect(determineze(nd_automata51)).toEqual(expected);
+    });
 
 
 });

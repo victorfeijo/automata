@@ -7,7 +7,7 @@ import makeAutomata, { isDeterministic, hasBlankTransitions } from './Automata';
 
 import { firstNDTransition, removeFromNext,
          transitiveTransitions, previousStates,
-         reduceEquivalents, createNewTransition,
+         reduceEquivalents, createNewTransition, removeRepeatedStates,
          createEquivalentTransitions, firstBlankTransition} from './Operations';
 
 
@@ -134,7 +134,8 @@ function minimize(automata) {
  * Filter transitions to remove non-deterministic transition
  */
 function createDetTransition(automata, ndTransition) {
-  const newState = reduce((newState, state) => concat(newState, state), '', ndTransition.next);
+  const removedDupStates = removeRepeatedStates(ndTransition.next);
+  const newState = reduce((newState, state) => concat(newState, state), '', removedDupStates);
   let filterTrans = filter(t => !equals(ndTransition, t), automata.transitions);
   let newTransitions;
   const editNdTransition = [{state: ndTransition.state, value: ndTransition.value, next: [newState]}];
