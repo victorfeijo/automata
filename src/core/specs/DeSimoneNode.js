@@ -1,16 +1,16 @@
-import { where, is, curry } from 'ramda';
-import { isString } from './Predicates';
+import { where, is, curry, __, isEmpty, equals } from 'ramda';
+import { isString } from '../Predicates';
 
 const specDeSimoneNode = deSimoneNode => (
   where({
     symbol: isString(__),
     left: is(Object)(__),
     right: is(Object)(__),
-    parent: is(Object)(__)
+    parent: is(Object)(__),
   })(deSimoneNode)
 );
 
-export default makeDeSimoneNode(symbol, left={}, right={}, parent={}) {
+export default function makeDeSimoneNode(symbol, left={}, right={}, parent={}) {
   const deSimoneNode = {
     symbol,
     left,
@@ -33,7 +33,7 @@ export default makeDeSimoneNode(symbol, left={}, right={}, parent={}) {
  * @param {any} value - Value to update attribute.
  * @return {DeSimoneNode} - The same node, mutated.
  */
-export const updateNode = curry((deSimoneNode, attr, value) => {
+export const updateNode = curry((attr, deSimoneNode, value) => {
   const oldValue = deSimoneNode[attr];
 
   deSimoneNode[attr] = value;
@@ -44,3 +44,23 @@ export const updateNode = curry((deSimoneNode, attr, value) => {
 
   return deSimoneNode;
 });
+
+export const isLeafNode = deSimoneNode => (
+  isEmpty(deSimoneNode.left) && isEmpty(deSimoneNode.right)
+);
+
+export const isOrNode = deSimoneNode => (
+  equals(deSimoneNode.symbol, '|')
+);
+
+export const isConcatNode = deSimoneNode => (
+  equals(deSimoneNode.symbol, '.')
+);
+
+export const isCloseNode = deSimoneNode => (
+  equals(deSimoneNode.symbol, '*')
+);
+
+export const isOptionNode = deSimoneNode => (
+  equals(deSimoneNode.symbol, '?')
+);
