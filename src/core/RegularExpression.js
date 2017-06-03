@@ -81,17 +81,17 @@ function deDesimoneTree(expr) {
     let left = nExpr.substr(0, lsig[1]);
     let right = nExpr.substr(add(lsig[1], 1), length(nExpr));
 
-    left =;
-    right =;
-    if (lsig === '|') {
-
-    } else if (lsig === '*') {
-
-    } else if (lsig === '?') {
-
-    } else if (lsig === '.') {
-
-    }
+    // left =;
+    // right =;
+    // if (lsig === '|') {
+    //
+    // } else if (lsig === '*') {
+    //
+    // } else if (lsig === '?') {
+    //
+    // } else if (lsig === '.') {
+    //
+    // }
   }
 }
 
