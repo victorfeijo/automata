@@ -1,9 +1,10 @@
-import makeDeSimoneNode, { updateNode, updateParents } from '../src/core/specs/DeSimoneNode';
+import makeDeSimoneNode, { updateNode } from '../src/core/specs/DeSimoneNode';
+import { updateParents } from '../src/core/Utils';
 import ENUM from '../src/core/Enum';
 
 // R = (a | bc)*
 // WITHOUT PARENTS
-export const root1 = makeDeSimoneNode(
+const root1 = makeDeSimoneNode(
   '*',
   makeDeSimoneNode(
     '|',
@@ -41,5 +42,52 @@ const root2 = makeDeSimoneNode(
   ENUM.Lambda
 );
 updateParents(root2);
-export { root2 };
+
+// R = (ab|b(ab)*b)*(ba)*
+const root3 = makeDeSimoneNode(
+  '.',
+  makeDeSimoneNode(
+    '*',
+    makeDeSimoneNode(
+      '|',
+      makeDeSimoneNode(
+        '.',
+        makeDeSimoneNode('a'),
+        makeDeSimoneNode('b')
+      ),
+      makeDeSimoneNode(
+        '.',
+        makeDeSimoneNode('b'),
+        makeDeSimoneNode(
+          '.',
+          makeDeSimoneNode(
+            '*',
+            makeDeSimoneNode(
+              '.',
+              makeDeSimoneNode('a'),
+              makeDeSimoneNode('b')
+            )
+          ),
+          makeDeSimoneNode('b')
+        )
+      )
+    )
+  ),
+  makeDeSimoneNode(
+    '*',
+    makeDeSimoneNode(
+      '.',
+      makeDeSimoneNode('b'),
+      makeDeSimoneNode('a')
+    )
+  ),
+  ENUM.Lambda
+);
+updateParents(root3);
+
+export {
+  root1,
+  root2,
+  root3,
+};
 

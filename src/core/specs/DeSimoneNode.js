@@ -46,25 +46,6 @@ const updateNode = curry((attr, deSimoneNode, value) => {
   return deSimoneNode;
 });
 
-/**
- * THIS FUNCTION MUTATES THE OBJECT! Helper function
- * to create deSimone trees easily.
- * @param {DeSimoneNode} deSimoneNode - DeSimoneNode to change.
- * @return {undefined} - Bad...
- */
-const updateParents = deSimoneNode => {
-  if (isLeafNode(deSimoneNode)) {
-    return;
-  }
-
-  updateNode('parent', deSimoneNode.left, deSimoneNode);
-  updateParents(deSimoneNode.left);
-
-  if (!isEmpty(deSimoneNode.right)) {
-    updateNode('parent', deSimoneNode.right, deSimoneNode);
-    updateParents(deSimoneNode.right);
-  }
-}
 
 const isLeafNode = deSimoneNode => (
   isEmpty(deSimoneNode.left) && isEmpty(deSimoneNode.right)
@@ -150,7 +131,7 @@ const upMoveLeaf = deSimoneNode => {
   }
 
   return [upMove(throwBack(deSimoneNode))]
-}
+};
 
 const upMoveOr = deSimoneNode => {
   if (isThrowBackNode(deSimoneNode)) {
@@ -189,13 +170,11 @@ const upMove = deSimoneNode => (
 
 export {
   updateNode,
-  updateParents,
   isLeafNode,
   isOrNode,
   isConcatNode,
   isCloseNode,
   isOptionNode,
-  throwBack,
   downMove,
   upMove
 };

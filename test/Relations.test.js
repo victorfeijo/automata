@@ -11,7 +11,7 @@ import { joinAutomatas,
          intersectionAutomata,
          differenceAutomata } from '../src/core/Relations';
 import { readTape } from '../src/core/Operations';
-import makeTape from '../src/core/Tape';
+import makeTape from '../src/core/specs/Tape';
 import { contains } from 'ramda';
 
 describe('Union relation', () => {

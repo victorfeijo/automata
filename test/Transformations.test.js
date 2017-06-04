@@ -8,8 +8,8 @@ import { d_automata1,
 import { distinguishStates, minimize, determineze, removeStates, removeUnreachables, removeDeads, createDetTransition, removeEquivalent, removeBlankTransitions } from '../src/core/Transformations';
 import { readTape } from '../src/core/Operations';
 import { nd_automata1, nd_automata3, nd_automata4, nd_automata5, nd_automata51, nd_automata52, nd_automata53, nd_automata6, nd_automata7, nd_automata8, nd_automata9} from '../samples/NonDeterministic';
-import makeAutomata from '../src/core/Automata';
-import makeTape from '../src/core/Tape';
+import makeAutomata from '../src/core/specs/Automata';
+import makeTape from '../src/core/specs/Tape';
 
 describe('Transform NDAF to DAF', () => {
   test('Update State and Transition with 2 next', () => {

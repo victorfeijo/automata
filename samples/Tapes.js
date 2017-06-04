@@ -1,4 +1,4 @@
-import makeTape from '../src/core/Tape.js';
+import makeTape from '../src/core/specs/Tape.js';
 
 export const tape1 = makeTape('abbb');
 
