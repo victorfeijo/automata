@@ -68,11 +68,9 @@ const isOptionNode = deSimoneNode => (
 );
 
 const isThrowBackNode = deSimoneNode => (
-  or(
-    isLeafNode(deSimoneNode),
-    isCloseNode(deSimoneNode),
-    isOptionNode(deSimoneNode)
-  )
+  isLeafNode(deSimoneNode) ||
+  isCloseNode(deSimoneNode) ||
+  isOptionNode(deSimoneNode)
 );
 
 const isRootNode = deSimoneNode => (
@@ -81,7 +79,7 @@ const isRootNode = deSimoneNode => (
 
 const isLeftNode = deSimoneNode => (
   or(
-    equals(deSimoneNode, deSimoneNode.parent.left),
+    (deSimoneNode === deSimoneNode.parent.left),
     isRootNode(deSimoneNode)
   )
 );
@@ -177,5 +175,5 @@ export {
   isCloseNode,
   isOptionNode,
   downMove,
-  upMove
+  upMove,
 };

@@ -1,4 +1,4 @@
-import {assoc, and, find, any, all, pluck, add, subtract, uniq, clone, length, remove, range, filter, equals, contains, drop, head, without, propEq, flatten, reduce, union, map, isEmpty } from 'ramda'
+import {  assoc, and, find, any, all, pluck, add, subtract, uniq, clone, length, remove, range, filter, equals, contains, drop, head, without, propEq, flatten, reduce, union, map, isEmpty } from 'ramda'
 import makeDeSimoneNode, { updateNode, downMove, upMove } from './specs/DeSimoneNode';
 import makeAutomata from './specs/Automata';
 import { rangeStates } from './Utils';
@@ -143,7 +143,8 @@ const findByComposition = (deSimoneStates, composition) => (
 
 const deSimoneStatesAlphabet = (deSimoneStates) => (
   reduce((acc, state) => (
-    union(acc, head(state.transitions).alphabet)
+    (!isEmpty(state.transitions)) ?
+      union(acc, head(state.transitions).alphabet) : acc
   ), [], deSimoneStates)
 );
 
