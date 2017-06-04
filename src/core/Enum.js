@@ -1,5 +1,5 @@
 export default {
   Error: 'ERROR',
   Epsilon: '&',
-  Lambda: { symbol: 'ƒ' },
+  Lambda: { symbol: 'ƒ', left: {}, right:{}, parent: {} },
 }

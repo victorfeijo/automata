@@ -1,5 +1,6 @@
-import { where, is, curry, __, isEmpty, equals } from 'ramda';
+import { where, is, curry, __, isEmpty, equals, cond, or } from 'ramda';
 import { isString } from '../Predicates';
+import ENUM from '../Enum';
 
 const specDeSimoneNode = deSimoneNode => (
   where({
@@ -33,7 +34,7 @@ export default function makeDeSimoneNode(symbol, left={}, right={}, parent={}) {
  * @param {any} value - Value to update attribute.
  * @return {DeSimoneNode} - The same node, mutated.
  */
-export const updateNode = curry((attr, deSimoneNode, value) => {
+const updateNode = curry((attr, deSimoneNode, value) => {
   const oldValue = deSimoneNode[attr];
 
   deSimoneNode[attr] = value;
@@ -45,22 +46,156 @@ export const updateNode = curry((attr, deSimoneNode, value) => {
   return deSimoneNode;
 });
 
-export const isLeafNode = deSimoneNode => (
+/**
+ * THIS FUNCTION MUTATES THE OBJECT! Helper function
+ * to create deSimone trees easily.
+ * @param {DeSimoneNode} deSimoneNode - DeSimoneNode to change.
+ * @return {undefined} - Bad...
+ */
+const updateParents = deSimoneNode => {
+  if (isLeafNode(deSimoneNode)) {
+    return;
+  }
+
+  updateNode('parent', deSimoneNode.left, deSimoneNode);
+  updateParents(deSimoneNode.left);
+
+  if (!isEmpty(deSimoneNode.right)) {
+    updateNode('parent', deSimoneNode.right, deSimoneNode);
+    updateParents(deSimoneNode.right);
+  }
+}
+
+const isLeafNode = deSimoneNode => (
   isEmpty(deSimoneNode.left) && isEmpty(deSimoneNode.right)
 );
 
-export const isOrNode = deSimoneNode => (
+const isOrNode = deSimoneNode => (
   equals(deSimoneNode.symbol, '|')
 );
 
-export const isConcatNode = deSimoneNode => (
+const isConcatNode = deSimoneNode => (
   equals(deSimoneNode.symbol, '.')
 );
 
-export const isCloseNode = deSimoneNode => (
+const isCloseNode = deSimoneNode => (
   equals(deSimoneNode.symbol, '*')
 );
 
-export const isOptionNode = deSimoneNode => (
+const isOptionNode = deSimoneNode => (
   equals(deSimoneNode.symbol, '?')
 );
+
+const isThrowBackNode = deSimoneNode => (
+  or(
+    isLeafNode(deSimoneNode),
+    isCloseNode(deSimoneNode),
+    isOptionNode(deSimoneNode)
+  )
+);
+
+const isRootNode = deSimoneNode => (
+  equals(ENUM.Lambda, deSimoneNode.parent)
+);
+
+const isLeftNode = deSimoneNode => (
+  or(
+    equals(deSimoneNode, deSimoneNode.parent.left),
+    isRootNode(deSimoneNode)
+  )
+);
+
+const throwBack = deSimoneNode => {
+  if (isLeftNode(deSimoneNode)) {
+    return deSimoneNode.parent;
+  }
+
+  return throwBack(deSimoneNode.parent);
+};
+
+const downMoveLeaf = deSimoneNode => (
+  deSimoneNode
+);
+
+const downMoveOr = deSimoneNode => (
+  [downMove(deSimoneNode.left), downMove(deSimoneNode.right)]
+);
+
+const downMoveConcat = deSimoneNode => (
+  [downMove(deSimoneNode.left)]
+);
+
+const downMoveClose = deSimoneNode => (
+  [downMove(deSimoneNode.left), upMove(throwBack(deSimoneNode))]
+);
+
+/**
+ * Down move decider.
+ * @param {DeSimoneNode} deSimoneNode - DeSimoneNode to change.
+ * @return {array<DeSimoneNode>} - Found nodes.
+ */
+const downMove = deSimoneNode => (
+  cond([
+    [isLeafNode,   node => downMoveLeaf(node)],
+    [isOrNode,     node => downMoveOr(node)],
+    [isConcatNode, node => downMoveConcat(node)],
+    [isCloseNode,  node => downMoveClose(node)],
+    [isOptionNode, node => downMoveClose(node)],
+  ])(deSimoneNode)
+);
+
+const upMoveLeaf = deSimoneNode => {
+  if (equals(deSimoneNode, ENUM.Lambda)) {
+    return deSimoneNode;
+  }
+
+  return [upMove(throwBack(deSimoneNode))]
+}
+
+const upMoveOr = deSimoneNode => {
+  if (isThrowBackNode(deSimoneNode)) {
+    return [upMove(throwBack(deSimoneNode))];
+  }
+
+  return upMoveOr(deSimoneNode.right);
+};
+
+const upMoveConcat = deSimoneNode => (
+  [downMove(deSimoneNode.right)]
+);
+
+const upMoveClose = deSimoneNode => (
+  [downMove(deSimoneNode.left), upMove(throwBack(deSimoneNode))]
+);
+
+const upMoveOption = deSimoneNode => (
+  [upMove(throwBack(deSimoneNode))]
+);
+
+/**
+ * Up move decider.
+ * @param {DeSimoneNode} deSimoneNode - DeSimoneNode to change.
+ * @return {array<DeSimoneNode>} - Found nodes.
+ */
+const upMove = deSimoneNode => (
+  cond([
+    [isLeafNode,   node => upMoveLeaf(node)],
+    [isOrNode,     node => upMoveOr(node)],
+    [isConcatNode, node => upMoveConcat(node)],
+    [isCloseNode,  node => upMoveClose(node)],
+    [isOptionNode, node => upMoveOption(node)],
+  ])(deSimoneNode)
+);
+
+export {
+  updateNode,
+  updateParents,
+  isLeafNode,
+  isOrNode,
+  isConcatNode,
+  isCloseNode,
+  isOptionNode,
+  throwBack,
+  downMove,
+  upMove
+};

@@ -1,5 +1,6 @@
-import makeDeSimoneNode, { updateNode, isLeafNode, isOrNode, isConcatNode, isCloseNode, isOptionNode } from '../src/core/specs/DeSimoneNode';
-import { root1 } from '../samples/RegularExpression';
+import makeDeSimoneNode, { updateNode, isLeafNode, isOrNode, isConcatNode, isCloseNode, isOptionNode, downMove, throwBack } from '../src/core/specs/DeSimoneNode';
+import { root1, root2 } from '../samples/RegularExpression';
+import { flatten } from 'ramda';
 import ENUM from '../src/core/Enum';
 
 describe('It makes a DeSimoneNode', () => {
@@ -103,6 +104,13 @@ describe('DeSimoneNode type', () => {
     expect(isCloseNode(root1.left)).toBeFalsy();
   });
 
-  test('Is Option Node', () => { expect(isOptionNode(root1.left)).toBeFalsy();
+  test('Is Option Node', () => {
+    expect(isOptionNode(root1.left)).toBeFalsy();
+  });
+});
+
+describe('DeSimone moves', () => {
+  test('Down Move', () => {
+    console.log(flatten(downMove(root2)))
   });
 });
