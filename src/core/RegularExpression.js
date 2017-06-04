@@ -1,4 +1,4 @@
-import {  assoc, and, find, any, all, pluck, add, subtract, uniq, clone, length, remove, range, filter, equals, contains, drop, head, without, propEq, flatten, reduce, union, map, isEmpty } from 'ramda'
+import {  assoc, and, find, any, all, pluck, add, subtract, uniq, clone, length, remove, range, filter, equals, contains, drop, last, without, propEq, flatten, reduce, union, map, isEmpty } from 'ramda'
 import makeDeSimoneNode, { updateNode, downMove, upMove } from './specs/DeSimoneNode';
 import makeAutomata from './specs/Automata';
 import { rangeStates } from './Utils';
@@ -96,7 +96,7 @@ function deDesimoneTree(expr) {
 
 /**
  * Build the tree of the specified expression.
- * @param {expr} expr - The expression that will be the base of the tree construction.
+ * @param {string} expr - The expression that will be the base of the tree construction.
  * @return {array<Object>} - Specified expression's tree.
 */
 function makeTree(expr) {
@@ -143,8 +143,9 @@ const findByComposition = (deSimoneStates, composition) => (
 
 const deSimoneStatesAlphabet = (deSimoneStates) => (
   reduce((acc, state) => (
-    (!isEmpty(state.transitions)) ?
-      union(acc, head(state.transitions).alphabet) : acc
+    union(acc, reduce((acc, node) => (
+      (!equals(node, ENUM.Lambda)) ? union(acc, node.symbol) : acc
+    ), [], state.composedBy))
   ), [], deSimoneStates)
 );
 
@@ -168,8 +169,7 @@ const createCompTransitions = (state, composition, stateList) => {
       nextCreate: {
         state: newNext,
         composition: filter(propEq('symbol', sym), composition)
-      },
-      alphabet: alphabet
+      }
     }
   }, alphabet);
 };
