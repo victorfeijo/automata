@@ -1,5 +1,5 @@
 import {add, subtract, uniq, clone, length, remove, range, filter, equals, contains} from 'ramda'
-
+import {makeDeSimoneNode, updateNode} from './specs/DeSimoneNode'
 
 function normalize(expr) {
   let regExp = clone(expr);
@@ -38,8 +38,7 @@ function normalize(expr) {
     pos = pos+1;
   }
   regExp = str;
-  while ( regExp[0] === '(' && regExp[subtract(length(regExp), 1)] === ')' ) {
-            // (less_significant() == ('&',-1) ):
+  while ( regExp[0] === '(' && regExp[subtract(length(regExp), 1)] === ')'  && equals(lessSignificant(regExp), ['&',-1])) {
     regExp = regExp.substr(1,subtract(length(regExp), 2));
   }
   return regExp;
@@ -81,6 +80,25 @@ function deDesimoneTree(expr) {
     let left = nExpr.substr(0, lsig[1]);
     let right = nExpr.substr(add(lsig[1], 1), length(nExpr));
 
+    left = deDesimoneTree(normalize(left));
+    right = deDesimoneTree(normalize(right));
+
+    if (lsig[0] === '|') {
+      node = makeDeSimoneNode('|', left,right);
+    } else if (lsig[0] === '*') {
+      node = makeDeSimoneNode('*', left);
+    } else if (lsig[0] === '?') {
+      node = makeDeSimoneNode('?', left);
+    } else if (lsig[0] === '.') {
+      node = makeDeSimoneNode('.', left,right);
+    }
+
+    updateNode('parent', node.left, node);
+    updateNode('parent', node.right, node);
+  } else {
+    node = makeDeSimoneNode(lsig[0]);
+  }
+  return node
     // left =;
     // right =;
     // if (lsig === '|') {
@@ -92,7 +110,6 @@ function deDesimoneTree(expr) {
     // } else if (lsig === '.') {
     //
     // }
-  }
 }
 
 export {
