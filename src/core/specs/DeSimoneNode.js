@@ -169,6 +169,7 @@ const upMove = deSimoneNode => (
 );
 
 export {
+  makeDeSimoneNode,
   updateNode,
   isLeafNode,
   isOrNode,

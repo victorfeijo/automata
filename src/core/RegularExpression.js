@@ -1,6 +1,13 @@
 import {add, subtract, uniq, clone, length, remove, range, filter, equals, contains} from 'ramda'
 import {makeDeSimoneNode, updateNode} from './specs/DeSimoneNode'
+import ENUM from './Enum';
 
+/**
+ * Normalize a regular expression, removing external parentesis
+ * and setting '.' between terminals.
+ * @param {expr} expr - Expression to be normalized.
+ * @return {string} - The expression normalized.
+*/
 function normalize(expr) {
   let regExp = clone(expr);
   let str = clone(regExp);
@@ -11,7 +18,6 @@ function normalize(expr) {
                            !equals(s, '?') &&
                            !equals(s, '.') &&
                            !equals(s, '*'), str));
-  // console.log(alph);
   if (length(str) === 0) {
     return;
   }
@@ -20,7 +26,6 @@ function normalize(expr) {
   let pos = 0;
   for (i in range(0, length(regExp))) {
     pair = (regExp.substring(i, i+2)).split("");
-    // console.log(pair);
 
     if  ( contains(pair[0], alph) && contains(pair[1], alph) ||
         ( contains(pair[0], alph) && pair[1] === '(' ) ||
@@ -32,7 +37,6 @@ function normalize(expr) {
         ( pair[0] === ')' && pair[1] === '(')) {
           str = str.substr(0, pos+1) + '.' + str.substr(pos+1, length(str));
           pos = pos + 1;
-          // console.log(str);
         }
 
     pos = pos+1;
@@ -44,6 +48,12 @@ function normalize(expr) {
   return regExp;
 }
 
+/**
+ * Get the less significant property from the expression
+ * @param {expr} expr - The expression to be analysed.
+ * @return {array<Object>} - The less significant property from the expression
+ * and its index.
+*/
 function lessSignificant(expr) {
   let lvl = 0;
   let lSignificant = ['&', -1];
@@ -71,18 +81,31 @@ function lessSignificant(expr) {
   return lSignificant;
 }
 
+/**
+ * Build the tree with the parent of the root node.
+ * @param {expr} expr - The expression that will be the base of the tree construction.
+ * @return {array<Object>} - Specified expression's tree.
+*/
 function deDesimoneTree(expr) {
+  const tree = makeTree(expr);
+  tree.parent = ENUM.Lambda;
+  return tree;
+}
+
+/**
+ * Build the tree of the specified expression.
+ * @param {expr} expr - The expression that will be the base of the tree construction.
+ * @return {array<Object>} - Specified expression's tree.
+*/
+function makeTree(expr) {
   let nExpr = normalize(expr);
   let lsig = lessSignificant(nExpr);
-  console.log(lsig);
   let node;
-  if (length(expr) > 1) {
+  if (length(nExpr) > 1) {
     let left = nExpr.substr(0, lsig[1]);
     let right = nExpr.substr(add(lsig[1], 1), length(nExpr));
-
-    left = deDesimoneTree(normalize(left));
-    right = deDesimoneTree(normalize(right));
-
+    left = makeTree(left);
+    right = makeTree(right);
     if (lsig[0] === '|') {
       node = makeDeSimoneNode('|', left,right);
     } else if (lsig[0] === '*') {
@@ -93,23 +116,12 @@ function deDesimoneTree(expr) {
       node = makeDeSimoneNode('.', left,right);
     }
 
-    updateNode('parent', node.left, node);
-    updateNode('parent', node.right, node);
+    updateNode('parent', left, node);
+    updateNode('parent', right, node);
   } else {
     node = makeDeSimoneNode(lsig[0]);
   }
   return node
-    // left =;
-    // right =;
-    // if (lsig === '|') {
-    //
-    // } else if (lsig === '*') {
-    //
-    // } else if (lsig === '?') {
-    //
-    // } else if (lsig === '.') {
-    //
-    // }
 }
 
 export {

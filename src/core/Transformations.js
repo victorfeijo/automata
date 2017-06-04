@@ -129,9 +129,11 @@ function minimize(automata) {
               removeEquivalent)(automata);
 }
 /**
- * Create a new deterministic transition and its dependencies.
- * First rename a new state for the newTransition.
- * Filter transitions to remove non-deterministic transition
+ * Create a new deterministic transition from a non-deterministic
+ * transition and its states and values.
+ * @param {automata} automata - The automata where the transition is from.
+ * @param {ndTransition} ndTransition - the non-deterministic transition to determinize.
+ * @return {Automata} - A new automata without the ndTransition.
  */
 function createDetTransition(automata, ndTransition) {
   const removedDupStates = removeRepeatedStates(ndTransition.next);
@@ -171,6 +173,11 @@ function createDetTransition(automata, ndTransition) {
   );
 }
 
+/**
+ * Create a deterministic automata.
+ * @param {automata} automata - The automata to determinize.
+ * @return {Automata} - New deterministic automata.
+*/
 function determineze(automata) {
   if (isDeterministic(automata)) {
     return automata;
@@ -183,6 +190,11 @@ function determineze(automata) {
 
 }
 
+/**
+ * Remove all blank transitions from a automata.
+ * @param {automata} automata - Automata with blank transitions.
+ * @return {Automata} - A new automata without blank transitions.
+*/
 function removeBlankTransitions(automata) {
   if (!hasBlankTransitions(automata)) {
     return automata;

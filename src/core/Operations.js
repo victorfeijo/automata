@@ -199,6 +199,12 @@ function reduceEquivalents(automata, equivalents) {
 
   return reduceEquivalents(automata, reduced);
 }
+/**
+ * Remove states that contain each other, eliminating
+ * repetition inside the states.
+ * @param {array<array>} states - Set of states with repetition.
+ * @return {array<array>} - Set of states without repetition.
+ */
 function removeRepeatedStates(states) {
   const n = length(states);
   let i;
@@ -224,6 +230,12 @@ function removeRepeatedStates(states) {
   }
 }
 
+/**
+ * Create a new Transition in automata.
+ * @param {automata} automata - The automata which the new transition will be created.
+ * @param {array<array>} states - Set of states that the new transition will use.
+ * @return {Trasition} - New transition based on the parameters given.
+*/
 function createNewTransition(automata, states) {
   const { transitions, alphabet } = automata;
   let state;
