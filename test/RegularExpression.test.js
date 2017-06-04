@@ -1,5 +1,7 @@
-import { normalize, deDesimoneTree, lessSignificant } from '../src/core/RegularExpression';
+import { normalize, deDesimoneTree, lessSignificant, deSimoneToAutomata } from '../src/core/RegularExpression';
 import ENUM from '../src/core/Enum';
+
+import { root2, root3 } from '../samples/RegularExpression';
 
 describe('Regular Expression Transformations', () => {
   test('Normalize Regular Expression', () => {
@@ -77,5 +79,11 @@ describe('Regular Expression Transformations', () => {
     expect(test1.right.left.right.right.parent.symbol).toEqual('.');
     expect(test1.right.left.right.left.left.parent.symbol).toEqual('?');
     expect(test1.right.left.right.left.parent.symbol).toEqual('.');
+  });
+});
+
+describe('DeSimoneNode tree transformation to Automata', () => {
+  test('Transform root2 to Automata', () => {
+    // deSimoneToAutomata(root2)
   });
 });

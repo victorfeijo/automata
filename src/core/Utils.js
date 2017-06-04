@@ -1,5 +1,5 @@
 import { isLeafNode, updateNode } from './specs/DeSimoneNode';
-import { isEmpty } from 'ramda';
+import { isEmpty, map, range } from 'ramda';
 
 /**
  * THIS FUNCTION MUTATES THE OBJECT! Helper function
@@ -21,6 +21,11 @@ const updateParents = deSimoneNode => {
   }
 };
 
+const rangeStates = (char='q', amount=100) => (
+  map(state => char + state, range(0, amount))
+);
+
 export {
-  updateParents
+  updateParents,
+  rangeStates
 };

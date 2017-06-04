@@ -1,5 +1,7 @@
-import {add, subtract, uniq, clone, length, remove, range, filter, equals, contains} from 'ramda'
-import {makeDeSimoneNode, updateNode} from './specs/DeSimoneNode'
+import {assoc, and, find, any, all, pluck, add, subtract, uniq, clone, length, remove, range, filter, equals, contains, drop, head, without, propEq, flatten, reduce, union, map, isEmpty } from 'ramda'
+import makeDeSimoneNode, { updateNode, downMove, upMove } from './specs/DeSimoneNode';
+import makeAutomata from './specs/Automata';
+import { rangeStates } from './Utils';
 import ENUM from './Enum';
 
 /**
@@ -124,8 +126,156 @@ function makeTree(expr) {
   return node
 }
 
+/**
+ * Find deSimoneState with the same composition.
+ * @param {array<object>} deSimoneStates - State to look.
+ * @param {array<deSimoneNode>} composition - Node composition to compare.
+ * @return {object} - Found DeSimoneState.
+ */
+const findByComposition = (deSimoneStates, composition) => (
+  find(tran => (
+    and(
+      all(comp => contains(comp, tran.composedBy), composition),
+      all(comp => contains(comp, composition), tran.composedBy),
+    )
+  ), deSimoneStates)
+);
+
+const deSimoneStatesAlphabet = (deSimoneStates) => (
+  reduce((acc, state) => (
+    union(acc, head(state.transitions).alphabet)
+  ), [], deSimoneStates)
+);
+
+/**
+ * Create deSimoneState trasntitions based on composition.
+ * @param {string} state - State to create.
+ * @param {array<deSimoneNode>} composition - Nodes composition.
+ * @param {array<string>} stateList - List of remaining states to create.
+ * @return {array<objcet>} - Collection of DeSimoneState transitions.
+ */
+const createCompTransitions = (state, composition, stateList) => {
+  const alphabet = reduce((acc, node) => (
+    (!equals(node, ENUM.Lambda)) ? union(acc, node.symbol) : acc
+  ), [], composition);
+
+  return map(sym => {
+    const newNext = stateList.shift();
+
+    return {
+      transition: { state: state, value: sym, next: [newNext] },
+      nextCreate: {
+        state: newNext,
+        composition: filter(propEq('symbol', sym), composition)
+      },
+      alphabet: alphabet
+    }
+  }, alphabet);
+};
+
+/**
+ * Update next transitions of DeSimoneStates.
+ * @param {array<objcet>} deSimoneStates - DeSimoneNode tree root.
+ * @param {string} oldState - state to be replaced.
+ * @param {string} newState - new state.
+ * @return {array<object>} - Collection of updated DeSimoneStates.
+ */
+const updateNextTransitions = (deSimoneStates, oldState, newState) => (
+  map(state => (
+    assoc('transitions', map(compTran => {
+      if (equals(compTran.transition.next, [oldState])) {
+        return {
+          transition: assoc('next', [newState], compTran.transition),
+          nextCreate: compTran.nextCreate,
+        };
+      }
+      return compTran;
+    }, state.transitions), state)
+  ), deSimoneStates)
+);
+
+/**
+ * Recursive function to create deSimoneStates.
+ * The date structure used to create transitions contains
+ * state, transitions and deSimone composition.
+ * @param {array<object>} createdStates - Already created DeSimoneNodeStates.
+ * @param {array<object>} toCreate - DeSimoneStates left to create.
+ * @param {array<string>} stateList - List of reamining states to create.
+ * @return {DeSimoneStates} - Equivalent states.
+ */
+function deSimoneStates(createdStates, toCreate, stateList) {
+  if (isEmpty(toCreate)) {
+    return createdStates;
+  }
+
+  const nextTransitions = reduce((acc, stateComp) => {
+    const composition = reduce((acc, node) => (
+      union(flatten(upMove(node)), acc)
+    ), [], stateComp.composition);
+
+    const existentComp = findByComposition(createdStates, composition);
+    if (existentComp) {
+      createdStates = updateNextTransitions(createdStates, stateComp.state, existentComp.state);
+      return acc;
+    }
+
+    return union(acc, [{
+      state: stateComp.state,
+      transitions: createCompTransitions(stateComp.state, composition, stateList),
+      composedBy: composition
+    }]);
+  }, [], toCreate);
+
+  const newToCreate = reduce((acc, toCreate) => (
+    union(acc, map(t => t.nextCreate, toCreate.transitions))
+  ), [], nextTransitions);
+
+  return deSimoneStates(
+    [...createdStates, ...nextTransitions],
+    newToCreate,
+    stateList
+  );
+}
+
+/**
+ * Transform deSimone tree to Finite Automata.
+ * @param {DeSimoneNode} deSimoneNode - DeSimoneNode tree root.
+ * @return {Automata} - Equivalent automata.
+ */
+function deSimoneToAutomata(deSimoneRoot) {
+  const initialComposition = flatten(downMove(deSimoneRoot));
+
+  const stateList = rangeStates();
+  const initialState = stateList.shift();
+
+  const initialDeSimoneState = {
+    state: initialState,
+    transitions: createCompTransitions(initialState, initialComposition, stateList),
+    composedBy: initialComposition
+  };
+
+  const deSimoneAutomata = deSimoneStates(
+    [initialDeSimoneState],
+    pluck('nextCreate', initialDeSimoneState.transitions),
+    stateList
+  );
+
+  console.log(deSimoneAutomata)
+
+  return makeAutomata(
+    pluck('state', deSimoneAutomata),
+    deSimoneStatesAlphabet(deSimoneAutomata),
+    reduce((acc, state) =>
+      union(acc, pluck('transition', state.transitions)), [], deSimoneAutomata),
+    initialState,
+    pluck('state', filter(state =>
+      contains(ENUM.Lambda, state.composedBy), deSimoneAutomata))
+  );
+}
+
 export {
   normalize,
   lessSignificant,
   deDesimoneTree,
+  deSimoneToAutomata,
 }
