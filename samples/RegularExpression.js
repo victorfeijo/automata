@@ -1,4 +1,5 @@
 import makeDeSimoneNode, { updateNode } from '../src/core/specs/DeSimoneNode';
+import { normalize } from '../src/core/RegularExpression';
 import { updateParents } from '../src/core/Utils';
 import ENUM from '../src/core/Enum';
 
@@ -85,9 +86,27 @@ const root3 = makeDeSimoneNode(
 );
 updateParents(root3);
 
+// NOT NORMALIZED
+const regex1 = '(acbd|ddab*s(c)*)';
+const regex2 = 'acb*ascv|dsa.d(c)?';
+const regex3 = 'acb?sd|da(c)*aa';
+const regex4 = 'abbac*sda?(ab|asd)*(asd|sd)?dsa';
+
+//NORMALIZED
+const nRegex1 = normalize('a?(ba)*b?');
+const nRegex2 = normalize('(ab|b(ab)*b)*(ba)*');
+const nRegex3 = normalize('l(_?d|_?l)*');
+
 export {
   root1,
   root2,
   root3,
+  regex1,
+  regex2,
+  regex3,
+  regex4,
+  nRegex1,
+  nRegex2,
+  nRegex3,
 };
 

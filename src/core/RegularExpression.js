@@ -238,7 +238,7 @@ function deSimoneStates(createdStates, toCreate, stateList) {
 }
 
 /**
- * Transform deSimone tree to Finite Automata.
+ * Transform deSimone tree to Finite State Automata.
  * @param {DeSimoneNode} deSimoneNode - DeSimoneNode tree root.
  * @return {Automata} - Equivalent automata.
  */
@@ -259,8 +259,6 @@ function deSimoneToAutomata(deSimoneRoot) {
     pluck('nextCreate', initialDeSimoneState.transitions),
     stateList
   );
-
-  console.log(deSimoneAutomata)
 
   return makeAutomata(
     pluck('state', deSimoneAutomata),
