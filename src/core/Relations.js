@@ -2,7 +2,7 @@ import { union, concat, clone, difference,
          map, contains, pipe } from 'ramda';
 import { determineze, distinguishStates, removeBlankTransitions } from './Transformations';
 import { withErrorTransitions, errorToState } from './Operations';
-import makeAutomata from './Automata';
+import makeAutomata from './specs/Automata';
 import ENUM from './Enum';
 
 /**

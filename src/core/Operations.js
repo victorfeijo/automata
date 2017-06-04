@@ -5,7 +5,7 @@ import { isNil, isEmpty, contains, find, assoc,
          all, curry, reduce, union, concat, sort, pluck,
          update, indexOf, remove } from 'ramda';
 
-import { errorTransition, isBlankTransition } from './Automata';
+import { errorTransition, isBlankTransition } from './specs/Automata';
 import ENUM from './Enum';
 
 /**

@@ -1,4 +1,4 @@
-import makeAutomata from '../src/core/Automata.js';
+import makeAutomata from '../src/core/specs/Automata.js';
 
 export const d_automata1 = makeAutomata(
   ['q0', 'q1', 'q2'],

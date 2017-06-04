@@ -3,7 +3,7 @@ import { isEmpty, contains, tail, head, filter,
          flatten, map, reduce, union, pluck, pipe, splitEvery,
          sort, propEq, equals, concat, append } from 'ramda';
 
-import makeAutomata, { isDeterministic, hasBlankTransitions } from './Automata';
+import makeAutomata, { isDeterministic, hasBlankTransitions } from './specs/Automata';
 
 import { firstNDTransition, removeFromNext,
          transitiveTransitions, previousStates,

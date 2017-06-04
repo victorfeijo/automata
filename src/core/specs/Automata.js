@@ -1,6 +1,6 @@
 import { where, all, any, pluck, gte, length, propEq, __ } from 'ramda';
-import { isString, isStringList } from './Predicates';
-import ENUM from './Enum';
+import { isString, isStringList } from '../Predicates';
+import ENUM from '../Enum';
 
 const specTransition = transition => (
   where({
