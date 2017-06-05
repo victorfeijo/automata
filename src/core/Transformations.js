@@ -3,7 +3,7 @@ import { isEmpty, contains, tail, head, filter,
          flatten, map, reduce, union, pluck, pipe, splitEvery,
          sort, propEq, equals, concat, append } from 'ramda';
 
-import makeAutomata, { isDeterministic, hasBlankTransitions } from './Automata';
+import makeAutomata, { isDeterministic, hasBlankTransitions } from './specs/Automata';
 
 import { firstNDTransition, removeFromNext,
          transitiveTransitions, previousStates,
@@ -129,48 +129,53 @@ function minimize(automata) {
               removeEquivalent)(automata);
 }
 /**
- * Create a new deterministic transition and its dependencies.
- * First rename a new state for the newTransition.
- * Filter transitions to remove non-deterministic transition
+ * Create a new deterministic transition from a non-deterministic
+ * transition and its states and values.
+ * @param {automata} automata - The automata where the transition is from.
+ * @param {ndTransition} ndTransition - the non-deterministic transition to determinize.
+ * @return {Automata} - A new automata without the ndTransition.
  */
 function createDetTransition(automata, ndTransition) {
   const removedDupStates = removeRepeatedStates(ndTransition.next);
+
   const newState = reduce((newState, state) => concat(newState, state), '', removedDupStates);
-  let filterTrans = filter(t => !equals(ndTransition, t), automata.transitions);
-  let newTransitions;
+  const filterTrans = filter(t => !equals(ndTransition, t), automata.transitions);
   const editNdTransition = [{state: ndTransition.state, value: ndTransition.value, next: [newState]}];
 
-  let filterTest = filter(t => equals(t, newState), automata.states);
+  const filterTest = filter(t => equals(t, newState), automata.states);
   if (length(filterTest) > 0) {
-    newTransitions = union(filterTrans, editNdTransition);
-    return makeAutomata (
+
+    return makeAutomata(
       automata.states,
       clone(automata.alphabet),
-      newTransitions,
+      union(filterTrans, editNdTransition),
       clone(automata.initial),
       union(automata.finals, newFinals),
     );
   }
 
   let newTransitionAdd = createNewTransition(automata, ndTransition.next);
+  // console.log(newTransitionAdd)
 
   let newFinals = automata.finals;
   if (any(f => contains(f, automata.finals), ndTransition.next)) {
     newFinals = union(newFinals, [newState]);
   }
 
-  newTransitions = union(union(filterTrans, newTransitionAdd), editNdTransition);
-
   return makeAutomata(
     uniq(append(newState, automata.states)),
     clone(automata.alphabet),
-    newTransitions,
+    union(union(filterTrans, newTransitionAdd), editNdTransition),
     clone(automata.initial),
     union(automata.finals, newFinals),
-
   );
 }
 
+/**
+ * Create a deterministic automata.
+ * @param {automata} automata - The automata to determinize.
+ * @return {Automata} - New deterministic automata.
+*/
 function determineze(automata) {
   if (isDeterministic(automata)) {
     return automata;
@@ -183,6 +188,11 @@ function determineze(automata) {
 
 }
 
+/**
+ * Remove all blank transitions from a automata.
+ * @param {automata} automata - Automata with blank transitions.
+ * @return {Automata} - A new automata without blank transitions.
+*/
 function removeBlankTransitions(automata) {
   if (!hasBlankTransitions(automata)) {
     return automata;

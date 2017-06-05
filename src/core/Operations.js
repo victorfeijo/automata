@@ -5,7 +5,7 @@ import { isNil, isEmpty, contains, find, assoc,
          all, curry, reduce, union, concat, sort, pluck,
          update, indexOf, remove } from 'ramda';
 
-import { errorTransition, isBlankTransition } from './Automata';
+import { errorTransition, isBlankTransition } from './specs/Automata';
 import ENUM from './Enum';
 
 /**
@@ -16,9 +16,9 @@ import ENUM from './Enum';
  * @return {transition} - Found transition or error transition.
  */
 const findTransition = (transitions, state, value) => (
-  (find(propEq('value', value))(
-    filter(propEq('state', state), transitions),
-  ) || errorTransition(state, value))
+  (find(transition => (
+    transition.state === state && transition.value === value
+  ), transitions) || errorTransition(state, value))
 );
 
 /**
@@ -199,6 +199,12 @@ function reduceEquivalents(automata, equivalents) {
 
   return reduceEquivalents(automata, reduced);
 }
+/**
+ * Remove states that contain each other, eliminating
+ * repetition inside the states.
+ * @param {array<array>} states - Set of states with repetition.
+ * @return {array<array>} - Set of states without repetition.
+ */
 function removeRepeatedStates(states) {
   const n = length(states);
   let i;
@@ -224,34 +230,32 @@ function removeRepeatedStates(states) {
   }
 }
 
+/**
+ * Create a new Transition in automata.
+ * @param {automata} automata - The automata which the new transition will be created.
+ * @param {array<array>} states - Set of states that the new transition will use.
+ * @return {Trasition} - New transition based on the parameters given.
+*/
 function createNewTransition(automata, states) {
   const { transitions, alphabet } = automata;
-  let state;
-  let symbol;
-  let statesTransitions;
-  for (state of states) {
-    for (symbol of alphabet) {
-      statesTransitions = union(statesTransitions, (map(sym =>
-      findTransition(transitions, state, symbol), alphabet)));
-    }
-  }
+
+  const statesTransitions = reduce((acc, state) => (
+    [...acc, ...map(sym => findTransition(transitions, state, sym), alphabet)]
+  ), [], states);
+
   const filteredStates = removeRepeatedStates(states);
-  let newState = reduce((newState, state) => concat(newState, state), '', filteredStates);
+  const newState = reduce((newState, state) => concat(newState, state), '', filteredStates);
 
-  let sym;
   let newTransitions;
-  let newNext;
-  let noRepeatArr;
-  for (sym of alphabet) {
-
+  forEach(sym => {
     const transSym = filter(propEq('value', sym), statesTransitions);
     let symNextAll = (reduce((acc, tran) => union(acc, filter(t => t !== ENUM.Error, tran.next)), [], transSym)).sort();
 
-    noRepeatArr = removeRepeatedStates(symNextAll);
+    const noRepeatArr = removeRepeatedStates(symNextAll);
 
     newTransitions = union(newTransitions, [{state: newState, value: sym, next: noRepeatArr}]);
     newTransitions = filter(t => !isEmpty(t.next), newTransitions);
-  }
+  }, alphabet);
 
   return newTransitions;
 }

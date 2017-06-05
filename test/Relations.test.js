@@ -11,8 +11,10 @@ import { joinAutomatas,
          intersectionAutomata,
          differenceAutomata } from '../src/core/Relations';
 import { readTape } from '../src/core/Operations';
-import makeTape from '../src/core/Tape';
+import makeTape from '../src/core/specs/Tape';
 import { contains } from 'ramda';
+
+import { inspect } from 'util'
 
 describe('Union relation', () => {
   test('Join d_automata2 with d_automata3', () => {
@@ -33,6 +35,8 @@ describe('Union relation', () => {
     const tape3 = makeTape('baaa');
 
     const joined = joinAutomatas(d_automata4, d_automata5);
+
+    // console.log(inspect(joined, false, null))
 
     expect(readTape(joined, tape1)).toBeTruthy();
     expect(readTape(joined, tape2)).toBeTruthy();

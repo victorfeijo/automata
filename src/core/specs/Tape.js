@@ -1,5 +1,5 @@
 import { split, where, __ } from 'ramda';
-import { isStringList } from './Predicates';
+import { isStringList } from '../Predicates';
 
 const specTape = tape => (
   where({

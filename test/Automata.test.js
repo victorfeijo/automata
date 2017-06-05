@@ -1,4 +1,4 @@
-import makeAutomata, { isDeterministic, hasBlankTransitions } from '../src/core/Automata';
+import makeAutomata, { isDeterministic, hasBlankTransitions } from '../src/core/specs/Automata';
 import { d_automata1, d_automata2 } from '../samples/Deterministic';
 import { nd_automata1, nd_automata3 } from '../samples/NonDeterministic';
 
