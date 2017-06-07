@@ -11,6 +11,7 @@ import { joinAutomatas,
          intersectionAutomata,
          differenceAutomata } from '../src/core/Relations';
 import { readTape } from '../src/core/Operations';
+import { minimize } from '../src/core/Transformations';
 import makeTape from '../src/core/specs/Tape';
 import { contains } from 'ramda';
 
@@ -119,7 +120,7 @@ describe('Intersection relation', () => {
     const tape3 = makeTape('abababa');
     const tape4 = makeTape('aa');
 
-    const intersect = intersectionAutomata(d_automata2, d_automata3);
+    const intersect = intersectionAutomata(minimize(d_automata2), minimize(d_automata3));
 
     expect(readTape(intersect, tape1)).toBeTruthy();
     expect(readTape(intersect, tape2)).toBeTruthy();
@@ -135,7 +136,7 @@ describe('Difference relation', () => {
     const tape3 = makeTape('abaaba');
     const tape4 = makeTape('aaabbba');
 
-    const intersect = intersectionAutomata(d_automata3, d_automata7);
+    const intersect = intersectionAutomata(minimize(d_automata3), minimize(d_automata7));
 
     expect(readTape(intersect, tape1)).toBeTruthy();
     expect(readTape(intersect, tape2)).toBeTruthy();
@@ -152,7 +153,7 @@ describe('Difference relation', () => {
     const tape3 = makeTape('abaaba');
     const tape4 = makeTape('aaabbba');
 
-    const intersect = intersectionAutomata(d_automata4, d_automata7);
+    const intersect = intersectionAutomata(minimize(d_automata4), minimize(d_automata7));
 
     expect(readTape(intersect, tape1)).toBeTruthy();
     expect(readTape(intersect, tape2)).toBeTruthy();
