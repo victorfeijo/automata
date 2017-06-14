@@ -200,3 +200,13 @@ export const d_automata7 = makeAutomata(
   'A',
   ['A', 'G']
 );
+
+export const d_automata8 = makeAutomata(
+  ['q0q2q1'],
+  ['a', 'b'],
+  [{
+    state: 'q0q2q1', value: 'a', next: ['q0q2q1']
+  }],
+  'q0q2q1',
+  ['q0q2q1']
+);
