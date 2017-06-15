@@ -4,8 +4,8 @@ import { Button, Row, Col, Input, Icon, Card, Table } from 'antd';
 
 import EditAutomata from './EditAutomata.jsx';
 
-import { isValidRegex, toAutomata } from './Utils/RegexUtils';
-import { toColumns, toSourceData } from './Utils/AutomataUtils';
+import { isValidRegex, toAutomata } from './utils/RegexUtils';
+import { toColumns, toSourceData } from './utils/AutomataUtils';
 
 const Container = styled.div`
   margin: 24px;
