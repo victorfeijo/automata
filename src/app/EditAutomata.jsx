@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { curry, equals, map, assoc, tail, keys, reduce } from 'ramda';
 import { Modal, Button, Table, Input } from 'antd';
 
-import { toColumns, toSourceData } from './Utils/AutomataUtils';
+import { toColumns, toSourceData } from './utils/AutomataUtils';
 
 const ButtonCnt = styled.div`
   margin-top: 10px;
