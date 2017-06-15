@@ -127,6 +127,7 @@ function makeTree(expr) {
 }
 
 /**
+ * TODO: FIX COMPARE OBJECT INSTEAD OF CONTAINS
  * Find deSimoneState with the same composition.
  * @param {array<object>} deSimoneStates - State to look.
  * @param {array<deSimoneNode>} composition - Node composition to compare.
@@ -213,6 +214,8 @@ function deSimoneStates(createdStates, toCreate, stateList) {
     const composition = reduce((acc, node) => (
       union(flatten(upMove(node)), acc)
     ), [], stateComp.composition);
+
+    console.log('composition -> ', composition)
 
     const existentComp = findByComposition(createdStates, composition);
     if (existentComp) {
