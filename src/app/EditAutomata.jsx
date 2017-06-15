@@ -17,7 +17,6 @@ class EditAutomata extends Component {
       visible: false,
       automata: {},
       title: 'Title',
-      savedTransitions: [],
       columns: [],
       sourceData: [],
     };
@@ -44,11 +43,9 @@ class EditAutomata extends Component {
   }
 
   updateSourceData = curry((rowValue, colValue, newValue) => {
-    console.log('row', rowValue);
+    const change = { row: rowValue, col: colValue, new: newValue };
 
-    console.log('col', colValue);
-
-    console.log('new', newValue.target.value);
+    // this.setState({ changes: [...this.state.changes, change] })
   });
 
   mapColumns = (automata) => {
@@ -68,7 +65,8 @@ class EditAutomata extends Component {
     const lastData = tail(this.state.sourceData)[0];
 
     const newBlank = reduce((obj, key) => (
-      assoc(key, equals(key, 'key') ? lastData.key++ : '', obj)
+      assoc(key, equals(key, 'key') ?
+        lastData.key++ : { text: '', value: key }, obj)
     ), {}, keys(lastData));
 
     this.setState({ sourceData: [...this.state.sourceData, newBlank] });
