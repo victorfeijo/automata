@@ -19,7 +19,8 @@ class RegexPane extends Component {
   state = {
     valid: true,
     regex: '',
-    automata: {}
+    automata: {},
+    sourceData: {},
   };
 
   onRegexChange = (event) => {
@@ -36,14 +37,21 @@ class RegexPane extends Component {
   updateAutomata = (regex) => {
     const automata = toAutomata(regex);
 
-    this.setState({ automata: automata, valid: false });
+    this.setState({
+      automata: automata,
+      valid: false,
+      sourceData: toSourceData(automata)
+    });
+  }
+
+  updateSourceData = (sourceData) => {
+    this.setState({ sourceData });
   }
 
   render() {
-    const { automata } = this.state;
+    const { automata, sourceData } = this.state;
 
     const columns = toColumns(automata);
-    const data = toSourceData(automata);
 
     return (
       <Container>
@@ -64,7 +72,7 @@ class RegexPane extends Component {
                 <EditAutomata
                   title={"Edit Automata"}
                   automata={automata}
-                  onSave={(e) => console.log('save')}></EditAutomata>
+                  onSave={this.updateSourceData}></EditAutomata>
                 <Button icon="copy">Copy</Button>
               </Row>
               }>
@@ -72,7 +80,7 @@ class RegexPane extends Component {
                 {this.state.valid ? (
                   <p> Write a valid regular expression.. </p>
                 ) : (
-                  <Table columns={columns} dataSource={data} pagination={false} />
+                  <Table columns={columns} dataSource={sourceData} pagination={false} />
                 )}
               </CardContainer>
             </Card>

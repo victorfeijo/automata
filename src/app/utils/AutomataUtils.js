@@ -43,7 +43,8 @@ const toSourceData = (automata) => {
     ), {
       state: {
         state: state,
-        text: parseState(state, automata)
+        text: parseState(state, automata),
+        final: contains(state, automata.finals),
       }
     }, automata.alphabet);
 

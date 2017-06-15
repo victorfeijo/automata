@@ -1,12 +1,19 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import { curry, equals, map, assoc, tail, keys, reduce } from 'ramda';
-import { Modal, Button, Table, Input } from 'antd';
-
+import { indexOf, inc, curry, equals, map, has, without,
+         assoc, last, keys, reduce, update, append, head } from 'ramda';
+import { Modal, Button, Table, Input, Switch } from 'antd';
 import { toColumns, toSourceData } from './utils/AutomataUtils';
 
 const ButtonCnt = styled.div`
   margin-top: 10px;
+`;
+
+const Actions = styled.div`
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  min-width: 100px;
 `;
 
 class EditAutomata extends Component {
@@ -43,37 +50,89 @@ class EditAutomata extends Component {
   }
 
   updateSourceData = curry((rowValue, colValue, newValue) => {
-    const change = { row: rowValue, col: colValue, new: newValue };
+    const { sourceData } = this.state;
+    const rowIndex = indexOf(rowValue, sourceData);
 
-    // this.setState({ changes: [...this.state.changes, change] })
+    this.setState({ sourceData: update(rowIndex, newValue, sourceData) });
+  });
+
+  updateFinal = curry((rowValue, isFinal) => {
+    const newState = assoc('final', isFinal, rowValue.state);
+
+    this.updateSourceData(rowValue, rowValue.state,
+      assoc('state', newState, rowValue));
+  });
+
+  updateText = curry((rowValue, colValue, newValue) => {
+    const updated = assoc(colValue.value,
+      { text: newValue.target.value, value: colValue.value }, rowValue);
+
+    this.updateSourceData(rowValue, colValue, updated);
   });
 
   mapColumns = (automata) => {
-    const parsed = toColumns(automata);
+    const actionCol = {
+      title: 'Actions',
+      dataIndex: 'actions',
+      key: 'actions',
+      render: (t, r) => (
+        <Actions>
+          <Switch
+            checkedChildren="Final"
+            defaultChecked={r.state.final}
+            onChange={this.updateFinal(r)}/>
+          <Button
+            type="danger"
+            key="remove"
+            shape="circle"
+            icon="close"
+            onClick={this.onRemoveTransition(r)} >
+          </Button>
+        </Actions>
+      )
+    };
 
-    return map(assoc('render',
+    const withRender = map(assoc('render',
       (textObj, rowValue) => (
         <Input
-          onChange={this.updateSourceData(rowValue, textObj)}
-          defaultValue={textObj.text}>
+          onChange={this.updateText(rowValue, textObj)}
+          defaultValue={textObj.state || textObj.text}>
         </Input>
       )
-    ), parsed);
+    ), toColumns(automata));
+
+    return append(actionCol, withRender);
   }
 
   onAddTransition = (e) => {
-    const lastData = tail(this.state.sourceData)[0];
+    const lastData = last(this.state.sourceData);
 
     const newBlank = reduce((obj, key) => (
       assoc(key, equals(key, 'key') ?
-        lastData.key++ : { text: '', value: key }, obj)
+        inc(lastData.key) : { text: '', value: key }, obj)
     ), {}, keys(lastData));
 
     this.setState({ sourceData: [...this.state.sourceData, newBlank] });
   }
 
+  onRemoveTransition = curry((rowValue, e) => {
+    const { sourceData } = this.state;
+    const initial = head(sourceData);
+
+    if (initial !== rowValue) {
+      this.setState({
+        sourceData: without([rowValue], this.state.sourceData)
+      });
+    }
+  })
+
+  onSave = curry((saveCallback, e) => {
+    this.setState({ visible: false });
+
+    saveCallback(this.state.sourceData);
+  })
+
   render() {
-    const { onSave } = this.props;
     const { title, columns, sourceData } = this.state;
 
     return (
@@ -85,8 +144,11 @@ class EditAutomata extends Component {
           onCancel={this.handleCancel}
           footer={[
             <Button key="back" onClick={this.handleCancel} icon="close"> Return</Button>,
-            <Button key="submit" type="primary" onClick={this.onSave} icon="save"> Save </Button>,
-          ]}
+            <Button
+              key="submit"
+              type="primary"
+              onClick={this.onSave(this.props.onSave)}
+              icon="save"> Save </Button>, ]}
         >
           <Table columns={columns} dataSource={sourceData} pagination={false} />
           <ButtonCnt>
