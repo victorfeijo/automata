@@ -1,7 +1,7 @@
 import { isEmpty, contains, tail, head, filter,
          any, find, clone, difference, uniq, length, forEach,
          flatten, map, reduce, union, pluck, pipe, splitEvery,
-         sort, propEq, equals, concat, append } from 'ramda';
+         sort, propEq, equals, concat, append, range, match } from 'ramda';
 
 import makeAutomata, { isDeterministic, hasBlankTransitions } from './specs/Automata';
 
@@ -137,8 +137,12 @@ function minimize(automata) {
  */
 function createDetTransition(automata, ndTransition) {
   const removedDupStates = removeRepeatedStates(ndTransition.next);
+  console.log(removedDupStates);
+  let newState = reduce((newstate, state) => concat(newstate, state), '', removedDupStates);
+  newState = match(/([a-z]|[A-Z])+[0-9]+/g, newState);
+  newState = uniq(newState.sort());
+  newState = reduce((newstate, state) => concat(newstate, state), '', newState);
 
-  const newState = reduce((newState, state) => concat(newState, state), '', removedDupStates);
   const filterTrans = filter(t => !equals(ndTransition, t), automata.transitions);
   const editNdTransition = [{state: ndTransition.state, value: ndTransition.value, next: [newState]}];
 
