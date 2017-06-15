@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import { Row, Col, Input, Icon, Card, Table } from 'antd';
+import { Button, Row, Col, Input, Icon, Card, Table } from 'antd';
+
+import EditAutomata from './EditAutomata.jsx';
 
 import { isValidRegex, toAutomata } from './Utils/RegexUtils';
 import { toColumns, toSourceData } from './Utils/AutomataUtils';
@@ -14,15 +16,11 @@ const CardContainer = styled.div`
 `;
 
 class RegexPane extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      loading: true,
-      regex: '',
-      automata: {}
-    };
-  }
+  state = {
+    valid: true,
+    regex: '',
+    automata: {}
+  };
 
   onRegexChange = (event) => {
     const regex = event.target.value;
@@ -30,13 +28,15 @@ class RegexPane extends Component {
 
     if (isValidRegex(regex)) {
       this.updateAutomata(regex);
+    } else {
+      this.setState({ valid: true });
     }
-  };
+  }
 
   updateAutomata = (regex) => {
     const automata = toAutomata(regex);
 
-    this.setState({ automata: automata, loading: false });
+    this.setState({ automata: automata, valid: false });
   }
 
   render() {
@@ -59,10 +59,18 @@ class RegexPane extends Component {
             <Icon type="arrow-right" />
           </Row>
           <Col span={11}>
-            <Card title="Result Automata" extra={<a href="#">Copy</a>}>
+            <Card title="Result Automata" extra={
+              <Row type="flex" justify="space-between">
+                <EditAutomata
+                  title={"Edit Automata"}
+                  automata={automata}
+                  onSave={(e) => console.log('save')}></EditAutomata>
+                <Button icon="copy">Copy</Button>
+              </Row>
+              }>
               <CardContainer>
-                {this.state.loading ? (
-                  <p> Loading.. </p>
+                {this.state.valid ? (
+                  <p> Write a valid regular expression.. </p>
                 ) : (
                   <Table columns={columns} dataSource={data} pagination={false} />
                 )}
@@ -71,7 +79,7 @@ class RegexPane extends Component {
           </Col>
         </Row>
       </Container>
-    )
+    );
   }
 }
 
