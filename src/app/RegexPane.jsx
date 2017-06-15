@@ -55,7 +55,7 @@ class RegexPane extends Component {
               type="textarea"
               rows={6} />
           </Col>
-          <Row type="flex" span={1} jusify="center" align="middle">
+          <Row type="flex" span={1} justify="center" align="middle">
             <Icon type="arrow-right" />
           </Row>
           <Col span={11}>
