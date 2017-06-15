@@ -232,14 +232,12 @@ describe('Integration test - Regexp to Automata', () => {
     const root = deDesimoneTree(nRegex4);
     const automata = deSimoneToAutomata(root);
 
-    // const tape1 = makeTape('bababa');
-    // const tape2 = makeTape('abbababb');
-    // const tape3 = makeTape('aababb');
-    // const tape4 = makeTape('bbabbbaa');
+    const tape1 = makeTape('abbbabbba');
+    const tape2 = makeTape('bbbbbbabbb');
+    const tape3 = makeTape('bbabb');
 
-    // expect(readTape(automata, tape1)).toBeTruthy();
-    // expect(readTape(automata, tape2)).toBeTruthy();
-    // expect(readTape(automata, tape3)).toBeFalsy();
-    // expect(readTape(automata, tape4)).toBeFalsy();
+    expect(readTape(automata, tape1)).toBeTruthy();
+    expect(readTape(automata, tape2)).toBeTruthy();
+    expect(readTape(automata, tape3)).toBeFalsy();
   });
 });
