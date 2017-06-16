@@ -7,7 +7,7 @@ import { d_automata1,
          d_automata7 } from '../samples/Deterministic';
 import { distinguishStates, minimize, determineze, removeStates, removeUnreachables, removeDeads, createDetTransition, removeEquivalent, removeBlankTransitions } from '../src/core/Transformations';
 import { readTape } from '../src/core/Operations';
-import { nd_automata1, nd_automata3, nd_automata4, nd_automata5, nd_automata51, nd_automata52, nd_automata53, nd_automata6, nd_automata7, nd_automata8, nd_automata9, nd_automata10} from '../samples/NonDeterministic';
+import { nd_automata1, nd_automata3, nd_automata4, nd_automata5, nd_automata51, nd_automata52, nd_automata53, nd_automata6, nd_automata7, nd_automata8, nd_automata9, nd_automata10, nd_automata11} from '../samples/NonDeterministic';
 import makeAutomata from '../src/core/specs/Automata';
 import makeTape from '../src/core/specs/Tape';
 import {renameStates} from '../src/core/Utils'
@@ -320,10 +320,45 @@ describe('Transform NDAF to DAF', () => {
       ['q0', 'q3', 'q2q3', 'q0q3', 'q0q2q3', 'q1q2q3', 'q0q1q3', 'q0q1q2q3']
     );
     expect(determineze(nd_automata10)).toEqual(expected);
-    // test = renameStates(test);
-    // test = minimize(test);
-    // console.log(test);
-    // console.log(test.transitions);
+
+  });
+
+  test('Determinize automata with letters', () => {
+    const expected = makeAutomata(
+      ['A', 'B', 'C', 'E', 'F', 'G'],
+      ['a', 'b'],
+      [{
+        state: 'A', value: 'a', next: ['G', 'B']
+      }, {
+        state: 'A', value: 'b', next: ['B']
+      }, {
+        state: 'B', value: 'a', next: ['F', 'A']
+      }, {
+        state: 'B', value: 'b', next: ['E']
+      }, {
+        state: 'C', value: 'a', next: ['C']
+      }, {
+        state: 'C', value: 'b', next: ['G']
+      }, {
+        state: 'E', value: 'a', next: ['E', 'F']
+      }, {
+        state: 'E', value: 'b', next: ['A']
+      }, {
+        state: 'F', value: 'a', next: ['B']
+      }, {
+        state: 'F', value: 'b', next: ['C', 'G']
+      }, {
+        state: 'G', value: 'a', next: ['G']
+      },  {
+        state: 'G', value: 'b', next: ['F', 'E']
+      }],
+      'A',
+      ['A', 'G']
+    );
+    console.log('BeginTest!');
+    const test = determineze(nd_automata11);
+    console.log(test);
+    console.log(test.transitions);
   });
 
 });

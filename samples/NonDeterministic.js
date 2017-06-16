@@ -195,7 +195,37 @@ export const nd_automata10 = makeAutomata(
       ['q0', 'q3']
 );
 
-
+export const nd_automata11 = makeAutomata(
+  ['A', 'B', 'C', 'E', 'F', 'G'],
+  ['a', 'b'],
+  [{
+    state: 'A', value: 'a', next: ['G', 'B']
+  }, {
+    state: 'A', value: 'b', next: ['B']
+  }, {
+    state: 'B', value: 'a', next: ['F', 'A']
+  }, {
+    state: 'B', value: 'b', next: ['E']
+  }, {
+    state: 'C', value: 'a', next: ['C']
+  }, {
+    state: 'C', value: 'b', next: ['G']
+  }, {
+    state: 'E', value: 'a', next: ['E', 'F']
+  }, {
+    state: 'E', value: 'b', next: ['A']
+  }, {
+    state: 'F', value: 'a', next: ['B']
+  }, {
+    state: 'F', value: 'b', next: ['C', 'G']
+  }, {
+    state: 'G', value: 'a', next: ['G']
+  }, {
+    state: 'G', value: 'b', next: ['F', 'E']
+  }],
+  'A',
+  ['A', 'G']
+);
 // ---- HAS EMPTY TRANSITIONS -----
 // L(M) = { x E (a | b)* }
 export const nd_automata3 = makeAutomata(

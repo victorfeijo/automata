@@ -138,7 +138,16 @@ function minimize(automata) {
 function createDetTransition(automata, ndTransition) {
   const removedDupStates = removeRepeatedStates(ndTransition.next);
   let newState = reduce((newstate, state) => concat(newstate, state), '', removedDupStates);
-  newState = match(/([a-z]|[A-Z])+[0-9]+/g, newState);
+  console.log(newState);
+  let isLetter;
+
+  isLetter = automata.states[0].indexOf('q');
+
+  if (!(isLetter === 0)) {
+    newState = match(/[A-Z]/g, newState);
+  } else {
+    newState = match(/q[0-9]+/g, newState);
+  }
   newState = uniq(newState.sort());
   newState = reduce((newstate, state) => concat(newstate, state), '', newState);
 
