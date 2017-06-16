@@ -30,7 +30,20 @@ class EditAutomata extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { automata, title } = nextProps;
+    const { automata, title, autoUpdate } = nextProps;
+
+    if (autoUpdate) {
+      this.updateStateAutomata(automata, title);
+    }
+  }
+
+  componentDidMount() {
+    const { automata, title } = this.props;
+
+    this.updateStateAutomata(automata, title);
+  }
+
+  updateStateAutomata = (automata, title) => {
     const columns = this.mapColumns(automata);
     const sourceData = toSourceData(automata);
 

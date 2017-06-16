@@ -72,6 +72,7 @@ class RegexPane extends Component {
                 <EditAutomata
                   title={"Edit Automata"}
                   automata={automata}
+                  autoUpdate={true}
                   onSave={this.updateSourceData}></EditAutomata>
                 <Button icon="copy">Copy</Button>
               </Row>

@@ -250,3 +250,13 @@ export const d_automata10 = makeAutomata(
   'q0',
   ['q0', 'q1']
 );
+
+export const blank_automata = makeAutomata(
+  ['q0'],
+  ['a', 'b'],
+  [{
+    state: 'q0', value: 'b', next: ['q0']
+  }],
+  'q0',
+  ['q0']
+);

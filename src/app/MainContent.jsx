@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import RegexPane from './RegexPane.jsx';
+import AutomataPane from './AutomataPane.jsx';
 import { Tabs, Icon } from 'antd';
 const TabPane = Tabs.TabPane;
 
@@ -28,7 +29,7 @@ class MainContent extends Component {
             <RegexPane />
           </TabPane>
           <TabPane tab={automataIcon} key="2">
-            Tab 2
+            <AutomataPane />
           </TabPane>
         </Tabs>
       </Container>
