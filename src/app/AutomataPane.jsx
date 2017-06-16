@@ -4,6 +4,7 @@ import { assoc, pipe } from 'ramda';
 import { Tooltip, Button, Row, Col, Input, Icon, Card, Table } from 'antd';
 import { blank_automata } from '../../samples/Deterministic';
 import { joinAutomatas, complementAutomata, intersectionAutomata, differenceAutomata } from '../core/Relations';
+import { minimize, determineze } from '../core/Transformations';
 import { toColumns, toSourceData, sourceDataToAutomata } from './utils/AutomataUtils';
 import EditAutomata from './EditAutomata.jsx';
 
@@ -123,6 +124,34 @@ class AutomataPane extends Component {
     });
   }
 
+  onDeterminizeClick = (e) => {
+    const { automataA } = this.state;
+
+    const determinized = determineze(automataA.automata);
+
+    this.setState({
+      resultAutomata: {
+        automata: determinized,
+        columns: toColumns(determinized),
+        sourceData: toSourceData(determinized),
+      }
+    });
+  }
+
+  onMinimizeClick = (e) => {
+    const { automataA } = this.state;
+
+    const minimized = minimize(automataA.automata);
+
+    this.setState({
+      resultAutomata: {
+        automata: minimized,
+        columns: toColumns(minimized),
+        sourceData: toSourceData(minimized),
+      }
+    });
+  }
+
   render() {
     const { automataA, automataB, resultAutomata } = this.state;
 
@@ -178,6 +207,8 @@ class AutomataPane extends Component {
               <Button onClick={this.onIntersectionClick}>Intersection</Button>
               <Button onClick={this.onDifferenceClick}>Difference</Button>
               <Button onClick={this.onComplementClick}>Complement</Button>
+              <Button onClick={this.onDeterminizeClick}>Determinize</Button>
+              <Button onClick={this.onMinimizeClick}>Minimize</Button>
             </ButtonGroup>
           </Row>
           <Col span={7}>

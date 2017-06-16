@@ -82,7 +82,7 @@ class EditAutomata extends Component {
 
     const updated = assoc(updateKey, isState ?
       { text: newValue.target.value, state: newValue.target.value, final: false } :
-      { text: newValue.target.value, value: colValue.value }, rowValue);
+      { text: [newValue.target.value], value: colValue.value }, rowValue);
 
     this.updateSourceData(rowValue, colValue, updated);
   });

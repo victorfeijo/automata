@@ -60,7 +60,11 @@ const sourceDataToAutomata = sourceData => {
 
   const transitions = reduce((acc, data) => (
     union(acc, map(sym => (
-      { state: data.state.state, value: sym, next: prop(sym, data).text }
+      {
+        state: data.state.state,
+        value: sym,
+        next: prop(sym, data).text
+      }
     ), alphabet))
   ), [], sourceData);
 
