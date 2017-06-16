@@ -77,7 +77,11 @@ class EditAutomata extends Component {
   });
 
   updateText = curry((rowValue, colValue, newValue) => {
-    const updated = assoc(colValue.value,
+    const isState = has('state', colValue);
+    const updateKey = isState ? 'state' : colValue.value;
+
+    const updated = assoc(updateKey, isState ?
+      { text: newValue.target.value, state: newValue.target.value, final: false } :
       { text: newValue.target.value, value: colValue.value }, rowValue);
 
     this.updateSourceData(rowValue, colValue, updated);
@@ -120,10 +124,16 @@ class EditAutomata extends Component {
   onAddTransition = (e) => {
     const lastData = last(this.state.sourceData);
 
-    const newBlank = reduce((obj, key) => (
-      assoc(key, equals(key, 'key') ?
-        inc(lastData.key) : { text: '', value: key }, obj)
-    ), {}, keys(lastData));
+    const newBlank = reduce((obj, key) => {
+      if (equals(key, 'key')) {
+        return assoc(key, inc(lastData.key), obj)
+      }
+      if (equals(key, 'state')) {
+        return assoc(key, { text: '', state: '', final: false }, obj);
+      }
+
+      return assoc(key, { text: '', value: key }, obj);
+    }, {}, keys(lastData));
 
     this.setState({ sourceData: [...this.state.sourceData, newBlank] });
   }

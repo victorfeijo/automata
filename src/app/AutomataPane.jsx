@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import { assoc } from 'ramda';
+import { assoc, pipe } from 'ramda';
 import { Tooltip, Button, Row, Col, Input, Icon, Card, Table } from 'antd';
 import { blank_automata } from '../../samples/Deterministic';
-import { toColumns, toSourceData } from './utils/AutomataUtils';
+import { joinAutomatas, complementAutomata, intersectionAutomata, differenceAutomata } from '../core/Relations';
+import { toColumns, toSourceData, sourceDataToAutomata } from './utils/AutomataUtils';
 import EditAutomata from './EditAutomata.jsx';
 
 const Container = styled.div`
@@ -41,19 +42,85 @@ class AutomataPane extends Component {
       columns: toColumns(blank_automata),
       sourceData: toSourceData(blank_automata),
     },
-    resultAutomata: {},
+    resultAutomata: {
+      automata: blank_automata,
+      columns: toColumns(blank_automata),
+      sourceData: toSourceData(blank_automata),
+    },
   }
 
   onSaveAutomataA = (sourceData) => {
-    const { automataA } = this.state;
+    const automataA = pipe(
+      assoc('automata', sourceDataToAutomata(sourceData)),
+      assoc('sourceData', sourceData)
+    )(this.state.automataA);
 
-    this.setState({ automataA: assoc('sourceData', sourceData, automataA )});
+    this.setState({ automataA });
   }
 
   onSaveAutomataB = (sourceData) => {
-    const { automataB } = this.state;
+    const automataB = pipe(
+      assoc('automata', sourceDataToAutomata(sourceData)),
+      assoc('sourceData', sourceData)
+    )(this.state.automataB);
 
-    this.setState({ automataB: assoc('sourceData', sourceData, automataB )});
+    this.setState({ automataB });
+  }
+
+  onUnionClick = (e) => {
+    const { automataA, automataB } = this.state;
+
+    const joined = joinAutomatas(automataA.automata, automataB.automata);
+
+    this.setState({
+      resultAutomata: {
+        automata: joined,
+        columns: toColumns(joined),
+        sourceData: toSourceData(joined),
+      }
+    });
+  }
+
+  onIntersectionClick = (e) => {
+    const { automataA, automataB } = this.state;
+
+    const intersect = intersectionAutomata(automataA.automata, automataB.automata);
+
+    this.setState({
+      resultAutomata: {
+        automata: intersect,
+        columns: toColumns(intersect),
+        sourceData: toSourceData(intersect),
+      }
+    });
+  }
+
+  onDifferenceClick = (e) => {
+    const { automataA, automataB } = this.state;
+
+    const difference = differenceAutomata(automataA.automata, automataB.automata);
+
+    this.setState({
+      resultAutomata: {
+        automata: difference,
+        columns: toColumns(difference),
+        sourceData: toSourceData(difference),
+      }
+    });
+  }
+
+  onComplementClick = (e) => {
+    const { automataA } = this.state;
+
+    const complement = complementAutomata(automataA.automata);
+
+    this.setState({
+      resultAutomata: {
+        automata: complement,
+        columns: toColumns(complement),
+        sourceData: toSourceData(complement),
+      }
+    });
   }
 
   render() {
@@ -107,10 +174,10 @@ class AutomataPane extends Component {
           <Row type="flex" span={3} justify="center" align="middle">
             <ButtonGroup>
               <OpTitle>Operation</OpTitle>
-              <Button>Union</Button>
-              <Button>Intersection</Button>
-              <Button>Difference</Button>
-              <Button>Complement</Button>
+              <Button onClick={this.onUnionClick}>Union</Button>
+              <Button onClick={this.onIntersectionClick}>Intersection</Button>
+              <Button onClick={this.onDifferenceClick}>Difference</Button>
+              <Button onClick={this.onComplementClick}>Complement</Button>
             </ButtonGroup>
           </Row>
           <Col span={7}>
@@ -125,6 +192,7 @@ class AutomataPane extends Component {
                   </Tooltip>
                 </Row>}>
                 <CardContainer>
+                  <Table columns={resultAutomata.columns} dataSource={resultAutomata.sourceData} pagination={false} />
                 </CardContainer>
               </Card>
             </CardSpace>

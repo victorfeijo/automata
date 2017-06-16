@@ -1,5 +1,7 @@
-import { reduce, map, assoc, isEmpty, prepend, cond, T, equals, contains } from 'ramda';
+import { reduce, map, assoc, isEmpty, prepend, pluck, union,
+         cond, T, equals, contains, without, keys, prop, filter } from 'ramda';
 import { withErrorTransitions, findTransition } from '../../core/Operations';
+import makeAutomata from '../../core/specs/Automata';
 
 const toColumns = (automata) => (
   prepend({
@@ -28,7 +30,7 @@ const parseState = (state, automata) => {
   ])(state)
 };
 
-const toSourceData = (automata) => {
+const toSourceData = automata => {
   if (isEmpty(automata)) { return {}; }
 
   const withError = withErrorTransitions(automata);
@@ -52,7 +54,30 @@ const toSourceData = (automata) => {
   }, automata.states)
 };
 
+const sourceDataToAutomata = sourceData => {
+  const alphabet = without(['state', 'key'], keys(sourceData[0]));
+  const states = pluck('state', pluck('state', sourceData));
+
+  const transitions = reduce((acc, data) => (
+    union(acc, map(sym => (
+      { state: data.state.state, value: sym, next: prop(sym, data).text }
+    ), alphabet))
+  ), [], sourceData);
+
+  const finals = pluck('state', pluck('state',
+    filter(d => d.state.final, sourceData)));
+
+  return makeAutomata(
+    states,
+    alphabet,
+    transitions,
+    sourceData[0].state.state,
+    finals
+  );
+}
+
 export {
   toColumns,
-  toSourceData
+  toSourceData,
+  sourceDataToAutomata
 };
