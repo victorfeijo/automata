@@ -319,46 +319,30 @@ describe('Transform NDAF to DAF', () => {
       'q0',
       ['q0', 'q3', 'q2q3', 'q0q3', 'q0q2q3', 'q1q2q3', 'q0q1q3', 'q0q1q2q3']
     );
-    expect(determineze(nd_automata10)).toEqual(expected);
-
+    const test = determineze(nd_automata10);
+    expect(test).toEqual(expected);
+    const tape1 = makeTape('accccb');
+    const tape2 = makeTape('abaaaaaaa');
+    const tape3 = makeTape('acccccccc');
+    const tape4 = makeTape('acccccbb');
+    expect(readTape(test, tape1)).toBeTruthy();
+    expect(readTape(test, tape2)).toBeTruthy();
+    expect(readTape(test, tape3)).toBeFalsy();
+    expect(readTape(test, tape4)).toBeFalsy();
   });
 
   test('Determinize automata with letters', () => {
-    const expected = makeAutomata(
-      ['A', 'B', 'C', 'E', 'F', 'G'],
-      ['a', 'b'],
-      [{
-        state: 'A', value: 'a', next: ['G', 'B']
-      }, {
-        state: 'A', value: 'b', next: ['B']
-      }, {
-        state: 'B', value: 'a', next: ['F', 'A']
-      }, {
-        state: 'B', value: 'b', next: ['E']
-      }, {
-        state: 'C', value: 'a', next: ['C']
-      }, {
-        state: 'C', value: 'b', next: ['G']
-      }, {
-        state: 'E', value: 'a', next: ['E', 'F']
-      }, {
-        state: 'E', value: 'b', next: ['A']
-      }, {
-        state: 'F', value: 'a', next: ['B']
-      }, {
-        state: 'F', value: 'b', next: ['C', 'G']
-      }, {
-        state: 'G', value: 'a', next: ['G']
-      },  {
-        state: 'G', value: 'b', next: ['F', 'E']
-      }],
-      'A',
-      ['A', 'G']
-    );
-    console.log('BeginTest!');
     const test = determineze(nd_automata11);
-    console.log(test);
-    console.log(test.transitions);
+    const tape1 = makeTape('abba');
+    const tape2 = makeTape('bbba');
+    const tape3 = makeTape('baa');
+    const tape4 = makeTape('bab');
+    const tape5 = makeTape('bbbb');
+    expect(readTape(test, tape1)).toBeTruthy();
+    expect(readTape(test, tape2)).toBeTruthy();
+    expect(readTape(test, tape3)).toBeTruthy();
+    expect(readTape(test, tape4)).toBeTruthy();
+    expect(readTape(test, tape5)).toBeFalsy();
   });
 
 });

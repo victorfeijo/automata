@@ -24,7 +24,6 @@ describe('Union relation', () => {
     const tape3 = makeTape('baa');
 
     const joined = joinAutomatas(d_automata2, d_automata3);
-
     expect(readTape(joined, tape1)).toBeTruthy();
     expect(readTape(joined, tape2)).toBeTruthy();
     expect(readTape(joined, tape3)).toBeFalsy();

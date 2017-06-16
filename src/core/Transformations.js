@@ -138,7 +138,7 @@ function minimize(automata) {
 function createDetTransition(automata, ndTransition) {
   const removedDupStates = removeRepeatedStates(ndTransition.next);
   let newState = reduce((newstate, state) => concat(newstate, state), '', removedDupStates);
-  console.log(newState);
+  // console.log(newState);
   let isLetter;
 
   isLetter = automata.states[0].indexOf('q');
