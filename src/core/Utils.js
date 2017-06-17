@@ -25,6 +25,14 @@ const rangeStates = (char='q', amount=100) => (
   map(state => char + state, range(0, amount))
 );
 
+/**
+ * This function will rename the states, transitions, initials
+ * and finals of the automata. RenameStates will follow an alphabetical
+ * and numerical order, hence the states will not necessarilly be standard,
+ * q0 is not always initial, for example.
+ * @param {automata} automata - automata to rename the states.
+ * @return {Automata} - automata with the states renamed.
+*/
 function renameStates(automata) {
   const states = (automata.states).sort();
   let newStates;
