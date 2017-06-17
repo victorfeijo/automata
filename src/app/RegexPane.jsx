@@ -5,6 +5,7 @@ import { isValidRegex, toAutomata } from './utils/RegexUtils';
 import { toColumns, toSourceData } from './utils/AutomataUtils';
 import EditAutomata from './EditAutomata.jsx';
 import RegexOps from './RegexOps.jsx';
+import store from 'store';
 
 const Container = styled.div`
   margin: 24px;
@@ -56,6 +57,10 @@ class RegexPane extends Component {
     this.setState({ sourceData });
   }
 
+  onCopyClick = (e) => {
+    store.set('copied', { value: 'a' });
+  }
+
   render() {
     const { automata, sourceData } = this.state;
 
@@ -84,7 +89,7 @@ class RegexPane extends Component {
                   automata={automata}
                   autoUpdate={true}
                   onSave={this.updateSourceData}></EditAutomata>
-                <Button icon="copy">Copy</Button>
+                <Button icon="copy" onClick={this.onCopyClick}>Copy</Button>
               </Row>
               }>
               <CardContainer>

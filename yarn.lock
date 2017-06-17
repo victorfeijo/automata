@@ -6392,6 +6392,10 @@ state-toggle@^1.0.0:
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/statuses/-/statuses-1.3.1.tgz#faf51b9eb74aaef3b3acf4ad5f61abf24cb7b93e"
 
+store@^2.0.4:
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/store/-/store-2.0.4.tgz#6c6819602a5497166ade85db2442cc64ebcc5761"
+
 stream-array@^1.1.0:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/stream-array/-/stream-array-1.1.2.tgz#9e5f7345f2137c30ee3b498b9114e80b52bb7eb5"
