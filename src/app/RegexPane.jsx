@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import { Alert, Button, Row, Col, Input, Icon, Card, Table } from 'antd';
+import { Alert, Button, Row, Col, Input, Icon, Card, Table, message } from 'antd';
 import { isValidRegex, toAutomata } from './utils/RegexUtils';
 import { toColumns, toSourceData } from './utils/AutomataUtils';
 import EditAutomata from './EditAutomata.jsx';
@@ -26,7 +26,7 @@ const Title = styled.p`
 
 class RegexPane extends Component {
   state = {
-    valid: true,
+    valid: false,
     regex: '',
     automata: {},
     sourceData: {},
@@ -39,7 +39,7 @@ class RegexPane extends Component {
     if (isValidRegex(regex)) {
       this.updateAutomata(regex);
     } else {
-      this.setState({ valid: true });
+      this.setState({ valid: false });
     }
   }
 
@@ -48,7 +48,7 @@ class RegexPane extends Component {
 
     this.setState({
       automata: automata,
-      valid: false,
+      valid: true,
       sourceData: toSourceData(automata)
     });
   }
@@ -58,7 +58,14 @@ class RegexPane extends Component {
   }
 
   onCopyClick = (e) => {
-    store.set('copied', { value: 'a' });
+    const { automata, valid } = this.state;
+
+    if (valid) {
+      store.set('copied', { automata: this.state.automata });
+      message.success('Copied automata with success!');
+    } else {
+      message.warning('Not a valid automata.');
+    }
   }
 
   render() {
@@ -87,13 +94,12 @@ class RegexPane extends Component {
                 <EditAutomata
                   title={"Edit Automata"}
                   automata={automata}
-                  autoUpdate={true}
                   onSave={this.updateSourceData}></EditAutomata>
                 <Button icon="copy" onClick={this.onCopyClick}>Copy</Button>
               </Row>
               }>
               <CardContainer>
-                {this.state.valid ? (
+                {!this.state.valid ? (
                   <p> Write a valid regular expression.. </p>
                 ) : (
                   <Table columns={columns} dataSource={sourceData} pagination={false} />

@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import { indexOf, inc, curry, equals, map, has, without,
          assoc, last, keys, reduce, update, append, head } from 'ramda';
-import { Modal, Button, Table, Input, Switch, Tabs } from 'antd';
+import { Modal, Button, Table, Input, Tabs, message } from 'antd';
 import { toColumns, toSourceData } from './utils/AutomataUtils';
+import store from 'store';
 
 const ButtonCnt = styled.div`
   margin-top: 14px;
@@ -43,6 +44,11 @@ class AutomataParcials extends Component {
     });
   }
 
+  onCopyClick = curry((automata, e) => {
+    store.set('copied', { automata: automata });
+    message.success('Copied automata with success!');
+  });
+
   render() {
     const { parcials } = this.state;
 
@@ -57,9 +63,15 @@ class AutomataParcials extends Component {
           <Tabs>
             {parcials.map((parcial, i) => (
               <Tabs.TabPane tab={parcial.operation} key={i+1}>
-                <Table columns={toColumns(parcial.automata)} dataSource={toSourceData(parcial.automata)} pagination={false} />
+                <Table
+                  columns={toColumns(parcial.automata)}
+                  dataSource={toSourceData(parcial.automata)}
+                  pagination={false} />
                 <ButtonCnt>
-                  <Button key="copy" icon="copy">Copy</Button>
+                  <Button
+                    key="copy"
+                    icon="copy"
+                    onClick={this.onCopyClick(parcial.automata)}>Copy</Button>
                 </ButtonCnt>
               </Tabs.TabPane>
             ))}

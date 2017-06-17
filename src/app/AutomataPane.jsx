@@ -7,6 +7,7 @@ import { minimize, determineze } from '../core/Transformations';
 import { toColumns, toSourceData, sourceDataToAutomata, joinWithParcials, intersectionWithParcials, differenceWithParcials, complementWithParcials, determinizeWithParcials, minimizeWithParcials } from './utils/AutomataUtils';
 import EditAutomata from './EditAutomata.jsx';
 import AutomataParcials from './AutomataParcials.jsx';
+import store from 'store';
 
 const Container = styled.div`
   margin: 24px;
@@ -159,6 +160,30 @@ class AutomataPane extends Component {
     });
   }
 
+  onPasteAClick = (e) => {
+    const { automata } = store.get('copied');
+
+    this.setState({
+      automataA: {
+        automata: automata,
+        columns: toColumns(automata),
+        sourceData: toSourceData(automata),
+      }
+    });
+  }
+
+  onPasteBClick = (e) => {
+    const { automata } = store.get('copied');
+
+    this.setState({
+      automataB: {
+        automata: automata,
+        columns: toColumns(automata),
+        sourceData: toSourceData(automata),
+      }
+    });
+  }
+
   render() {
     const { automataA, automataB, resultAutomata, parcials } = this.state;
 
@@ -174,7 +199,7 @@ class AutomataPane extends Component {
                     automata={automataA.automata}
                     onSave={this.onSaveAutomataA} />
                   <Tooltip title="Paste">
-                    <Button icon="download"></Button>
+                    <Button icon="download" onClick={this.onPasteAClick}></Button>
                   </Tooltip>
                   <Tooltip title="Copy">
                     <Button icon="copy"></Button>
@@ -195,7 +220,7 @@ class AutomataPane extends Component {
                     automata={automataB.automata}
                     onSave={this.onSaveAutomataB} />
                   <Tooltip title="Paste">
-                    <Button icon="download"></Button>
+                    <Button icon="download" onClick={this.onPasteBClick}></Button>
                   </Tooltip>
                   <Tooltip title="Copy">
                     <Button icon="copy"></Button>

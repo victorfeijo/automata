@@ -30,11 +30,9 @@ class EditAutomata extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { automata, title, autoUpdate } = nextProps;
+    const { automata, title } = nextProps;
 
-    if (autoUpdate) {
-      this.updateStateAutomata(automata, title);
-    }
+    this.updateStateAutomata(automata, title);
   }
 
   componentDidMount() {
