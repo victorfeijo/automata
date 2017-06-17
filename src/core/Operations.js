@@ -3,7 +3,7 @@ import { isNil, isEmpty, contains, find, assoc,
          gte, length, map, append, flatten, range,
          uniq, clone, equals, without, reject, split,
          all, curry, reduce, union, concat, sort, pluck,
-         update, indexOf, remove } from 'ramda';
+         update, indexOf, remove, match } from 'ramda';
 
 import { errorTransition, isBlankTransition } from './specs/Automata';
 import ENUM from './Enum';
@@ -244,7 +244,18 @@ function createNewTransition(automata, states) {
   ), [], states);
 
   const filteredStates = removeRepeatedStates(states);
-  const newState = reduce((newState, state) => concat(newState, state), '', filteredStates);
+  let newState = reduce((newState, state) => concat(newState, state), '', filteredStates);
+  let isLetter;
+
+  isLetter = automata.states[0].indexOf('q');
+
+  if (!(isLetter === 0)) {
+    newState = match(/[A-Z]/g, newState);
+  } else {
+    newState = match(/q[0-9]+/g, newState);
+  }
+  newState = uniq(newState.sort());
+  newState = reduce((newstate, state) => concat(newstate, state), '', newState);
 
   let newTransitions;
   forEach(sym => {

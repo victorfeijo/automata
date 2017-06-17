@@ -2,6 +2,7 @@ import { union, concat, clone, difference,
          map, contains, pipe } from 'ramda';
 import { determineze, distinguishStates, removeBlankTransitions } from './Transformations';
 import { withErrorTransitions, errorToState } from './Operations';
+import {renameStates} from './Utils';
 import makeAutomata from './specs/Automata';
 import ENUM from './Enum';
 
@@ -22,19 +23,19 @@ function joinAutomatas(automataA, automataB) {
     next: [distinguishA.initial, distinguishB.initial]
   };
 
-  return determineze(
-    removeBlankTransitions(
-      makeAutomata(
-        union([newInitialTransition.state],
-          union(distinguishA.states, distinguishB.states)),
-        union(distinguishA.alphabet, distinguishB.alphabet),
-        union([newInitialTransition],
-          union(distinguishA.transitions, distinguishB.transitions)),
-        newInitialTransition.state,
-        union(distinguishA.finals, distinguishB.finals)
-      )
+  let joinedAutomata = removeBlankTransitions(
+    makeAutomata(
+      union([newInitialTransition.state],
+        union(distinguishA.states, distinguishB.states)),
+      union(distinguishA.alphabet, distinguishB.alphabet),
+      union([newInitialTransition],
+        union(distinguishA.transitions, distinguishB.transitions)),
+      newInitialTransition.state,
+      union(distinguishA.finals, distinguishB.finals)
     )
   );
+  joinedAutomata = renameStates(joinedAutomata);
+  return determineze(joinedAutomata);
 }
 
 /**

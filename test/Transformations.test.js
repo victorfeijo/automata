@@ -7,10 +7,10 @@ import { d_automata1,
          d_automata7 } from '../samples/Deterministic';
 import { distinguishStates, minimize, determineze, removeStates, removeUnreachables, removeDeads, createDetTransition, removeEquivalent, removeBlankTransitions } from '../src/core/Transformations';
 import { readTape } from '../src/core/Operations';
-import { nd_automata1, nd_automata3, nd_automata4, nd_automata5, nd_automata51, nd_automata52, nd_automata53, nd_automata6, nd_automata7, nd_automata8, nd_automata9} from '../samples/NonDeterministic';
+import { nd_automata1, nd_automata3, nd_automata4, nd_automata5, nd_automata51, nd_automata52, nd_automata53, nd_automata6, nd_automata7, nd_automata8, nd_automata9, nd_automata10, nd_automata11} from '../samples/NonDeterministic';
 import makeAutomata from '../src/core/specs/Automata';
 import makeTape from '../src/core/specs/Tape';
-
+import {renameStates} from '../src/core/Utils'
 describe('Transform NDAF to DAF', () => {
   test('Update State and Transition with 2 next', () => {
     const expected = makeAutomata(
@@ -283,6 +283,68 @@ describe('Transform NDAF to DAF', () => {
 
     expect(determineze(nd_automata51)).toEqual(expected);
   });
+
+  test('Determinize nd_automata7', () => {
+    const expected = makeAutomata(
+      ['q0', 'q1', 'q2', 'q3', 'q2q3', 'q0q3', 'q0q2q3', 'q1q2q3', 'q0q1q3', 'q0q1q2q3'],
+      ['a', 'b', 'c'],
+      [{ state: 'q0', value: 'a', next: [ 'q1' ] },
+      { state: 'q1', value: 'b', next: [ 'q3' ] },
+      { state: 'q1', value: 'c', next: [ 'q1' ] },
+      { state: 'q2', value: 'a', next: [ 'q1' ] },
+      { state: 'q0', value: 'b', next: [ 'q2q3' ] },
+      { state: 'q0q3', value: 'b', next: [ 'q2q3' ] },
+      { state: 'q0', value: 'c', next: [ 'q0q3' ] },
+      { state: 'q1', value: 'a', next: [ 'q0q3' ] },
+      { state: 'q0q2q3', value: 'b', next: [ 'q2q3' ] },
+      { state: 'q2', value: 'c', next: [ 'q0q2q3' ] },
+      { state: 'q3', value: 'a', next: [ 'q0q3' ] },
+      { state: 'q1q2q3', value: 'b', next: [ 'q3' ] },
+      { state: 'q3', value: 'c', next: [ 'q1q2q3' ] },
+      { state: 'q0q1q3', value: 'b', next: [ 'q2q3' ] },
+      { state: 'q2q3', value: 'a', next: [ 'q0q1q3' ] },
+      { state: 'q0q1q2q3', value: 'b', next: [ 'q2q3' ] },
+      { state: 'q2q3', value: 'c', next: [ 'q0q1q2q3' ] },
+      { state: 'q0q3', value: 'a', next: [ 'q0q1q3' ] },
+      { state: 'q0q3', value: 'c', next: [ 'q0q1q2q3' ] },
+      { state: 'q0q2q3', value: 'a', next: [ 'q0q1q3' ] },
+      { state: 'q0q2q3', value: 'c', next: [ 'q0q1q2q3' ] },
+      { state: 'q1q2q3', value: 'a', next: [ 'q0q1q3' ] },
+      { state: 'q1q2q3', value: 'c', next: [ 'q0q1q2q3' ] },
+      { state: 'q0q1q3', value: 'a', next: [ 'q0q1q3' ] },
+      { state: 'q0q1q3', value: 'c', next: [ 'q0q1q2q3' ] },
+      { state: 'q0q1q2q3', value: 'a', next: [ 'q0q1q3' ] },
+      { state: 'q0q1q2q3', value: 'c', next: [ 'q0q1q2q3' ]
+      }],
+      'q0',
+      ['q0', 'q3', 'q2q3', 'q0q3', 'q0q2q3', 'q1q2q3', 'q0q1q3', 'q0q1q2q3']
+    );
+    const test = determineze(nd_automata10);
+    expect(test).toEqual(expected);
+    const tape1 = makeTape('accccb');
+    const tape2 = makeTape('abaaaaaaa');
+    const tape3 = makeTape('acccccccc');
+    const tape4 = makeTape('acccccbb');
+    expect(readTape(test, tape1)).toBeTruthy();
+    expect(readTape(test, tape2)).toBeTruthy();
+    expect(readTape(test, tape3)).toBeFalsy();
+    expect(readTape(test, tape4)).toBeFalsy();
+  });
+
+  test('Determinize automata with letters', () => {
+    const test = determineze(nd_automata11);
+    const tape1 = makeTape('abba');
+    const tape2 = makeTape('bbba');
+    const tape3 = makeTape('baa');
+    const tape4 = makeTape('bab');
+    const tape5 = makeTape('bbbb');
+    expect(readTape(test, tape1)).toBeTruthy();
+    expect(readTape(test, tape2)).toBeTruthy();
+    expect(readTape(test, tape3)).toBeTruthy();
+    expect(readTape(test, tape4)).toBeTruthy();
+    expect(readTape(test, tape5)).toBeFalsy();
+  });
+
 });
 
 describe('Remove Blank Transitions', () => {

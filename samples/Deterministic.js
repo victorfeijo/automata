@@ -200,3 +200,53 @@ export const d_automata7 = makeAutomata(
   'A',
   ['A', 'G']
 );
+
+export const d_automata8 = makeAutomata(
+  ['q0q2q1'],
+  ['a', 'b'],
+  [{
+    state: 'q0q2q1', value: 'a', next: ['q0q2q1']
+  }],
+  'q0q2q1',
+  ['q0q2q1']
+);
+
+export const d_automata9 = makeAutomata(
+  ['q0', 'q1', 'q2'],
+  ['a', 'b'],
+  [{
+    state: 'q0', value: 'a', next: ['q1']
+  }, {
+    state: 'q0', value: 'b', next: ['q0']
+  }, {
+    state: 'q1', value: 'a', next: ['q2']
+  }, {
+    state: 'q1', value: 'b', next: ['q0']
+  }, {
+    state: 'q2', value: 'a', next: ['q2']
+  }, {
+    state: 'q2', value: 'b', next: ['q2']
+  }],
+  'q0',
+  ['q0', 'q1']
+);
+
+export const d_automata10 = makeAutomata(
+  ['q0', 'q1', 'q2'],
+  ['a', 'b'],
+  [{
+    state: 'q0', value: 'a', next: ['q0']
+  }, {
+    state: 'q0', value: 'b', next: ['q1']
+  }, {
+    state: 'q1', value: 'a', next: ['q0']
+  }, {
+    state: 'q1', value: 'b', next: ['q2']
+  }, {
+    state: 'q2', value: 'a', next: ['q2']
+  }, {
+    state: 'q2', value: 'b', next: ['q2']
+  }],
+  'q0',
+  ['q0', 'q1']
+);

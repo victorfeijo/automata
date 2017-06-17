@@ -4,7 +4,9 @@ import { d_automata1,
          d_automata4,
          d_automata5,
          d_automata6,
-         d_automata7 } from '../samples/Deterministic';
+         d_automata7,
+         d_automata9,
+         d_automata10} from '../samples/Deterministic';
 import { nd_automata3 } from '../samples/NonDeterministic';
 import { joinAutomatas,
          complementAutomata,
@@ -13,8 +15,9 @@ import { joinAutomatas,
 import { readTape } from '../src/core/Operations';
 import { minimize } from '../src/core/Transformations';
 import makeTape from '../src/core/specs/Tape';
+import makeAutomata from '../src/core/specs/Automata'
 import { contains } from 'ramda';
-
+import {renameStates} from '../src/core/Utils'
 import { inspect } from 'util'
 
 describe('Union relation', () => {
@@ -24,7 +27,6 @@ describe('Union relation', () => {
     const tape3 = makeTape('baa');
 
     const joined = joinAutomatas(d_automata2, d_automata3);
-
     expect(readTape(joined, tape1)).toBeTruthy();
     expect(readTape(joined, tape2)).toBeTruthy();
     expect(readTape(joined, tape3)).toBeFalsy();
@@ -126,6 +128,35 @@ describe('Intersection relation', () => {
     expect(readTape(intersect, tape2)).toBeTruthy();
     expect(readTape(intersect, tape3)).toBeFalsy();
     expect(readTape(intersect, tape4)).toBeFalsy();
+  });
+  test('Intersection test for automatas showed in class', () => {
+    const expected = makeAutomata(
+      ['q0', 'q1', 'q2'],
+      ['a', 'b'],
+      [{
+        state: 'q1', value: 'a', next: ['q2']
+      }, {
+        state: 'q1', value: 'b', next: ['q0']
+      }, {
+        state: 'q2', value: 'b', next: ['q0']
+      }, {
+        state: 'q0', value: 'a', next: ['q2']
+      }],
+      'q1',
+      ['q1', 'q2', 'q0']
+    );
+    const test = renameStates(minimize(intersectionAutomata(minimize(d_automata9), minimize(d_automata10))));
+    expect(test).toEqual(expected);
+    const tape1 = makeTape('ababababab');
+    const tape2 = makeTape('babababa');
+    const tape3 = makeTape('aaaabbb');
+    const tape4 = makeTape('bbababab');
+
+    expect(readTape(test, tape1)).toBeTruthy();
+    expect(readTape(test, tape2)).toBeTruthy();
+    expect(readTape(test, tape3)).toBeFalsy();
+    expect(readTape(test, tape4)).toBeFalsy();
+
   });
 });
 
