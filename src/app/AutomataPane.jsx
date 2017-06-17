@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import { assoc, pipe } from 'ramda';
+import { assoc, pipe, last } from 'ramda';
 import { Tooltip, Button, Row, Col, Input, Icon, Card, Table } from 'antd';
 import { blank_automata } from '../../samples/Deterministic';
-import { joinAutomatas, complementAutomata, intersectionAutomata, differenceAutomata } from '../core/Relations';
 import { minimize, determineze } from '../core/Transformations';
-import { toColumns, toSourceData, sourceDataToAutomata } from './utils/AutomataUtils';
+import { toColumns, toSourceData, sourceDataToAutomata, joinWithParcials, intersectionWithParcials, differenceWithParcials, complementWithParcials, determinizeWithParcials, minimizeWithParcials } from './utils/AutomataUtils';
 import EditAutomata from './EditAutomata.jsx';
+import AutomataParcials from './AutomataParcials.jsx';
 
 const Container = styled.div`
   margin: 24px;
@@ -48,6 +48,7 @@ class AutomataPane extends Component {
       columns: toColumns(blank_automata),
       sourceData: toSourceData(blank_automata),
     },
+    parcials: [],
   }
 
   onSaveAutomataA = (sourceData) => {
@@ -70,90 +71,96 @@ class AutomataPane extends Component {
 
   onUnionClick = (e) => {
     const { automataA, automataB } = this.state;
-
-    const joined = joinAutomatas(automataA.automata, automataB.automata);
+    const joinedParcials = joinWithParcials(automataA.automata, automataB.automata);
+    const joined = last(joinedParcials).automata;
 
     this.setState({
       resultAutomata: {
         automata: joined,
         columns: toColumns(joined),
         sourceData: toSourceData(joined),
-      }
+      },
+      parcials: joinedParcials,
     });
   }
 
   onIntersectionClick = (e) => {
     const { automataA, automataB } = this.state;
-
-    const intersect = intersectionAutomata(automataA.automata, automataB.automata);
+    const intersectParcials = intersectionWithParcials(automataA.automata, automataB.automata);
+    const intersect = last(intersectParcials).automata;
 
     this.setState({
       resultAutomata: {
         automata: intersect,
         columns: toColumns(intersect),
         sourceData: toSourceData(intersect),
-      }
+      },
+      parcials: intersectParcials,
     });
   }
 
   onDifferenceClick = (e) => {
     const { automataA, automataB } = this.state;
-
-    const difference = differenceAutomata(automataA.automata, automataB.automata);
+    const differenceParcials = differenceWithParcials(automataA.automata, automataB.automata);
+    const difference = last(differenceParcials).automata;
 
     this.setState({
       resultAutomata: {
         automata: difference,
         columns: toColumns(difference),
         sourceData: toSourceData(difference),
-      }
+      },
+      parcials: differenceParcials,
     });
   }
 
   onComplementClick = (e) => {
     const { automataA } = this.state;
-
-    const complement = complementAutomata(automataA.automata);
+    const complementParcials = complementWithParcials(automataA.automata);
+    const complement = last(complementParcials).automta;
 
     this.setState({
       resultAutomata: {
         automata: complement,
         columns: toColumns(complement),
         sourceData: toSourceData(complement),
-      }
+      },
+      parcials: complementParcials,
     });
   }
 
   onDeterminizeClick = (e) => {
     const { automataA } = this.state;
-
-    const determinized = determineze(automataA.automata);
+    const determinizedParcials = determinizeWithParcials(automataA.automata);
+    const determinized = last(determinizedParcials).automata;
 
     this.setState({
       resultAutomata: {
         automata: determinized,
         columns: toColumns(determinized),
         sourceData: toSourceData(determinized),
-      }
+      },
+      parcials: determinizedParcials,
     });
   }
 
   onMinimizeClick = (e) => {
     const { automataA } = this.state;
-
-    const minimized = minimize(automataA.automata);
+    const minimizedParcials = minimizeWithParcials(automataA.automata);
+    const minimized = last(minimizedParcials).automata;
 
     this.setState({
       resultAutomata: {
         automata: minimized,
         columns: toColumns(minimized),
         sourceData: toSourceData(minimized),
-      }
+      },
+      parcials: minimizedParcials,
     });
   }
 
   render() {
-    const { automataA, automataB, resultAutomata } = this.state;
+    const { automataA, automataB, resultAutomata, parcials } = this.state;
 
     return (
       <Container>
@@ -219,7 +226,7 @@ class AutomataPane extends Component {
                     <Button icon="copy"></Button>
                   </Tooltip>
                   <Tooltip title="Expand view">
-                    <Button icon="scan"></Button>
+                    <AutomataParcials parcials={parcials} />
                   </Tooltip>
                 </Row>}>
                 <CardContainer>

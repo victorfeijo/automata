@@ -5,7 +5,7 @@ import { isNil, isEmpty, contains, find, assoc,
          all, curry, reduce, union, concat, sort, pluck,
          update, indexOf, remove, match } from 'ramda';
 
-import { errorTransition, isBlankTransition } from './specs/Automata';
+import { errorTransition, isBlankTransition, hasBlankTransitions } from './specs/Automata';
 import ENUM from './Enum';
 
 /**
@@ -60,6 +60,16 @@ const withErrorTransitions = automata => (
     automata.transitions,
     errorTransitions(automata)
   )
+);
+
+/**
+ * Return with epsolon if has epsilon transitions.
+ * @param {automata} automata - Automata to look.
+ * @return {array<string>} - Alphabet.
+ */
+const alphabetWithBlank = automata => (
+  hasBlankTransitions(automata) ?
+    [...automata.alphabet, ENUM.Epsilon] : automata.alphabet
 );
 
 /**
@@ -337,6 +347,7 @@ export {
   findTransition,
   firstNDTransition,
   withErrorTransitions,
+  alphabetWithBlank,
   errorToState,
   removeFromNext,
   transitiveTransitions,

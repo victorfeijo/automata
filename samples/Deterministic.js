@@ -255,6 +255,8 @@ export const blank_automata = makeAutomata(
   ['q0'],
   ['a', 'b'],
   [{
+    state: 'q0', value: 'a', next: ['q0']
+  }, {
     state: 'q0', value: 'b', next: ['q0']
   }],
   'q0',
