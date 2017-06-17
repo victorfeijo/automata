@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import { assoc, pipe, last } from 'ramda';
-import { Tooltip, Button, Row, Col, Input, Icon, Card, Table } from 'antd';
+import { assoc, pipe, last, curry } from 'ramda';
+import { message, Tooltip, Button, Row, Col, Input, Icon, Card, Table } from 'antd';
 import { blank_automata } from '../../samples/Deterministic';
 import { minimize, determineze } from '../core/Transformations';
 import { toColumns, toSourceData, sourceDataToAutomata, joinWithParcials, intersectionWithParcials, differenceWithParcials, complementWithParcials, determinizeWithParcials, minimizeWithParcials } from './utils/AutomataUtils';
@@ -184,6 +184,11 @@ class AutomataPane extends Component {
     });
   }
 
+  onCopyClick = curry((automata, e) => {
+    store.set('copied', { automata: automata });
+    message.success('Copied automata with success!');
+  });
+
   render() {
     const { automataA, automataB, resultAutomata, parcials } = this.state;
 
@@ -202,7 +207,7 @@ class AutomataPane extends Component {
                     <Button icon="download" onClick={this.onPasteAClick}></Button>
                   </Tooltip>
                   <Tooltip title="Copy">
-                    <Button icon="copy"></Button>
+                    <Button icon="copy" onClick={this.onCopyClick(automataA.automata)}></Button>
                   </Tooltip>
                 </Row>}>
                 <CardContainer>
@@ -223,7 +228,7 @@ class AutomataPane extends Component {
                     <Button icon="download" onClick={this.onPasteBClick}></Button>
                   </Tooltip>
                   <Tooltip title="Copy">
-                    <Button icon="copy"></Button>
+                    <Button icon="copy" onClick={this.onCopyClick(automataB.automata)}></Button>
                   </Tooltip>
                 </Row>}>
                 <CardContainer>
