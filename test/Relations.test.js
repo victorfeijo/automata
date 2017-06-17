@@ -11,14 +11,16 @@ import { nd_automata3 } from '../samples/NonDeterministic';
 import { joinAutomatas,
          complementAutomata,
          intersectionAutomata,
-         differenceAutomata } from '../src/core/Relations';
+         differenceAutomata,
+         isEquivalent, isContained } from '../src/core/Relations';
 import { readTape } from '../src/core/Operations';
 import { minimize } from '../src/core/Transformations';
 import makeTape from '../src/core/specs/Tape';
 import makeAutomata from '../src/core/specs/Automata'
-import { contains } from 'ramda';
+import { contains, pipe } from 'ramda';
 import {renameStates} from '../src/core/Utils'
-import { inspect } from 'util'
+import { inspect } from 'util';
+import {normalize, deDesimoneTree, deSimoneToAutomata} from '../src/core/RegularExpression';
 
 describe('Union relation', () => {
   test('Join d_automata2 with d_automata3', () => {
@@ -108,7 +110,6 @@ describe('Complement relation', () => {
     const tape3 = makeTape('abbba');
 
     const complemented = complementAutomata(d_automata7);
-
     expect(readTape(complemented, tape1)).toBeTruthy();
     expect(readTape(complemented, tape2)).toBeTruthy();
     expect(readTape(complemented, tape3)).toBeFalsy();
@@ -190,5 +191,78 @@ describe('Difference relation', () => {
     expect(readTape(intersect, tape2)).toBeTruthy();
     expect(readTape(intersect, tape3)).toBeFalsy();
     expect(readTape(intersect, tape4)).toBeFalsy();
+  });
+});
+
+describe('Equivalence and Contained', () => {
+  test('Equivalence', () => {
+    const regExp1 = pipe(normalize,
+                         deDesimoneTree,
+                         deSimoneToAutomata)('aa*bb*');
+    const regExp2 = pipe(normalize,
+                         deDesimoneTree,
+                         deSimoneToAutomata)('a*ab*b');
+
+    const regExp3 = pipe(normalize,
+                         deDesimoneTree,
+                         deSimoneToAutomata)('(ab|ba)*');
+    const regExp4 = pipe(normalize,
+                         deDesimoneTree,
+                         deSimoneToAutomata)('(ba|ab)*');
+
+    const regExp5 = pipe(normalize,
+                         deDesimoneTree,
+                         deSimoneToAutomata)('1?(01)*0?');
+    const regExp6 = pipe(normalize,
+                         deDesimoneTree,
+                         deSimoneToAutomata)('0?(10)*1?');
+
+    // const regExp7 = pipe(normalize,
+                         // deDesimoneTree,
+                         // deSimoneToAutomata)('1?1?(00?11?)*0?0?');
+    // const regExp8 = pipe(normalize,
+                         // deDesimoneTree,
+                         // deSimoneToAutomata)('(1|0)?((10)*(01)*)*(1|0)?');
+
+    const regExp9 = pipe(normalize,
+                         deDesimoneTree,
+                         deSimoneToAutomata
+                         )('abba|bb*');
+    const regExp10 = pipe(normalize,
+                          deDesimoneTree,
+                          deSimoneToAutomata
+                          )('b*b|aba');
+
+    const regExp11 = pipe(normalize,
+                          deDesimoneTree,
+                          deSimoneToAutomata)('bbabbac|bbabba');
+    const regExp12 = pipe(normalize,
+                          deDesimoneTree,
+                          deSimoneToAutomata)('bbabba|bbabba');
+
+    const regExp13 = pipe(normalize,
+                          deDesimoneTree,
+                          deSimoneToAutomata)('abaa|bb*');
+
+    const regExp14 = pipe(normalize,
+                          deDesimoneTree,
+                          deSimoneToAutomata)('aaba|bb*');
+
+    const regExp15 = pipe(normalize,
+                          deDesimoneTree,
+                          deSimoneToAutomata)('abbabbaba|bb*');
+
+    const regExp16 = pipe(normalize,
+                          deDesimoneTree,
+                          deSimoneToAutomata)('abbabbaab|bb*');
+
+    expect(isEquivalent(regExp1, regExp2)).toBeTruthy();
+    expect(isEquivalent(regExp3, regExp4)).toBeTruthy();
+    expect(isEquivalent(regExp5, regExp6)).toBeTruthy();
+    // expect(isEquivalent(regExp7, regExp8)).toBeFalsy();
+    expect(isEquivalent(regExp9, regExp10)).toBeFalsy();
+    expect(isEquivalent(regExp11, regExp12)).toBeFalsy();
+    expect(isEquivalent(regExp13, regExp14)).toBeFalsy();
+    expect(isEquivalent(regExp15, regExp16)).toBeFalsy();
   });
 });

@@ -45,24 +45,34 @@ function joinAutomatas(automataA, automataB) {
  * @return {Automata} - Complement automata.
  */
 function complementAutomata(automata, newState = 'qCOMP') {
-  const transitions = pipe(
-    withErrorTransitions,
-    errorToState(newState)
-  )(automata);
+  const automataNotBlank = removeBlankTransitions(automata);
+  const automataDet = determineze(automataNotBlank);
+  if (!contains('qCOMP', automata.states)) {
+      const transitions = pipe(
+        withErrorTransitions,
+        errorToState(newState)
+      )(automata);
 
-  const newTransitions = map(sym => ({
-    state: newState,
-    value: sym,
-    next: [newState]
-  }), automata.alphabet);
-
+      const newTransitions = map(sym => ({
+        state: newState,
+        value: sym,
+        next: [newState]
+          }), automataDet.alphabet);
+      return makeAutomata(
+        union([newState], automataDet.states),
+        clone(automataDet.alphabet),
+        union(newTransitions, transitions),
+        clone(automataDet.initial),
+        union([newState], difference(automataDet.states, automataDet.finals))
+      );
+  }
   return makeAutomata(
-    union([newState], automata.states),
-    clone(automata.alphabet),
-    union(newTransitions, transitions),
-    clone(automata.initial),
-    union([newState], difference(automata.states, automata.finals))
-  );
+    clone(automataDet.states),
+    clone(automataDet.alphabet),
+    clone(automata.transitions),
+    clone(automataDet.initial),
+    clone(difference(automataDet.states, automataDet.finals))
+  )
 }
 
 function intersectionAutomata(automataA, automataB) {
@@ -83,13 +93,14 @@ function differenceAutomata(automataA, automataB) {
 
 function isContained(automataA, automataB) {
   const difference = differenceAutomata(automataA, automataB);
-
+  const diff = renameStates(difference);
+  // console.log('DIFFERENCE => ', diff);
   const reachables = transitiveTransitions(
-    difference.initial,
-    difference.transitions
+    diff.initial,
+    diff.transitions
   );
-
-  return !any(s => contains(s, difference.finals), reachables);
+  // console.log('RECHEABLES => ', reachables);
+  return !any(s => contains(s, diff.finals), reachables);
 }
 
 const isEquivalent = (automataA, automataB) => (

@@ -4,6 +4,7 @@ import { d_automata1, d_automata2, d_automata4, d_automata7, d_automata5 } from 
 import { nd_automata1, nd_automata3 } from '../samples/NonDeterministic';
 import { tape1, tape2, tape3 } from '../samples/Tapes';
 import { difference, contains } from 'ramda';
+import ENUM from '../src/core/Enum'
 
 describe('Read tape', () => {
   test('Full state automata - Read and accept tape', () => {
@@ -145,10 +146,10 @@ describe('With error transitions', () => {
     const withError = withErrorTransitions(d_automata2);
 
     expect(contains(
-      { state: 'q1', value: 'b', next: ['ERROR'] }, withError
+      { state: 'q1', value: 'b', next: [ENUM.Error] }, withError
     )).toBeTruthy();
     expect(contains(
-      { state: 'q2', value: 'a', next: ['ERROR'] }, withError
+      { state: 'q2', value: 'a', next: [ENUM.Error] }, withError
     )).toBeTruthy();
   });
 });

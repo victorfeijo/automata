@@ -124,7 +124,7 @@ describe('Integration test - Regexp to Automata', () => {
   });
 
   // TODO: FIX SINGLE CHAR REGEX CASE
-  test.only('Trick a regex to automata', () => {
+  test('Trick a regex to automata', () => {
     const root = deDesimoneTree('a');
     const automata = deSimoneToAutomata(root);
 
