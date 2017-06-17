@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Alert, Button, Row, Col, Icon, Input } from 'antd';
+import { checkEquivalence, checkIsContained } from './utils/RegexUtils';
 import styled from 'styled-components';
 
 const Container = styled.div`
@@ -46,6 +47,48 @@ class RegexOps extends Component {
     });
   }
 
+  onClickEquivalence = (e) => {
+    const { regexA, regexB } = this.state;
+    const isEquivalent = checkEquivalence(regexA, regexB);
+
+    if (isEquivalent) {
+      this.setState({
+        alertData: {
+          message: 'The regular expressions are equivalent.',
+          type: 'success',
+        }
+      });
+    } else {
+      this.setState({
+        alertData: {
+          message: 'The regular expressions are not equivalent.',
+          type: 'error',
+        }
+      });
+    }
+  }
+
+  onClickContained = (e) => {
+    const { regexA, regexB } = this.state;
+    const isContained = checkIsContained(regexA, regexB);
+
+    if (isContained) {
+      this.setState({
+        alertData: {
+          message: 'The regular expression A is contained in B.',
+          type: 'success',
+        }
+      });
+    } else {
+      this.setState({
+        alertData: {
+          message: 'The regular expression A is not contained in B.',
+          type: 'warning',
+        }
+      });
+    }
+  }
+
   render() {
     const { alertData } = this.state;
 
@@ -72,8 +115,8 @@ class RegexOps extends Component {
         </Row>
         <Row>
           <ButtonGroup>
-            <Button>Equivalence</Button>
-            <Button>Contains</Button>
+            <Button onClick={this.onClickEquivalence}>Equivalence</Button>
+            <Button onClick={this.onClickContained}>Contains</Button>
           </ButtonGroup>
         </Row>
         <Row>

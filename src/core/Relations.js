@@ -1,7 +1,7 @@
 import { union, concat, clone, difference,
-         map, contains, pipe } from 'ramda';
+         map, contains, pipe, any } from 'ramda';
 import { determineze, distinguishStates, removeBlankTransitions } from './Transformations';
-import { withErrorTransitions, errorToState } from './Operations';
+import { withErrorTransitions, errorToState, transitiveTransitions } from './Operations';
 import {renameStates} from './Utils';
 import makeAutomata from './specs/Automata';
 import ENUM from './Enum';
@@ -81,9 +81,27 @@ function differenceAutomata(automataA, automataB) {
   );
 }
 
+function isContained(automataA, automataB) {
+  const difference = differenceAutomata(automataA, automataB);
+
+  const reachables = transitiveTransitions(
+    difference.initial,
+    difference.transitions
+  );
+
+  return !any(s => contains(s, difference.finals), reachables);
+}
+
+const isEquivalent = (automataA, automataB) => (
+  isContained(automataA, automataB) &&
+  isContained(automataB, automataA)
+);
+
 export {
   joinAutomatas,
   complementAutomata,
   intersectionAutomata,
   differenceAutomata,
+  isContained,
+  isEquivalent,
 }
