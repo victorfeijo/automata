@@ -2,6 +2,7 @@ import {  assoc, and, find, any, all, pluck, add, subtract, uniq, clone, length,
 import makeDeSimoneNode, { updateNode, downMove, upMove } from './specs/DeSimoneNode';
 import makeAutomata from './specs/Automata';
 import { rangeStates } from './Utils';
+import { containsObj } from './Predicates';
 import ENUM from './Enum';
 
 /**
@@ -135,8 +136,8 @@ function makeTree(expr) {
 const findByComposition = (deSimoneStates, composition) => (
   find(tran => (
     and(
-      all(comp => contains(comp, tran.composedBy), composition),
-      all(comp => contains(comp, composition), tran.composedBy),
+      all(comp => containsObj(comp, tran.composedBy), composition),
+      all(comp => containsObj(comp, composition), tran.composedBy),
     )
   ), deSimoneStates)
 );

@@ -16,7 +16,7 @@
     "docs": "documentation build src/** -f html -o docs"
   },
   "dependencies": {
-    "antd": "^2.8.0",
+    "antd": "^2.11.0",
     "eslint-plugin-jsx-a11y": "^4.0.0",
     "express": "^4.15.2",
     "global": "^4.3.2",
