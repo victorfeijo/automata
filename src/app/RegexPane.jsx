@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import { Alert, Button, Row, Col, Input, Icon, Card, Table } from 'antd';
-
-import EditAutomata from './EditAutomata.jsx';
-
 import { isValidRegex, toAutomata } from './utils/RegexUtils';
 import { toColumns, toSourceData } from './utils/AutomataUtils';
+import EditAutomata from './EditAutomata.jsx';
+import RegexOps from './RegexOps.jsx';
 
 const Container = styled.div`
   margin: 24px;
@@ -72,26 +71,7 @@ class RegexPane extends Component {
               placeholder="Enter a regular expression: (a | b?)*"
               type="textarea"
               rows={6} />
-            <RegexOp>
-              <Title>Operations</Title>
-              <Row justify="space-around">
-                <Col span={12}>
-                  <Input
-                    placeholder="Enter a regular expression: (a | b?)*"
-                    type="textarea"
-                    rows={3} />
-                </Col>
-                <Col span={12}>
-                  <Input
-                    placeholder="Enter a regular expression: (a | b?)*"
-                    type="textarea"
-                    rows={3} />
-                </Col>
-              </Row>
-              <Row>
-                <Alert message="Equivalents :)" type="success" showIcon />
-              </Row>
-            </RegexOp>
+            <RegexOps />
           </Col>
           <Row type="flex" span={1} justify="center" align="middle">
             <Icon type="arrow-right" />
