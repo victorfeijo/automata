@@ -118,7 +118,7 @@ class AutomataPane extends Component {
   onComplementClick = (e) => {
     const { automataA } = this.state;
     const complementParcials = complementWithParcials(automataA.automata);
-    const complement = last(complementParcials).automta;
+    const complement = last(complementParcials).automata;
 
     this.setState({
       resultAutomata: {
