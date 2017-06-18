@@ -200,7 +200,6 @@ function determineze(automata) {
   const nAutomata = createDetTransition(automata, ndTransition);
   let detAutomata = determineze(nAutomata);
   return detAutomata;
-
 }
 
 /**
