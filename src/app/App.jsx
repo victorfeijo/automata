@@ -27,8 +27,8 @@ const App = () => (
         defaultSelectedKeys={['2']}
         style={{ lineHeight: '64px' }}
       >
-        <Menu.Item key="1">Home</Menu.Item>
-        <Menu.Item key="2">
+        <Menu.Item key="2">Home</Menu.Item>
+        <Menu.Item key="1">
           <a href={"/docs/index.html"}> Documentation </a>
         </Menu.Item>
       </Menu>
