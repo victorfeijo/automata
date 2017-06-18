@@ -3,7 +3,7 @@ import { isNil, isEmpty, contains, find, assoc,
          gte, length, map, append, flatten, range,
          uniq, clone, equals, without, reject, split,
          all, curry, reduce, union, concat, sort, pluck,
-         update, indexOf, remove, match } from 'ramda';
+         update, indexOf, remove, match, join } from 'ramda';
 
 import { errorTransition, isBlankTransition, hasBlankTransitions } from './specs/Automata';
 import ENUM from './Enum';
@@ -270,7 +270,10 @@ function createNewTransition(automata, states) {
   let newTransitions;
   forEach(sym => {
     const transSym = filter(propEq('value', sym), statesTransitions);
-    let symNextAll = (reduce((acc, tran) => union(acc, filter(t => t !== ENUM.Error, tran.next)), [], transSym)).sort();
+    let symNextAll = (reduce((acc, tran) => union(acc, tran.next), [], transSym)).sort();
+
+    symNextAll = all(equals(ENUM.Error), symNextAll) ?
+      symNextAll : filter(sym => sym !== ENUM.Error, symNextAll);
 
     const noRepeatArr = removeRepeatedStates(symNextAll);
 
@@ -305,6 +308,7 @@ function createEquivalentTransitions(equivalents, automata) {
       if (isNil(newNext)) {
         return transition;
       }
+
       return assoc('next', [newNext.transitions[0].state], transition);
     }, gen.transitions);
     return assoc('transitions', transitions, gen);
