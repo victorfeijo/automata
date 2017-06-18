@@ -49,11 +49,8 @@ function renameStates(automata) {
     const nextIndex = filter(ind => ind >= 0, reduce((indxs, next) => union(indxs, [states.indexOf(next)]), [], transition.next));
     let newNext;
     newNext = reduce((next, indx) => union(next, [newStates[indx]]), [], nextIndex);
-    if (any(v => v === ENUM.Error, transition.next)) {
-      newNext = union(newNext, '-');
-      if (length(newNext) === 1) {
-        newNext = '-';
-      }
+    if (all(v => v === ENUM.Error, transition.next)) {
+      newNext = '-';
     }
     newTransitions = union(newTransitions, [{state: newStates[stateIndex],
                                              value: transition.value,
