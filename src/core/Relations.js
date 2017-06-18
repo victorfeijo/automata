@@ -47,7 +47,7 @@ function joinAutomatas(automataA, automataB) {
 function complementAutomata(automata, newState = 'qCOMP') {
   const automataNotBlank = removeBlankTransitions(automata);
   const automataDet = determineze(automataNotBlank);
-  if (!contains('qCOMP', automata.states)) {
+  if (!contains('qCOMP', automataDet.states)) {
       const transitions = pipe(
         withErrorTransitions,
         errorToState(newState)
@@ -69,7 +69,7 @@ function complementAutomata(automata, newState = 'qCOMP') {
   return makeAutomata(
     clone(automataDet.states),
     clone(automataDet.alphabet),
-    clone(automata.transitions),
+    clone(automataDet.transitions),
     clone(automataDet.initial),
     clone(difference(automataDet.states, automataDet.finals))
   )
