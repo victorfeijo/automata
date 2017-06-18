@@ -292,6 +292,7 @@ describe('Transform NDAF to DAF', () => {
       { state: 'q1', value: 'b', next: [ 'q3' ] },
       { state: 'q1', value: 'c', next: [ 'q1' ] },
       { state: 'q2', value: 'a', next: [ 'q1' ] },
+      { state: 'q2q3', value: 'b', next: ['-']},
       { state: 'q0', value: 'b', next: [ 'q2q3' ] },
       { state: 'q0q3', value: 'b', next: [ 'q2q3' ] },
       { state: 'q0', value: 'c', next: [ 'q0q3' ] },
