@@ -1,4 +1,4 @@
-import { __, curry, or, and, all, isEmpty, isNil, find } from 'ramda';
+import { __, is, curry, or, and, all, isEmpty, isNil, find } from 'ramda';
 
 export const notNil = curry(v => (
   !isNil(v)
@@ -14,6 +14,10 @@ export const isString = curry(v => (
 
 export const isStringList = curry(v => (
   and(notEmpty(v), all(isString(__))(v))
+));
+
+export const isSEList = curry(v => (
+  (is(Array, v) && isEmpty(v)) || isStringList(v)
 ));
 
 export const containsObj = curry((obj, arr) => (

@@ -254,7 +254,7 @@ class AutomataPane extends Component {
               <Card title="Result Automata" extra={
                 <Row type="flex" justify="space-between">
                   <Tooltip title="Copy">
-                    <Button icon="copy"></Button>
+                    <Button icon="copy" onClick={this.onCopyClick(resultAutomata.automata)}></Button>
                   </Tooltip>
                   <Tooltip title="Expand view">
                     <AutomataParcials parcials={parcials} />

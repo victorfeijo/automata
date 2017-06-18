@@ -1,5 +1,5 @@
 import { where, all, any, pluck, gte, length, propEq, __ } from 'ramda';
-import { isString, isStringList } from '../Predicates';
+import { isString, isStringList, isSEList } from '../Predicates';
 import ENUM from '../Enum';
 
 const specTransition = transition => (
@@ -16,7 +16,7 @@ const specAutomata = automata => (
     alphabet: isStringList(__),
     transitions: all(specTransition(__))(__),
     initial: isString(__),
-    finals: isStringList(__),
+    finals: isSEList(__),
   })(automata)
 );
 
