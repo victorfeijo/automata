@@ -58,6 +58,7 @@ class AutomataPane extends Component {
       assoc('sourceData', sourceData)
     )(this.state.automataA);
 
+    console.log(automataA);
     this.setState({ automataA });
   }
 

@@ -68,7 +68,11 @@ class EditAutomata extends Component {
   });
 
   updateFinal = curry((rowValue, isFinal) => {
-    const newState = assoc('final', isFinal, rowValue.state);
+    let newState = assoc('final', isFinal, rowValue.state);
+
+    newState = isFinal ?
+      assoc('text', `* ${rowValue.state.state}`, newState) :
+      assoc('text', rowValue.state.state, newState)
 
     this.updateSourceData(rowValue, rowValue.state,
       assoc('state', newState, rowValue));
@@ -172,7 +176,9 @@ class EditAutomata extends Component {
               onClick={this.onSave(this.props.onSave)}
               icon="save"> Save </Button>, ]}
         >
-          <Table columns={columns} dataSource={sourceData} pagination={false} />
+          { this.state.visible &&
+              <Table columns={columns} dataSource={sourceData} pagination={false} />
+          }
           <ButtonCnt>
             <Button key="add" shape="circle" icon="plus" onClick={this.onAddTransition}></Button>
           </ButtonCnt>
