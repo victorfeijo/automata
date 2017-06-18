@@ -146,7 +146,7 @@ function createDetTransition(automata, ndTransition) {
   if (!(isLetter === 0)) {
     newState = match(/[A-Z]/g, newState);
   } else {
-    newState = match(/q[0-9]+/g, newState);
+    newState = match(/q([0-9]|[A-Z])+/g, newState);
   }
   newState = uniq(newState.sort());
   newState = reduce((newstate, state) => concat(newstate, state), '', newState);

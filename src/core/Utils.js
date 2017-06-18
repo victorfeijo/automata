@@ -1,6 +1,7 @@
 import { isLeafNode, updateNode } from './specs/DeSimoneNode';
-import { isEmpty, map, reduce, range, length, union, concat, clone, toString, append } from 'ramda';
+import { isEmpty, map, reduce, range, length, union, concat, clone, toString, append, all, any, filter, flatten } from 'ramda';
 import makeAutomata from '../core/specs/Automata'
+import ENUM from '../core/Enum'
 /**
  * THIS FUNCTION MUTATES THE OBJECT! Helper function
  * to create deSimone trees easily.
@@ -45,8 +46,15 @@ function renameStates(automata) {
   let newTransitions;
   for(transition of automata.transitions) {
     const stateIndex = states.indexOf(transition.state);
-    const nextIndex = reduce((indxs, next) => union(indxs, [states.indexOf(next)]), [], transition.next);
-    const newNext = reduce((next, indx) => union(next, [newStates[indx]]), [], nextIndex);
+    const nextIndex = filter(ind => ind >= 0, reduce((indxs, next) => union(indxs, [states.indexOf(next)]), [], transition.next));
+    let newNext;
+    newNext = reduce((next, indx) => union(next, [newStates[indx]]), [], nextIndex);
+    if (any(v => v === ENUM.Error, transition.next)) {
+      newNext = union(newNext, '-');
+      if (length(newNext) === 1) {
+        newNext = '-';
+      }
+    }
     newTransitions = union(newTransitions, [{state: newStates[stateIndex],
                                              value: transition.value,
                                              next: newNext}]);

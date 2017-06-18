@@ -21,6 +21,7 @@ import { contains, pipe } from 'ramda';
 import {renameStates} from '../src/core/Utils'
 import { inspect } from 'util';
 import {normalize, deDesimoneTree, deSimoneToAutomata} from '../src/core/RegularExpression';
+import ENUM from '../src/core/Enum'
 
 describe('Union relation', () => {
   test('Join d_automata2 with d_automata3', () => {
@@ -139,25 +140,28 @@ describe('Intersection relation', () => {
       }, {
         state: 'q1', value: 'b', next: ['q0']
       }, {
+        state: 'q2', value: 'a', next: ENUM.Error
+      }, {
         state: 'q2', value: 'b', next: ['q0']
       }, {
         state: 'q0', value: 'a', next: ['q2']
+      }, {
+        state: 'q0', value: 'b', next: ENUM.Error
       }],
       'q1',
       ['q1', 'q2', 'q0']
     );
-    console.log(renameStates(minimize(intersectionAutomata(minimize(d_automata9), minimize(d_automata10)))));
-    console.log(minimize(intersectionAutomata(minimize(d_automata9), minimize(d_automata10))));
-    // expect(test).toEqual(expected);
+    const test = renameStates(minimize(intersectionAutomata(minimize(d_automata9), minimize(d_automata10))));
+    expect(test).toEqual(expected);
     const tape1 = makeTape('ababababab');
     const tape2 = makeTape('babababa');
     const tape3 = makeTape('aaaabbb');
     const tape4 = makeTape('bbababab');
 
-    // expect(readTape(test, tape1)).toBeTruthy();
-    // expect(readTape(test, tape2)).toBeTruthy();
-    // expect(readTape(test, tape3)).toBeFalsy();
-    // expect(readTape(test, tape4)).toBeFalsy();
+    expect(readTape(test, tape1)).toBeTruthy();
+    expect(readTape(test, tape2)).toBeTruthy();
+    expect(readTape(test, tape3)).toBeFalsy();
+    expect(readTape(test, tape4)).toBeFalsy();
 
   });
 });
