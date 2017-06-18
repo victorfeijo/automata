@@ -50,7 +50,7 @@ function renameStates(automata) {
     let newNext;
     newNext = reduce((next, indx) => union(next, [newStates[indx]]), [], nextIndex);
     if (all(v => v === ENUM.Error, transition.next)) {
-      newNext = '-';
+      newNext = [ENUM.Error];
     }
     newTransitions = union(newTransitions, [{state: newStates[stateIndex],
                                              value: transition.value,

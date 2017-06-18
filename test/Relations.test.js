@@ -140,13 +140,13 @@ describe('Intersection relation', () => {
       }, {
         state: 'q1', value: 'b', next: ['q0']
       }, {
-        state: 'q2', value: 'a', next: ENUM.Error
+        state: 'q2', value: 'a', next: [ENUM.Error]
       }, {
         state: 'q2', value: 'b', next: ['q0']
       }, {
         state: 'q0', value: 'a', next: ['q2']
       }, {
-        state: 'q0', value: 'b', next: ENUM.Error
+        state: 'q0', value: 'b', next: [ENUM.Error]
       }],
       'q1',
       ['q1', 'q2', 'q0']
@@ -221,13 +221,6 @@ describe('Equivalence and Contained', () => {
     const regExp6 = pipe(normalize,
                          deDesimoneTree,
                          deSimoneToAutomata)('0?(10)*1?');
-
-    // const regExp7 = pipe(normalize,
-                         // deDesimoneTree,
-                         // deSimoneToAutomata)('1?1?(00?11?)*0?0?');
-    // const regExp8 = pipe(normalize,
-                         // deDesimoneTree,
-                         // deSimoneToAutomata)('(1|0)?((10)*(01)*)*(1|0)?');
 
     const regExp9 = pipe(normalize,
                          deDesimoneTree,
