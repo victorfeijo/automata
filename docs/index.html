@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset='utf-8' />
-  <title>Automata 0.0.1 | Documentation</title>
+  <title>Automata 1.0.0 | Documentation</title>
   <meta name='viewport' content='width=device-width,initial-scale=1'>
   <link href='assets/bass.css' type='text/css' rel='stylesheet' />
   <link href='assets/style.css' type='text/css' rel='stylesheet' />
@@ -14,7 +14,7 @@
       <div class='fixed xs-hide fix-3 overflow-auto max-height-100'>
         <div class='py1 px2'>
           <h3 class='mb0 no-anchor'>Automata</h3>
-          <div class='mb1'><code>0.0.1</code></div>
+          <div class='mb1'><code>1.0.0</code></div>
           <input
             placeholder='Filter'
             id='filter-input'
@@ -58,6 +58,16 @@
                   href='#witherrortransitions'
                   class="">
                   withErrorTransitions
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#alphabetwithblank'
+                  class="">
+                  alphabetWithBlank
                   
                 </a>
                 
@@ -413,6 +423,16 @@
                 
                 </li>
               
+                
+                <li><a
+                  href='#renamestates'
+                  class="">
+                  renameStates
+                  
+                </a>
+                
+                </li>
+              
             </ul>
           </div>
           <div class='mt1 h6 quiet'>
@@ -698,6 +718,75 @@
       <div class='py1 quiet mt1 prose-big'>Returns</div>
       <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">array</a>&#x3C;transitions></code>:
         Transitions with error.
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+            <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='alphabetwithblank'>
+      alphabetWithBlank
+    </h3>
+    
+    
+  </div>
+  
+
+  <p>Return with epsolon if has epsilon transitions.</p>
+
+
+  <div class='pre p1 fill-light mt0'>alphabetWithBlank</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>automata</span> <code class='quiet'>(automata)</code>
+	    Automata to look.
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">array</a>&#x3C;<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>></code>:
+        Alphabet.
 
       
     
@@ -3415,6 +3504,78 @@ to create deSimone trees easily.</p>
       <div class='py1 quiet mt1 prose-big'>Returns</div>
       <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></code>:
         Bad...
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+            <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='renamestates'>
+      renameStates
+    </h3>
+    
+    
+  </div>
+  
+
+  <p>This function will rename the states, transitions, initials
+and finals of the automata. RenameStates will follow an alphabetical
+and numerical order, hence the states will not necessarilly be standard,
+q0 is not always initial, for example.</p>
+
+
+  <div class='pre p1 fill-light mt0'>renameStates(automata: automata): Automata</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>automata</span> <code class='quiet'>(automata)</code>
+	    automata to rename the states.
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>Automata</code>:
+        automata with the states renamed.
 
       
     

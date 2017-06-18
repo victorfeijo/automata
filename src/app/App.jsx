@@ -28,7 +28,9 @@ const App = () => (
         style={{ lineHeight: '64px' }}
       >
         <Menu.Item key="1">Home</Menu.Item>
-        <Menu.Item key="2">Documentation</Menu.Item>
+        <Menu.Item key="2">
+          <a href={"/docs/index.html"}> Documentation </a>
+        </Menu.Item>
       </Menu>
     </Header>
     <Content style={{ padding: '0 50px' }}>
