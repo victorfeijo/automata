@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import { assoc, pipe, last, curry } from 'ramda';
 import { message, Tooltip, Button, Row, Col, Input, Icon, Card, Table } from 'antd';
 import { blank_automata } from '../../samples/Deterministic';
-import { minimize, determineze } from '../core/Transformations';
 import { toColumns, toSourceData, sourceDataToAutomata, joinWithParcials, intersectionWithParcials, differenceWithParcials, complementWithParcials, determinizeWithParcials, minimizeWithParcials } from './utils/AutomataUtils';
 import EditAutomata from './EditAutomata.jsx';
 import AutomataParcials from './AutomataParcials.jsx';
