@@ -1,5 +1,5 @@
-import { reduce, map, assoc, isEmpty, prepend, pluck, union, concat,
-         cond, T, equals, contains, without, keys, prop, filter } from 'ramda';
+import { reduce, map, assoc, isEmpty, prepend, pluck, union, concat, gte,
+         cond, T, equals, contains, without, keys, prop, filter, toString, length, trim, split, join } from 'ramda';
 import { withErrorTransitions, findTransition, alphabetWithBlank } from '../../core/Operations';
 import { determineze, distinguishStates, removeBlankTransitions,
          removeUnreachables, removeDeads, removeEquivalent } from '../../core/Transformations';
@@ -35,6 +35,14 @@ const parseState = (state, automata) => {
   ])(state)
 };
 
+const nextToND = (nextString) => (
+  split(',', trim(nextString))
+);
+
+const nextToString = next => (
+  join(', ', next)
+);
+
 const toSourceData = automata => {
   if (isEmpty(automata)) { return {}; }
 
@@ -44,8 +52,9 @@ const toSourceData = automata => {
   return map((state) => {
     const data = reduce((data, sym) => (
       assoc(sym, {
-        text: findTransition(withError, state, sym).next,
-        value: sym
+        text: nextToString(findTransition(withError, state, sym).next),
+        next: findTransition(withError, state, sym).next,
+        value: sym,
       }, data)
     ), {
       state: {
@@ -68,7 +77,7 @@ const sourceDataToAutomata = sourceData => {
       {
         state: data.state.state,
         value: sym,
-        next: prop(sym, data).text
+        next: prop(sym, data).next
       }
     ), alphabet))
   ), [], sourceData);
@@ -175,6 +184,7 @@ function minimizeWithParcials(automata) {
 }
 
 export {
+  nextToND,
   toColumns,
   toSourceData,
   sourceDataToAutomata,

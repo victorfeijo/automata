@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { indexOf, inc, curry, equals, map, has, without,
          assoc, last, keys, reduce, update, append, head } from 'ramda';
 import { Modal, Button, Table, Input, Switch } from 'antd';
-import { toColumns, toSourceData } from './utils/AutomataUtils';
+import { toColumns, toSourceData, nextToND } from './utils/AutomataUtils';
 
 const ButtonCnt = styled.div`
   margin-top: 10px;
@@ -75,12 +75,13 @@ class EditAutomata extends Component {
   });
 
   updateText = curry((rowValue, colValue, newValue) => {
+    const val = newValue.target.value;
     const isState = has('state', colValue);
     const updateKey = isState ? 'state' : colValue.value;
 
     const updated = assoc(updateKey, isState ?
-      { text: newValue.target.value, state: newValue.target.value, final: false } :
-      { text: [newValue.target.value], value: colValue.value }, rowValue);
+      { text: val, state: val, final: false } :
+      { text: val, value: colValue.value, next: nextToND(val) }, rowValue);
 
     this.updateSourceData(rowValue, colValue, updated);
   });
@@ -130,7 +131,7 @@ class EditAutomata extends Component {
         return assoc(key, { text: '', state: '', final: false }, obj);
       }
 
-      return assoc(key, { text: '', value: key }, obj);
+      return assoc(key, { text: '', value: key, next: [''] }, obj);
     }, {}, keys(lastData));
 
     this.setState({ sourceData: [...this.state.sourceData, newBlank] });

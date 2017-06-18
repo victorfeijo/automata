@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import { indexOf, inc, curry, equals, map, has, without,
          assoc, last, keys, reduce, update, append, head } from 'ramda';
-import { Modal, Button, Table, Input, Tabs, message } from 'antd';
+import { Tooltip, Modal, Button, Table, Input, Tabs, message } from 'antd';
 import { toColumns, toSourceData } from './utils/AutomataUtils';
 import store from 'store';
 
@@ -54,7 +54,9 @@ class AutomataParcials extends Component {
 
     return (
       <div>
-        <Button onClick={this.showModal} icon="scan"></Button>
+        <Tooltip title="View parcial automatas">
+          <Button onClick={this.showModal} icon="scan"></Button>
+        </Tooltip>
         <Modal
           title={"Parcial automatas"}
           visible={this.state.visible}
