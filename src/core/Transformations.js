@@ -1,4 +1,4 @@
-import { isEmpty, contains, tail, head, filter,
+import { isEmpty, contains, tail, head, filter, all,
          any, find, clone, difference, uniq, length, forEach,
          flatten, map, reduce, union, pluck, pipe, splitEvery,
          sort, propEq, equals, concat, append, range, match } from 'ramda';
@@ -9,6 +9,8 @@ import { firstNDTransition, removeFromNext,
          transitiveTransitions, previousStates,
          reduceEquivalents, createNewTransition, removeRepeatedStates,
          createEquivalentTransitions, firstBlankTransition} from './Operations';
+
+import ENUM from './Enum';
 
 
 /**
@@ -22,7 +24,8 @@ function distinguishStates(automata, char) {
     {
       state: concat(transition.state, char),
       value: clone(transition.value),
-      next: map(n => concat(n, char), transition.next),
+      next: all(equals(ENUM.Error), transition.next) ?
+        transition.next : map(n => concat(n, char), filter(n => !equals(ENUM.Error, n), transition.next))
     }
   ), automata.transitions);
 
