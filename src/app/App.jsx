@@ -7,16 +7,20 @@ const { Header, Content, Footer } = Layout;
 const Logo = styled.div`
   width: 120px;
   height: 31px;
-  background: #333;
-  border-radius: 6px;
-  margin: 16px 24px 16px 0;
   float: left;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 600;
+  color: white;
+  padding-bottom: 16px;
 `;
 
 const App = () => (
   <Layout className="layout">
     <Header>
-      <Logo />
+      <Logo>
+        UFSC
+      </Logo>
       <Menu
         theme="dark"
         mode="horizontal"
@@ -24,7 +28,9 @@ const App = () => (
         style={{ lineHeight: '64px' }}
       >
         <Menu.Item key="1">Home</Menu.Item>
-        <Menu.Item key="2">Documentation</Menu.Item>
+        <Menu.Item key="2">
+          <a href={"/docs/index.html"}> Documentation </a>
+        </Menu.Item>
       </Menu>
     </Header>
     <Content style={{ padding: '0 50px' }}>
