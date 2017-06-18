@@ -47,6 +47,10 @@ const toSourceData = automata => {
   if (isEmpty(automata)) { return {}; }
 
   const withError = withErrorTransitions(automata);
+  const orderedStates = prepend(
+    automata.initial,
+    without([automata.initial], automata.states)
+  );
 
   let counter = 0;
   return map((state) => {
@@ -65,7 +69,7 @@ const toSourceData = automata => {
     }, alphabetWithBlank(automata));
 
     return assoc('key', counter++, data);
-  }, automata.states)
+  }, orderedStates);
 };
 
 const sourceDataToAutomata = sourceData => {
