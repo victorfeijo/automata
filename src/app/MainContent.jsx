@@ -8,7 +8,7 @@ const TabPane = Tabs.TabPane;
 const Container = styled.div`
   background: #fff;
   padding: 24px;
-  min-height: 680px;
+  min-height: 80%;
   margin-top: 40px;
   border-radius: 6px;
 `;

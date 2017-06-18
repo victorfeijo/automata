@@ -40,7 +40,7 @@ const nextToND = (nextString) => (
 );
 
 const nextToString = next => (
-  join(', ', next)
+  join(',', next)
 );
 
 const toSourceData = automata => {
