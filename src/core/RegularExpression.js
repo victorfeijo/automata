@@ -212,9 +212,8 @@ function deSimoneStates(createdStates, toCreate, stateList) {
 
   const nextTransitions = reduce((acc, stateComp) => {
     const composition = reduce((acc, node) => (
-      union(flatten(upMove(node)), acc)
-    ), [], stateComp.composition);
-
+              [...acc, ...flatten(upMove(node))]
+        ), [], stateComp.composition);
     const existentComp = findByComposition(createdStates, composition);
     if (existentComp) {
       createdStates = updateNextTransitions(createdStates, stateComp.state, existentComp.state);
@@ -231,7 +230,6 @@ function deSimoneStates(createdStates, toCreate, stateList) {
   const newToCreate = reduce((acc, toCreate) => (
     union(acc, map(t => t.nextCreate, toCreate.transitions))
   ), [], nextTransitions);
-
   return deSimoneStates(
     [...createdStates, ...nextTransitions],
     newToCreate,
@@ -255,13 +253,11 @@ function deSimoneToAutomata(deSimoneRoot) {
     transitions: createCompTransitions(initialState, initialComposition, stateList),
     composedBy: initialComposition
   };
-
   const deSimoneAutomata = deSimoneStates(
     [initialDeSimoneState],
     pluck('nextCreate', initialDeSimoneState.transitions),
     stateList
   );
-
   return makeAutomata(
     pluck('state', deSimoneAutomata),
     deSimoneStatesAlphabet(deSimoneAutomata),
