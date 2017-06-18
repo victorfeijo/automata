@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { Alert, Button, Row, Col, Icon, Input } from 'antd';
+import { Alert, Button, Row, Col, Icon, Input, Popconfirm } from 'antd';
 import { checkEquivalence, checkIsContained } from './utils/RegexUtils';
+import { curry } from 'ramda';
 import styled from 'styled-components';
 
 const Container = styled.div`
@@ -68,8 +69,7 @@ class RegexOps extends Component {
     }
   }
 
-  onClickContained = (e) => {
-    const { regexA, regexB } = this.state;
+  onClickContained = curry((regexA, regexB, e) => {
     const isContained = checkIsContained(regexA, regexB);
 
     if (isContained) {
@@ -87,10 +87,10 @@ class RegexOps extends Component {
         }
       });
     }
-  }
+  })
 
   render() {
-    const { alertData } = this.state;
+    const { alertData, regexA, regexB } = this.state;
 
     return (
       <Container>
@@ -116,7 +116,14 @@ class RegexOps extends Component {
         <Row>
           <ButtonGroup>
             <Button onClick={this.onClickEquivalence}>Equivalence</Button>
-            <Button onClick={this.onClickContained}>Contains</Button>
+            <Popconfirm
+              title={"Select containment type:"}
+              okText={"Left ⊆ Right"}
+              cancelText={"Right ⊆ Left"}
+              onConfirm={this.onClickContained(regexA, regexB)}
+              onCancel={this.onClickContained(regexB, regexA)}>
+              <Button>Contains</Button>
+            </Popconfirm>
           </ButtonGroup>
         </Row>
         <Row>

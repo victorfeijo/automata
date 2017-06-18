@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import { assoc, pipe, last, curry } from 'ramda';
-import { message, Tooltip, Button, Row, Col, Input, Icon, Card, Table } from 'antd';
+import { message, Tooltip, Button, Row, Col, Input, Icon, Card, Table, Popconfirm } from 'antd';
 import { blank_automata } from '../../samples/Deterministic';
 import { toColumns, toSourceData, sourceDataToAutomata, joinWithParcials, intersectionWithParcials, differenceWithParcials, complementWithParcials, determinizeWithParcials, minimizeWithParcials } from './utils/AutomataUtils';
 import EditAutomata from './EditAutomata.jsx';
@@ -115,9 +115,8 @@ class AutomataPane extends Component {
     });
   }
 
-  onComplementClick = (e) => {
-    const { automataA } = this.state;
-    const complementParcials = complementWithParcials(automataA.automata);
+  onComplementClick = curry((automataObj, e) => {
+    const complementParcials = complementWithParcials(automataObj.automata);
     const complement = last(complementParcials).automata;
 
     this.setState({
@@ -128,11 +127,10 @@ class AutomataPane extends Component {
       },
       parcials: complementParcials,
     });
-  }
+  })
 
-  onDeterminizeClick = (e) => {
-    const { automataA } = this.state;
-    const determinizedParcials = determinizeWithParcials(automataA.automata);
+  onDeterminizeClick = curry((automataObj, e) => {
+    const determinizedParcials = determinizeWithParcials(automataObj.automata);
     const determinized = last(determinizedParcials).automata;
 
     this.setState({
@@ -143,11 +141,10 @@ class AutomataPane extends Component {
       },
       parcials: determinizedParcials,
     });
-  }
+  })
 
-  onMinimizeClick = (e) => {
-    const { automataA } = this.state;
-    const minimizedParcials = minimizeWithParcials(automataA.automata);
+  onMinimizeClick = curry((automataObj, e) => {
+    const minimizedParcials = minimizeWithParcials(automataObj.automata);
     const minimized = last(minimizedParcials).automata;
 
     this.setState({
@@ -158,7 +155,7 @@ class AutomataPane extends Component {
       },
       parcials: minimizedParcials,
     });
-  }
+  })
 
   onPasteAClick = (e) => {
     const { automata } = store.get('copied');
@@ -243,9 +240,30 @@ class AutomataPane extends Component {
               <Button onClick={this.onUnionClick}>Union</Button>
               <Button onClick={this.onIntersectionClick}>Intersection</Button>
               <Button onClick={this.onDifferenceClick}>Difference</Button>
-              <Button onClick={this.onComplementClick}>Complement</Button>
-              <Button onClick={this.onDeterminizeClick}>Determinize</Button>
-              <Button onClick={this.onMinimizeClick}>Minimize</Button>
+              <Popconfirm
+                title={"Wich automata to complement?"}
+                okText={"Automata A"}
+                cancelText={"Automata B"}
+                onConfirm={this.onComplementClick(automataA)}
+                onCancel={this.onComplementClick(automataB)}>
+                <Button>Complement</Button>
+              </Popconfirm>
+              <Popconfirm
+                title={"Wich automata to determinize?"}
+                okText={"Automata A"}
+                cancelText={"Automata B"}
+                onConfirm={this.onDeterminizeClick(automataA)}
+                onCancel={this.onDeterminizeClick(automataB)}>
+                <Button>Determinize</Button>
+              </Popconfirm>
+              <Popconfirm
+                title={"Wich automata to minimize?"}
+                okText={"Automata A"}
+                cancelText={"Automata B"}
+                onConfirm={this.onMinimizeClick(automataA)}
+                onCancel={this.onMinimizeClick(automataB)}>
+                <Button>Minimize</Button>
+              </Popconfirm>
             </ButtonGroup>
           </Row>
           <Col span={7}>
