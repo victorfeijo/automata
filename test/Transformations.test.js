@@ -193,7 +193,7 @@ describe('Transform NDAF to DAF', () => {
 
   test('Determineze Simple Automata', () => {
     const expected = makeAutomata(
-      ['q0', 'q1', 'q2', 'q0q2'],
+      ['q0', 'q1', 'q0q2'],
       ['a', 'b'],
       [{
         state: 'q0', value: 'a', next: ['q1']
@@ -201,8 +201,6 @@ describe('Transform NDAF to DAF', () => {
         state: 'q0', value: 'b', next: ['q0']
       }, {
         state: 'q1', value: 'b', next: ['q1']
-      }, {
-        state: 'q2', value: 'a', next: ['q1']
       }, {
         state: 'q0q2', value: 'a', next: ['q1']
       }, {
@@ -219,7 +217,7 @@ describe('Transform NDAF to DAF', () => {
 
   test('Determineze Complex Automata', () => {
     const expected = makeAutomata(
-      ['q0', 'q1', 'q2', 'q0q1q2', 'q0q1'],
+      ['q0', 'q1', 'q0q1q2', 'q0q1'],
       ['a', 'b'],
       [{
         state: 'q0', value: 'a', next: ['q1']
@@ -227,8 +225,6 @@ describe('Transform NDAF to DAF', () => {
         state: 'q0', value: 'b', next: ['q0']
       }, {
         state: 'q1', value: 'b', next: ['q1']
-      }, {
-        state: 'q2', value: 'a', next: ['q1']
       }, {
         state: 'q1', value: 'a', next: ['q0q1q2']
       }, {
@@ -248,7 +244,7 @@ describe('Transform NDAF to DAF', () => {
 
   test('Determineze Complex Automata 2.0', () => {
     const expected = makeAutomata(
-      ['q0', 'q1', 'q2', 'q3', 'q0q1q3', 'q0q1q2', 'q0q1'],
+      ['q0', 'q1', 'q0q1q3', 'q0q1q2', 'q0q1'],
       ['a', 'b'],
       [{
         state: 'q0', value: 'a', next: ['q1']
@@ -256,12 +252,6 @@ describe('Transform NDAF to DAF', () => {
         state: 'q0', value: 'b', next: ['q0']
       }, {
         state: 'q1', value: 'b', next: ['q1']
-      }, {
-        state: 'q2', value: 'a', next: ['q1']
-      }, {
-        state: 'q3', value: 'a', next: ['q3']
-      }, {
-        state: 'q3', value: 'b', next: ['q2']
       }, {
         state: 'q1', value: 'a', next: ['q0q1q3']
       }, {
@@ -286,19 +276,16 @@ describe('Transform NDAF to DAF', () => {
 
   test('Determinize nd_automata7', () => {
     const expected = makeAutomata(
-      ['q0', 'q1', 'q2', 'q3', 'q2q3', 'q0q3', 'q0q2q3', 'q1q2q3', 'q0q1q3', 'q0q1q2q3'],
+      ['q0', 'q1', 'q3', 'q2q3', 'q0q3', 'q1q2q3', 'q0q1q3', 'q0q1q2q3'],
       ['a', 'b', 'c'],
       [{ state: 'q0', value: 'a', next: [ 'q1' ] },
       { state: 'q1', value: 'b', next: [ 'q3' ] },
       { state: 'q1', value: 'c', next: [ 'q1' ] },
-      { state: 'q2', value: 'a', next: [ 'q1' ] },
       { state: 'q2q3', value: 'b', next: ['-']},
       { state: 'q0', value: 'b', next: [ 'q2q3' ] },
       { state: 'q0q3', value: 'b', next: [ 'q2q3' ] },
       { state: 'q0', value: 'c', next: [ 'q0q3' ] },
       { state: 'q1', value: 'a', next: [ 'q0q3' ] },
-      { state: 'q0q2q3', value: 'b', next: [ 'q2q3' ] },
-      { state: 'q2', value: 'c', next: [ 'q0q2q3' ] },
       { state: 'q3', value: 'a', next: [ 'q0q3' ] },
       { state: 'q1q2q3', value: 'b', next: [ 'q3' ] },
       { state: 'q3', value: 'c', next: [ 'q1q2q3' ] },
@@ -308,8 +295,6 @@ describe('Transform NDAF to DAF', () => {
       { state: 'q2q3', value: 'c', next: [ 'q0q1q2q3' ] },
       { state: 'q0q3', value: 'a', next: [ 'q0q1q3' ] },
       { state: 'q0q3', value: 'c', next: [ 'q0q1q2q3' ] },
-      { state: 'q0q2q3', value: 'a', next: [ 'q0q1q3' ] },
-      { state: 'q0q2q3', value: 'c', next: [ 'q0q1q2q3' ] },
       { state: 'q1q2q3', value: 'a', next: [ 'q0q1q3' ] },
       { state: 'q1q2q3', value: 'c', next: [ 'q0q1q2q3' ] },
       { state: 'q0q1q3', value: 'a', next: [ 'q0q1q3' ] },
@@ -318,7 +303,7 @@ describe('Transform NDAF to DAF', () => {
       { state: 'q0q1q2q3', value: 'c', next: [ 'q0q1q2q3' ]
       }],
       'q0',
-      ['q0', 'q3', 'q2q3', 'q0q3', 'q0q2q3', 'q1q2q3', 'q0q1q3', 'q0q1q2q3']
+      ['q0', 'q3', 'q2q3', 'q0q3', 'q1q2q3', 'q0q1q3', 'q0q1q2q3']
     );
     const test = determineze(nd_automata10);
     expect(test).toEqual(expected);

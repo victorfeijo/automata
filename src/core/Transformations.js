@@ -199,6 +199,7 @@ function determineze(automata) {
   const ndTransition = firstNDTransition(automata.transitions);
   const nAutomata = createDetTransition(automata, ndTransition);
   let detAutomata = determineze(nAutomata);
+  detAutomata = removeUnreachables(detAutomata);
   return detAutomata;
 }
 
