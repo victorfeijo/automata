@@ -98,7 +98,7 @@ function removeEquivalent(automata) {
   const { states, alphabet, initial, finals } = automata;
   const nonFinals = difference(states, finals);
 
-  const equivalents = reduceEquivalents(automata, [nonFinals, finals]);
+  const equivalents = reduceEquivalents(automata, [[...nonFinals, ENUM.Error], finals]);
   const transitions = createEquivalentTransitions(equivalents, automata);
 
   return makeAutomata(

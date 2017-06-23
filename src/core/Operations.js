@@ -204,7 +204,7 @@ function reduceEquivalents(automata, equivalents) {
   }, [], equivalents);
 
   if (equals(reduced, equivalents)) {
-    return reduced;
+    return without([[ENUM.Error]], reduced);
   }
 
   return reduceEquivalents(automata, reduced);
