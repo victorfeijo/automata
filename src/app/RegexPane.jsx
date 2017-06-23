@@ -25,6 +25,10 @@ const Title = styled.p`
   font-size: 16px;
 `;
 
+const ArrowCnt = styled.div`
+  margin-top: 85px;
+`;
+
 class RegexPane extends Component {
   state = {
     valid: false,
@@ -86,8 +90,10 @@ class RegexPane extends Component {
               rows={6} />
             <RegexOps />
           </Col>
-          <Row type="flex" span={1} justify="center" align="middle">
-            <Icon type="arrow-right" />
+          <Row type="flex" span={1} justify="center">
+            <ArrowCnt>
+              <Icon type="arrow-right" />
+            </ArrowCnt>
           </Row>
           <Col span={11}>
             <Card title="Result Automata" extra={
@@ -95,6 +101,7 @@ class RegexPane extends Component {
                 <EditAutomata
                   title={"Edit Automata"}
                   automata={automata}
+                  saveText={true}
                   onSave={this.updateSourceData}></EditAutomata>
                 <Button icon="copy" onClick={this.onCopyClick}>Copy</Button>
               </Row>

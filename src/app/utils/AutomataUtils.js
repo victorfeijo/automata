@@ -6,9 +6,13 @@ import { determineze, distinguishStates, removeBlankTransitions,
 import { complementAutomata, joinAutomatas } from '../../core/Relations';
 import { renameStates } from '../../core/Utils';
 import ENUM from '../../core/Enum';
-import makeAutomata from '../../core/specs/Automata';
+import makeAutomata, { isDeterministic } from '../../core/specs/Automata';
 
-const toColumns = (automata) => (
+const canMinimize = automata => (
+  isDeterministic(automata)
+);
+
+const toColumns = automata => (
   prepend({
     title: 'State',
     dataIndex: 'state',
@@ -188,6 +192,7 @@ function minimizeWithParcials(automata) {
 }
 
 export {
+  canMinimize,
   nextToND,
   toColumns,
   toSourceData,

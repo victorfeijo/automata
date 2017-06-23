@@ -2,8 +2,10 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import { indexOf, inc, curry, equals, map, has, without,
          assoc, last, keys, reduce, update, append, head } from 'ramda';
-import { Modal, Button, Table, Input, Switch } from 'antd';
+import { sourceDataToAutomata } from './utils/AutomataUtils';
+import { Modal, Button, Table, Input, Switch, Tooltip } from 'antd';
 import { toColumns, toSourceData, nextToND } from './utils/AutomataUtils';
+import store from 'store';
 
 const ButtonCnt = styled.div`
   margin-top: 10px;
@@ -22,7 +24,9 @@ class EditAutomata extends Component {
 
     this.state = {
       visible: false,
+      saveVisible: false,
       automata: {},
+      name: '',
       title: 'Title',
       columns: [],
       sourceData: [],
@@ -156,14 +160,34 @@ class EditAutomata extends Component {
     this.setState({ visible: false });
 
     saveCallback(this.state.sourceData);
-  })
+  });
+
+  onAutomataName = (e) => {
+    this.setState({ name: e.target.value });
+  }
+
+  onSaveStore = (e) => {
+    const { sourceData, name } = this.state;
+    const newAutomata = {
+      name: name,
+      automata: sourceDataToAutomata(sourceData),
+      sourceData: sourceData,
+    };
+
+    const saveds = store.get('savedList');
+    store.set('savedList', append(newAutomata, saveds));
+
+    this.setState({ saveVisible: false });
+  }
 
   render() {
     const { title, columns, sourceData } = this.state;
+    const { saveText, hideEdit } = this.props;
 
     return (
       <div>
-        <Button onClick={this.showModal} icon="edit">Edit</Button>
+        { !hideEdit &&
+            <Button onClick={this.showModal} icon="edit">Edit</Button> }
         <Modal
           title={title}
           visible={this.state.visible}
@@ -182,6 +206,23 @@ class EditAutomata extends Component {
           <ButtonCnt>
             <Button key="add" shape="circle" icon="plus" onClick={this.onAddTransition}></Button>
           </ButtonCnt>
+        </Modal>
+        <Tooltip title="Save">
+          <Button icon="file-add" onClick={(e) => this.setState({ saveVisible: true })}>{ saveText && "Save"}</Button>
+        </Tooltip>
+        <Modal
+          title="Save automata to current store."
+          visible={this.state.saveVisible}
+          onCancel={(e) => this.setState({ saveVisible: false })}
+          footer={[
+            <Button key="back" onClick={(e) => this.setState({ saveVisible: false })} icon="close"> Return</Button>,
+            <Button
+              key="submit"
+              type="primary"
+              onClick={this.onSaveStore}
+              icon="save"> Save </Button>, ]}
+        >
+          <Input placeholder="Automata Name" onChange={this.onAutomataName} />
         </Modal>
       </div>
     );

@@ -3,8 +3,10 @@ import styled from 'styled-components';
 import { assoc, pipe, last, curry } from 'ramda';
 import { message, Tooltip, Button, Row, Col, Input, Icon, Card, Table, Popconfirm } from 'antd';
 import { blank_automata } from '../../samples/Deterministic';
-import { toColumns, toSourceData, sourceDataToAutomata, joinWithParcials, intersectionWithParcials, differenceWithParcials, complementWithParcials, determinizeWithParcials, minimizeWithParcials } from './utils/AutomataUtils';
+import { canMinimize, toColumns, toSourceData, sourceDataToAutomata, joinWithParcials, intersectionWithParcials, differenceWithParcials, complementWithParcials, determinizeWithParcials, minimizeWithParcials } from './utils/AutomataUtils';
+import { isContained } from './../core/Relations';
 import EditAutomata from './EditAutomata.jsx';
+import LoadAutomata from './LoadAutomata.jsx';
 import AutomataParcials from './AutomataParcials.jsx';
 import store from 'store';
 
@@ -144,6 +146,11 @@ class AutomataPane extends Component {
   })
 
   onMinimizeClick = curry((automataObj, e) => {
+    if (!canMinimize(automataObj.automata)) {
+      message.error('Can not minimize non deterministic automata.');
+      return;
+    }
+
     const minimizedParcials = minimizeWithParcials(automataObj.automata);
     const minimized = last(minimizedParcials).automata;
 
@@ -181,6 +188,36 @@ class AutomataPane extends Component {
     });
   }
 
+  onLoadA = (automataObj) => {
+    this.setState({
+      automataA: {
+        automata: automataObj.automata,
+        columns: toColumns(automataObj.automata),
+        sourceData: automataObj.sourceData,
+      }
+    });
+  }
+
+  onLoadB = (automataObj) => {
+    this.setState({
+      automataB: {
+        automata: automataObj.automata,
+        columns: toColumns(automataObj.automata),
+        sourceData: automataObj.sourceData,
+      }
+    });
+  }
+
+  onContainedClick = curry((automataA, automataB, e) => {
+    const contained = isContained(automataA.automata, automataB.automata);
+
+    if (contained) {
+      message.success('The automata is contained.');
+    } else {
+      message.warning('The automata is not contained.');
+    }
+  });
+
   onCopyClick = curry((automata, e) => {
     store.set('copied', { automata: automata });
     message.success('Copied automata with success!');
@@ -200,6 +237,7 @@ class AutomataPane extends Component {
                     title={"Edit Automata A"}
                     automata={automataA.automata}
                     onSave={this.onSaveAutomataA} />
+                  <LoadAutomata onSave={this.onLoadA} />
                   <Tooltip title="Paste">
                     <Button icon="download" onClick={this.onPasteAClick}></Button>
                   </Tooltip>
@@ -221,6 +259,7 @@ class AutomataPane extends Component {
                     title={"Edit Automata B"}
                     automata={automataB.automata}
                     onSave={this.onSaveAutomataB} />
+                  <LoadAutomata onSave={this.onLoadB} />
                   <Tooltip title="Paste">
                     <Button icon="download" onClick={this.onPasteBClick}></Button>
                   </Tooltip>
@@ -240,6 +279,14 @@ class AutomataPane extends Component {
               <Button onClick={this.onUnionClick}>Union</Button>
               <Button onClick={this.onIntersectionClick}>Intersection</Button>
               <Button onClick={this.onDifferenceClick}>Difference</Button>
+              <Popconfirm
+                title={"Select containment type:"}
+                okText={"A ⊆ B"}
+                cancelText={"B ⊆ A"}
+                onConfirm={this.onContainedClick(automataA, automataB)}
+                onCancel={this.onContainedClick(automataB, automataA)}>
+                <Button>Contains</Button>
+              </Popconfirm>
               <Popconfirm
                 title={"Wich automata to complement?"}
                 okText={"Automata A"}
@@ -270,6 +317,10 @@ class AutomataPane extends Component {
             <CardSpace>
               <Card title="Result Automata" extra={
                 <Row type="flex" justify="space-between">
+                  <EditAutomata
+                    title={"Edit Automata B"}
+                    automata={resultAutomata.automata}
+                    hideEdit={true} />
                   <Tooltip title="Copy">
                     <Button icon="copy" onClick={this.onCopyClick(resultAutomata.automata)}></Button>
                   </Tooltip>
