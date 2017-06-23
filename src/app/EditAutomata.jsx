@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { indexOf, inc, curry, equals, map, has, without,
          assoc, last, keys, reduce, update, append, head } from 'ramda';
 import { sourceDataToAutomata } from './utils/AutomataUtils';
-import { Modal, Button, Table, Input, Switch, Tooltip } from 'antd';
+import { message, Modal, Button, Table, Input, Switch, Tooltip } from 'antd';
 import { toColumns, toSourceData, nextToND } from './utils/AutomataUtils';
 import store from 'store';
 
@@ -168,16 +168,21 @@ class EditAutomata extends Component {
 
   onSaveStore = (e) => {
     const { sourceData, name } = this.state;
+    if (name === '' || sourceData === {}) {
+      message.error('Fill the name or automata.');
+      return;
+    }
+
     const newAutomata = {
       name: name,
       automata: sourceDataToAutomata(sourceData),
       sourceData: sourceData,
     };
-
     const saveds = store.get('savedList');
     store.set('savedList', append(newAutomata, saveds));
 
     this.setState({ saveVisible: false });
+    message.success('Automata saved with success!');
   }
 
   render() {
@@ -211,7 +216,7 @@ class EditAutomata extends Component {
           <Button icon="file-add" onClick={(e) => this.setState({ saveVisible: true })}>{ saveText && "Save"}</Button>
         </Tooltip>
         <Modal
-          title="Save automata to current store."
+          title="Save automata"
           visible={this.state.saveVisible}
           onCancel={(e) => this.setState({ saveVisible: false })}
           footer={[
