@@ -23,6 +23,7 @@ const CardContainer = styled.div`
 const ButtonGroup = styled.div`
   display: flex;
   flex-direction: column;
+  margin-top: 20px;
 `;
 
 const OpTitle = styled.p`
@@ -233,7 +234,7 @@ class AutomataPane extends Component {
               </Card>
             </CardSpace>
           </Col>
-          <Row type="flex" span={3} justify="center" align="middle">
+          <Row type="flex" span={3} >
             <ButtonGroup>
               <OpTitle>Operation</OpTitle>
               <Button onClick={this.onUnionClick}>Union</Button>

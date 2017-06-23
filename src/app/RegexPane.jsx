@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { Alert, Button, Row, Col, Input, Icon, Card, Table, message } from 'antd';
 import { isValidRegex, toAutomata } from './utils/RegexUtils';
 import { toColumns, toSourceData } from './utils/AutomataUtils';
+import { replace } from 'ramda';
 import EditAutomata from './EditAutomata.jsx';
 import RegexOps from './RegexOps.jsx';
 import store from 'store';
@@ -33,7 +34,7 @@ class RegexPane extends Component {
   };
 
   onRegexChange = (event) => {
-    const regex = event.target.value;
+    const regex = replace(/\s/g, '', event.target.value);
     this.setState({ regex });
 
     if (isValidRegex(regex)) {
