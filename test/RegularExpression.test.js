@@ -3,7 +3,7 @@ import ENUM from '../src/core/Enum';
 import makeTape from '../src/core/specs/Tape';
 import { readTape } from '../src/core/Operations';
 
-import { root2, root3, regex1, regex2, regex3, regex4, nRegex1, nRegex2, nRegex3, nRegex4 } from '../samples/RegularExpression';
+import { root2, root3, regex1, regex2, regex3, regex4, nRegex1, nRegex2, nRegex3, nRegex4, nRegex5 } from '../samples/RegularExpression';
 
 describe('Regular Expression Transformations', () => {
   test('Normalize Regular Expression', () => {
@@ -251,5 +251,12 @@ describe('Integration test - Regexp to Automata', () => {
     expect(readTape(automata, tape1)).toBeTruthy();
     expect(readTape(automata, tape2)).toBeTruthy();
     expect(readTape(automata, tape3)).toBeFalsy();
+  });
+
+  test('nRegex5 to automata', () => {
+    const root = deDesimoneTree(nRegex5);
+    const automata = deSimoneToAutomata(root);
+
+    expect(automata.states.length).toEqual(6)
   });
 });

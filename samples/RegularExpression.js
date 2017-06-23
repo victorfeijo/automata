@@ -97,6 +97,7 @@ const nRegex1 = normalize('a?(ba)*b?');
 const nRegex2 = normalize('(ab|b(ab)*b)*(ba)*');
 const nRegex3 = normalize('l(_?d|_?l)*');
 const nRegex4 = normalize('(a|bbb)*');
+const nRegex5 = normalize('((ab|ba)(aa|bb)*(ab|ba)|aa|bb)*');
 
 export {
   root1,
@@ -110,5 +111,6 @@ export {
   nRegex2,
   nRegex3,
   nRegex4,
+  nRegex5,
 };
 

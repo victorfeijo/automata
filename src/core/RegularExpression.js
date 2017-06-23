@@ -1,4 +1,4 @@
-import {  assoc, and, find, any, all, pluck, add, subtract, uniq, clone, length, remove, range, filter, equals, contains, drop, last, without, propEq, flatten, reduce, union, map, isEmpty } from 'ramda'
+import { tail, assoc, and, find, any, all, pluck, add, subtract, uniq, clone, length, remove, range, filter, equals, contains, drop, last, without, propEq, flatten, reduce, union, map, isEmpty } from 'ramda'
 import makeDeSimoneNode, { updateNode, downMove, upMove } from './specs/DeSimoneNode';
 import makeAutomata from './specs/Automata';
 import { rangeStates } from './Utils';
@@ -68,7 +68,7 @@ function lessSignificant(expr) {
     } else if (elem === ')') {
       lvl = lvl-1
     } else if (lvl === 0) {
-        if (elem === '|' && lSignificant[0] != '|') {
+        if (elem === '|' && lSignificant[0] !== '|') {
           lSignificant = ['|', i];
         } else if (elem === '.' && !contains(lSignificant[0], ['|', '.'])) {
           lSignificant = ['.', i];
@@ -214,6 +214,7 @@ function deSimoneStates(createdStates, toCreate, stateList) {
     const composition = reduce((acc, node) => (
               [...acc, ...flatten(upMove(node))]
         ), [], stateComp.composition);
+
     const existentComp = findByComposition(createdStates, composition);
     if (existentComp) {
       createdStates = updateNextTransitions(createdStates, stateComp.state, existentComp.state);
@@ -225,14 +226,15 @@ function deSimoneStates(createdStates, toCreate, stateList) {
       transitions: createCompTransitions(stateComp.state, composition, stateList),
       composedBy: composition
     }]);
-  }, [], toCreate);
+  }, [], [toCreate[0]]);
 
   const newToCreate = reduce((acc, toCreate) => (
     union(acc, map(t => t.nextCreate, toCreate.transitions))
   ), [], nextTransitions);
+
   return deSimoneStates(
     [...createdStates, ...nextTransitions],
-    newToCreate,
+    [...tail(toCreate), ...newToCreate],
     stateList
   );
 }
@@ -258,6 +260,7 @@ function deSimoneToAutomata(deSimoneRoot) {
     pluck('nextCreate', initialDeSimoneState.transitions),
     stateList
   );
+
   return makeAutomata(
     pluck('state', deSimoneAutomata),
     deSimoneStatesAlphabet(deSimoneAutomata),
